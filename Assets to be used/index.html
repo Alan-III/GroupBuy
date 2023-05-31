@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GroupBuy</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <nav>
+    <ul>
+      <li>
+        <a class="nav-link active" href="#home"><h4 class="overlay">Home</h4></a>        
+      </li>
+      <li>
+        <a class="nav-link" href="#categories"><h4 class="overlay">Categories</h4></a>        
+      </li>
+      <li>
+        <a class="nav-link" href="#contact"><h4 class="overlay">Contact</h4></a>        
+      </li>
+    </ul>
+  </nav>
+  
+  <!-- Home section -->
+  <section class="home" id="home">
+    <div class="container">
+      <h1>Group Buy</h1>
+      <p>Get better deals by buying together!</p>
+      <div style="display:flex">
+          <div class="search_bar">
+              <img src="https://cdn.pixabay.com/photo/2013/07/12/15/55/clues-150586_960_720.png" alt="glass" height="35rem" width="35rem" />
+                  
+                  <input class="typewriter" type="text" placeholder="Type here to search..."/>
+              
+              <button onClick="document.getElementById('categories').scrollIntoView();">Search</button>
+          </div>
+      </div> 
+    </div>
+  </section>
+
+  
+  <!-- Categories section -->
+  <section class="categories" id="categories">
+    <div class="container">
+      <h2>Categories</h2>
+      <div class="categories-grid">
+
+          <div class="categories-item">
+              <img src="probending.png" alt="cat">
+              <div class="overlay">
+                  <h3>Technology</h3>
+                  <ul>
+                      <li>Computers</li>
+                      <li>Phones</li>
+                      <li>TVs</li>
+                      <li>...</li>
+                  </ul>
+                  <button class="btn" onclick="location.href='';">View</button>
+              </div>
+          </div>
+
+          <div class="categories-item">
+              <img src="probending.png" alt="cat">
+              <div class="overlay">
+                  <h3>Technology</h3>
+                  <ul>
+                      <li>Computers</li>
+                      <li>Phones</li>
+                      <li>TVs</li>
+                      <li>...</li>
+                  </ul>
+                  <button class="btn" onclick="location.href='';">View</button>
+              </div>
+          </div>
+
+          <div class="categories-item">
+              <img src="probending.png" alt="cat">
+              <div class="overlay">
+                  <h3>Technology</h3>
+                  <ul>
+                      <li>Computers</li>
+                      <li>Phones</li>
+                      <li>TVs</li>
+                      <li>...</li>
+                  </ul>
+                  <button class="btn" onclick="location.href='';">View</button>
+              </div>
+          </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact section -->
+  <section class="contact" id="contact">
+  <div class="container">
+    <h2 class="section-title">Contact</h2>
+    <p>Socials</p>
+    <div class="contact-grid">
+        <a href="https://github.com/Alan-III"><img src="Images/github.png" alt="github"></a>
+        <a href="https://leetcode.com/Alan-III/"><img src="Images/LeetCode.png" alt="LeetCode"></a>
+        <a href="https://www.linkedin.com/in/alexandros-karagiannis-8586251b7/"><img src="Images/linkedin.png" alt="linkedin"></a>
+        <a href="https://www.instagram.com/alan_karagiannis/"><img src="Images/instagram.jpg" alt="instagram"></a>
+    </div>
+    </div>
+  </div>
+</section>
+  
+  <script src="main.js"></script>
+
+</body>
+</html>
