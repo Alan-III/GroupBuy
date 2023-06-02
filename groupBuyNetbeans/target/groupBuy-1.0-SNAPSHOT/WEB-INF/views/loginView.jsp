@@ -49,6 +49,8 @@
                                     </div>
                                 </div>
                             </div>-->
+            
+            
             <!-- Pills navs -->
             <ul class="nav nav-pills nav-justified mb-3 loginclamp" id="ex1" role="tablist">
                 <li class="nav-item" role="presentation">
@@ -93,7 +95,7 @@
 
                         <!-- Email input -->
                         <div class="form-outline mb-4">
-                            <input type="text" id="loginName" name="loginName" class="form-control" />
+                            <input type="text" id="loginName" name="loginEmail" class="form-control" />
                             <label class="form-label" for="loginName">Email or username</label>
                         </div>
 
@@ -146,40 +148,44 @@
 
                         <p class="text-center">or:</p>
 
-                        <!-- Name input -->
-                        <div class="form-outline mb-4">
-                            <input type="text" id="registerName" name="registerName" class="form-control" />
-                            <label class="form-label" for="registerName">Name</label>
+                        <!-- First Name input -->
+                        <div>
+                            <input type="text" id="registerFirstNameU" name="registerFirstNameU" class="form-control" />
+                            <label class="form-label" for="registerFirstNameU">First Name</label>
                         </div>
-
+                        <!-- Last Name input -->
+                        <div>
+                            <input type="text" id="registerLastNameU" name="registerLastNameU" class="form-control" />
+                            <label class="form-label" for="registerLastNameU">Last Name</label>
+                        </div>
                         <!-- Username input -->
-                        <div class="form-outline mb-4">
-                            <input type="text" id="registerUsername" name="registerUsername" class="form-control" />
+                        <div>
+                            <input type="text" id="registerUsernameU" name="registerUsernameU" class="form-control" />
                             <label class="form-label" for="registerUsername">Username</label>
                         </div>
 
                         <!-- Email input -->
-                        <div class="form-outline mb-4">
-                            <input type="email" id="registerEmail" name="registerEmail" class="form-control" />
+                        <div>
+                            <input type="email" id="registerEmailU" name="registerEmailU" class="form-control" />
                             <label class="form-label" for="registerEmail">Email</label>
                         </div>
 
                         <!-- Password input -->
-                        <div class="form-outline mb-4">
-                            <input type="password" id="registerPassword" name="registerPassword" class="form-control" />
+                        <div>
+                            <input type="password" id="registerPasswordU" name="registerPasswordU" class="form-control" />
                             <label class="form-label" for="registerPassword">Password</label>
                         </div>
 
                         <!-- Repeat Password input -->
-                        <div class="form-outline mb-4">
-                            <input type="password" id="registerRepeatPassword" name="registerRepeatPassword" class="form-control" />
+                        <div>
+                            <input type="password" id="registerRepeatPasswordU" name="registerRepeatPasswordU" class="form-control" />
                             <label class="form-label " for="registerRepeatPassword">Repeat password</label>
                         </div>
 
                         <!-- Checkbox -->
                         <div class="form-check d-flex justify-content-center mb-4">
-                            <input class="form-check-input me-2" type="checkbox" value="" id="registerCheck" checked
-                                   name="registerCheck" aria-describedby="registerCheckHelpText" />
+                            <input class="form-check-input me-2" type="checkbox" id="registerCheck" 
+                                   name="registerCheckU" aria-describedby="registerCheckHelpText" />
                             <label class="form-check-label" for="registerCheck">
                                 I have read and agree to the terms
                             </label>
@@ -193,35 +199,38 @@
                     <form method="post" action="${pageContext.request.contextPath}/registerCompany">
                         <div class="text-center mb-3">
                         <h4>Contact Information</h4>    
-                        <!-- Name input -->
+                        <!-- Company Name input -->
                         <div class="form-outline mb-4">
-                            <input type="text" id="registerName" class="form-control" />
+                            <input type="text" id="registerNameC" name="registerNameC" class="form-control" />
                             <label class="form-label" for="registerName">Company Name</label>
                         </div>
-
-                        
                         <!-- Email input -->
                         <div class="form-outline mb-4">
-                            <input type="email" id="registerEmail" class="form-control" />
+                            <input type="email" id="registerEmailC" name="registerEmailC" class="form-control" />
                             <label class="form-label" for="registerEmail">Email Address</label>
                         </div>
                         
                         <h4>Company Representative</h4>
-                        <!-- Email input -->
+                        <!-- SUpervisor First Name input -->
                         <div class="form-outline mb-4">
-                            <input type="email" id="registerEmail" class="form-control" />
-                            <label class="form-label" for="registerEmail">Primary Contact Username</label>
+                            <input type="text" id="registerFirstNameC" name="registerFirstNameC" class="form-control" />
+                            <label class="form-label" for="registerFirstName">Primary Contact First Name</label>
+                        </div>
+                        <!-- SUpervisor First Name input -->
+                        <div class="form-outline mb-4">
+                            <input type="text" id="registerLastNameC" name="registerLastNameC" class="form-control" />
+                            <label class="form-label" for="registerLastName">Primary Contact Last Name</label>
                         </div>
 
                         <!-- Password input -->
                         <div class="form-outline mb-4">
-                            <input type="password" id="registerPassword" class="form-control" />
+                            <input type="password" id="registerPasswordC" name="registerPasswordC" class="form-control" />
                             <label class="form-label" for="registerPassword">Password</label>
                         </div>
 
                         <!-- Repeat Password input -->
                         <div class="form-outline mb-4">
-                            <input type="password" id="registerRepeatPassword" class="form-control" />
+                            <input type="password" id="registerRepeatPasswordC" name="registerRepeatPasswordC" class="form-control" />
                             <label class="form-label" for="registerRepeatPassword">Repeat password</label>
                         </div>
 

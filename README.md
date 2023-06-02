@@ -3,6 +3,7 @@
 ## Basic Developer Guidelines
 
 **Use meaningful variable names:**
+
 // Bad
 let a = 10;
 let x = "John";
@@ -12,6 +13,7 @@ let age = 10;
 let name = "John";
 
 **Provide descriptive function names:**
+
 // Bad
 function calculate() {
   // ...
@@ -23,6 +25,7 @@ function calculateTotalPrice() {
 }
 
 **Use clear and consistent naming conventions for classes:**
+
 // Bad
 class user {
   // ...
@@ -34,6 +37,7 @@ class User {
 }
 
 **Differentiate between similar names with prefixes or suffixes:**
+
 // Bad
 let customerName = "John";
 let customerAddress = "123 Main St";
@@ -43,6 +47,7 @@ let customerName = "John";
 let customerAddressStreet = "123 Main St";
 
 **Avoid single-letter variable names or abbreviations that can be ambiguous:**
+
 // Bad
 let a = 5;
 let info = getUserInfo();
@@ -52,6 +57,7 @@ let age = 5;
 let userInfo = getUserInformation();
 
 **Use consistent and meaningful naming for function parameters:**
+
 // Bad
 function calculate(x, y) {
   // ...
@@ -63,6 +69,7 @@ function calculateTotalPrice(price, quantity) {
 }
 
 **Ensure clarity when using boolean variables:**
+
 // Bad
 let t = true;
 

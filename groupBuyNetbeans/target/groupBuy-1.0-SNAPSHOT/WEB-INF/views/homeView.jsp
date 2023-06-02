@@ -25,7 +25,7 @@
     <body>
         <!-- Navigation-->
         <jsp:include page="_menu.jsp"></jsp:include>
-            <!-- Masthead-->
+        <!-- Masthead-->
         <header class="masthead">
             <div class="container">
                 <div class="masthead-subheading">Welcome To Our App!</div>

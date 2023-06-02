@@ -21,7 +21,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
         <meta name="description" content="" />
         <meta name="author" content="" />
-        <meta http-equiv="refresh" content="7; url='http://localhost:8080/groupbuy/home'" />
+        <meta http-equiv="refresh" content="2; url='http://localhost:8080/groupbuy/home'" />
         <title>GroupBuy</title>
         <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
         <!-- Font Awesome icons (free version)-->
