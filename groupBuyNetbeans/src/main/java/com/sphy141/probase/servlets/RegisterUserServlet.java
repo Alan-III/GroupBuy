@@ -7,12 +7,14 @@ package com.sphy141.probase.servlets;
 
 import com.sphy141.probase.beans.UserAccount;
 import com.sphy141.probase.utils.DBUtils;
+import com.sphy141.probase.utils.MailUtils;
 import com.sphy141.probase.utils.MyUtils;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.mail.MessagingException;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -95,6 +97,13 @@ public class RegisterUserServlet extends HttpServlet {
                 RequestDispatcher dispatcher=this.getServletContext().getRequestDispatcher("/WEB-INF/views/loginView.jsp");
                 dispatcher.forward(req, resp);
                 return;
+            }
+            try {
+                System.out.println("Mail Sent to: "+user.getEmail());
+                MailUtils.sendMail(user);
+                
+            } catch (MessagingException ex) {
+                Logger.getLogger(LoginServlet.class.getName()).log(Level.SEVERE, null, ex);
             }
             resp.sendRedirect(req.getContextPath()+"/home");
         }
