@@ -12,6 +12,7 @@ import com.sphy141.probase.utils.MyUtils;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.mail.MessagingException;
@@ -89,7 +90,9 @@ public class RegisterUserServlet extends HttpServlet {
                 user.setEmail(email);
                 user.setUserName(username);
                 user.setPassword(password);
-                DBUtils.insertUser(conn, user);
+                String verificationCode = UUID.randomUUID().toString().substring(0, 8);
+                user.setVerificationCode(verificationCode);
+                user.setUserID(DBUtils.insertUser(conn, user));
             } catch (SQLException ex) {
                 ex.printStackTrace();
                 errorString = ex.getMessage();

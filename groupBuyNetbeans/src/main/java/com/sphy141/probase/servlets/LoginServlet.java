@@ -55,7 +55,7 @@ public class LoginServlet extends HttpServlet {
             user = DBUtils.findUser(conn, email, password);
             if(user==null){
                 hasError=true;
-                errorString = "email or password is wrong or does not exist";
+                errorString = "email or password is wrong, does not exist or email not verified";
             }
         } catch (SQLException ex) {
             ex.printStackTrace();
@@ -69,9 +69,9 @@ public class LoginServlet extends HttpServlet {
             user.setPassword(password);
             
             req.setAttribute("errorString", errorString);
-            req.setAttribute("logineduser", user);
+            //req.setAttribute("logineduser", user);
             RequestDispatcher dispatcher=this.getServletContext().getRequestDispatcher("/WEB-INF/views/loginView.jsp");
-        dispatcher.forward(req, resp);
+            dispatcher.forward(req, resp);
         }
         else{
             HttpSession session = req.getSession();

@@ -51,8 +51,10 @@ public class MailUtils {
         msg.setRecipient(Message.RecipientType.TO, new InternetAddress(user.getEmail()));
         
         msg.setSubject("User Verification");
-        msg.setText("Registration success. Please verify your account using this code: CODE");
-        //user.verificationCode
+        String verificationLink = "http://localhost:8080/groupbuy/verify?type=u&id="+user.getUserID()+"&code="+user.getVerificationCode();
+        String emailContent = "Registration success. Please verify your account by clicking the link below:<br><br>"
+        + "<a href=\"" + verificationLink + "\">Verify Account</a>";
+        msg.setContent(emailContent, "text/html; charset=utf-8");
         Transport.send(msg);
     }
     
@@ -81,8 +83,10 @@ public class MailUtils {
         msg.setRecipient(Message.RecipientType.TO, new InternetAddress(business.getEmail()));
         
         msg.setSubject("Business Verification");
-        msg.setText("Registration success. Please verify your account using this code: CODE");
-        //user.verificationCode
+        String verificationLink = "http://localhost:8080/groupbuy/verify?type=b&id="+business.getBusinessID()+"&code="+business.getVerificationCode();
+        String emailContent = "Registration success. Please verify your account by clicking the link below:<br><br>"
+        + "<a href=\"" + verificationLink + "\">Verify Account</a>";
+        msg.setContent(emailContent, "text/html; charset=utf-8");
         Transport.send(msg);
     }
 }

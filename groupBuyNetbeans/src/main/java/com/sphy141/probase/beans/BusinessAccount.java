@@ -20,6 +20,15 @@ public class BusinessAccount {
     //private String userName;
     private String bankAccount;
     private String password;
+    private String verificationCode;
+
+    public String getVerificationCode() {
+        return verificationCode;
+    }
+
+    public void setVerificationCode(String verificationCode) {
+        this.verificationCode = verificationCode;
+    }
 
     public BusinessAccount() {
     }

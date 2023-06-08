@@ -18,6 +18,7 @@ import com.sphy141.probase.utils.MyUtils;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.mail.MessagingException;
@@ -92,6 +93,8 @@ public class RegisterCompanyServlet extends HttpServlet{
                 business.setEmail(email);
                 business.setBusinessName(businessName);
                 business.setPassword(password);
+                String verificationCode = UUID.randomUUID().toString().substring(0, 8);
+                business.setVerificationCode(verificationCode);
                 DBUtils.insertBusiness(conn, business);
             } catch (SQLException ex) {
                 ex.printStackTrace();
