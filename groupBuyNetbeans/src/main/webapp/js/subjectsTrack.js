@@ -1,5 +1,7 @@
 const track = document.getElementById("image-track");
 const track2 = document.getElementById("image-track2");
+const trackContainer = document.getElementById("trackcontainer");
+const trackContainer2 = document.getElementById("trackcontainer2");
 const sidemenu = document.getElementById("side-menu");
 // -----------------scroll
 const handleOnWheelHorizontal = (e, trackElement) => {
@@ -10,9 +12,20 @@ const handleOnWheelHorizontal = (e, trackElement) => {
   const percentage = (delta * 50 / maxDelta) * -100;
   const prevPercentage = parseFloat(trackElement.dataset.prevPercentage) || 0;
   const nextPercentageUnconstrained = prevPercentage + percentage;
-  const nextPercentage = Math.max(Math.min(nextPercentageUnconstrained, 0), -60);
-  trackElement.dataset.prevPercentage = nextPercentage;
-  trackElement.dataset.percentage = nextPercentage;
+  const nextPercentage = Math.min(nextPercentageUnconstrained, 0);
+  
+  // Check if the last child is in the middle of the screen
+  const lastChild = trackElement.lastElementChild;
+  const lastChildRect = lastChild.getBoundingClientRect();
+  const trackContainerRect = trackContainer.getBoundingClientRect();
+
+  if (lastChildRect.right + nextPercentage +200 < trackContainerRect.right && nextPercentage < prevPercentage) {
+    // Stop scrolling if the last child is in the middle
+  }
+  else{
+      trackElement.dataset.prevPercentage = nextPercentage;
+      trackElement.dataset.percentage = nextPercentage;
+  }
 
   trackElement.animate(
     {
@@ -30,6 +43,7 @@ const handleOnWheelHorizontal = (e, trackElement) => {
     );
   }
 };
+
 const handleOnWheelVertical = (e, trackElement) => {
   e.preventDefault();
 
@@ -58,8 +72,8 @@ const handleOnWheelVertical = (e, trackElement) => {
     );
   }
 };
-track.addEventListener("wheel", e => handleOnWheelHorizontal(e, track), { passive: false });
-track2.addEventListener("wheel", e => handleOnWheelHorizontal(e, track2), { passive: false });
+trackcontainer.addEventListener("wheel", e => handleOnWheelHorizontal(e, track), { passive: false });
+trackcontainer2.addEventListener("wheel", e => handleOnWheelHorizontal(e, track2), { passive: false });
 sidemenu.addEventListener("wheel", e => handleOnWheelVertical(e, sidemenu), { passive: false });
 //// -----------------click drag
 //const handleOnDown = e => track.dataset.mouseDownAt = e.clientX;

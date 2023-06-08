@@ -90,7 +90,7 @@ public class RegisterUserServlet extends HttpServlet {
                 user.setEmail(email);
                 user.setUserName(username);
                 user.setPassword(password);
-                String verificationCode = UUID.randomUUID().toString().substring(0, 8);
+                String verificationCode = UUID.randomUUID().toString().substring(0, 20);
                 user.setVerificationCode(verificationCode);
                 user.setUserID(DBUtils.insertUser(conn, user));
             } catch (SQLException ex) {

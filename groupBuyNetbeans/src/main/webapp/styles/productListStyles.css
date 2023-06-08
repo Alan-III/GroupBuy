@@ -21,7 +21,7 @@
 }
 .main_box .sidebar_menu{
   position: absolute;
-  height: 100vh;
+  height: 90vh;
   width: 280px;
   left: -280px;
   background: rgba(255, 255, 255, 0.1);
@@ -140,10 +140,9 @@
   transition: all 0.3s linear;
 }
 .track-container{
-    height: 200px;
+    height: 30vh;
     /*width: calc(100vw - 480px);*/
   overflow-x: hidden;
-  
 }
 .border-yellow{
   border: solid 2px yellow;
@@ -156,6 +155,7 @@
   background-color: rgba(0,0,0,0.6);
 }
 .image-track {
+  padding: 1rem;
   display: flex;
   gap: 4vmin;
   user-select: none;
@@ -167,10 +167,52 @@
   z-index: 1;
 }
 
-.image {
+.product {
+  padding: 0.2rem;
+  position: relative;
+  height: 100%;
+  width: fit-content;
+  display: inline-flex;
+  border: solid 1px white;
+  border-radius: 10px;
+}
+.product-image {
+  padding: 1.5rem;
+}
+.product a img {
   height: 100%;
 }
 
+.product p{
+  position: absolute;
+  width: 100%;
+  color: #fff;
+  padding: 5px;
+  padding-top: 0;
+  margin: 0;
+  font-size: 14px;
+  overflow: hidden;
+  max-height: 30px;
+  border-radius: 15px;
+}
+.product p.image-left {
+  width: 70%;
+  left: 0;
+}
+.product p.image-right {
+  right: 0;
+  width: 30%;
+  padding-left: 0;
+  text-align: right;
+}
+.product p.image-bottom {
+  bottom: 0;
+  background-color: rgba(0,0,0,0.7);
+}
+.small-icon, .product a img.small-icon {
+    width: 20px;
+    height: 20px;
+}
 .menu{
     overflow-y: hidden;
 }

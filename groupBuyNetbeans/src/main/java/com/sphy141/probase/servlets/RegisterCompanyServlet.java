@@ -93,7 +93,7 @@ public class RegisterCompanyServlet extends HttpServlet{
                 business.setEmail(email);
                 business.setBusinessName(businessName);
                 business.setPassword(password);
-                String verificationCode = UUID.randomUUID().toString().substring(0, 8);
+                String verificationCode = UUID.randomUUID().toString().substring(0, 20);
                 business.setVerificationCode(verificationCode);
                 DBUtils.insertBusiness(conn, business);
             } catch (SQLException ex) {

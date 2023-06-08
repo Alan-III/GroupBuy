@@ -1,4 +1,5 @@
 <%@page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -35,6 +36,7 @@
                     <div class="menu">
                         <div id="side-menu">
                             <ul>
+                                <%--<c:forEach items="${list}" var="item">--%>
                                 <li><i class="fas fa-qrcode"></i>
                                     <a href="#">RAM</a>
                                 </li>
@@ -54,6 +56,39 @@
                                     <i class="fas fa-link"></i>
                                     <a href="#">MAKE filter</a>
                                 </li>
+                                <li>
+                                    <i class="fas fa-link"></i>
+                                    <a href="#">MAKE filter</a>
+                                </li>
+                                <li>
+                                    <i class="fas fa-link"></i>
+                                    <a href="#">MAKE filter</a>
+                                </li>
+                                <li>
+                                    <i class="fas fa-link"></i>
+                                    <a href="#">MAKE filter</a>
+                                </li>
+                                <li>
+                                    <i class="fas fa-link"></i>
+                                    <a href="#">MAKE filter</a>
+                                </li>
+                                <li>
+                                    <i class="fas fa-link"></i>
+                                    <a href="#">MAKE filter</a>
+                                </li>
+                                <li>
+                                    <i class="fas fa-link"></i>
+                                    <a href="#">MAKE filter</a>
+                                </li>
+                                <li>
+                                    <i class="fas fa-link"></i>
+                                    <a href="#">MAKE filter</a>
+                                </li>
+                                <li>
+                                    <i class="fas fa-link"></i>
+                                    <a href="#">MAKE filter</a>
+                                </li>
+                                <%--</c:forEach>--%>
                             </ul>
                         </div>
                     </div>
@@ -67,24 +102,72 @@
                 </div> 
                 <br>
                 <div class="layout"><h4>Offers</h4></div>
-                <div class="layout track-container border-red">
+                <div class="layout track-container border-red" id="trackcontainer">
                     <!-- Item slider-->
                     <div id='image-track' class="image-track" data-mouse-down-at='0' data-prev-percentage='0'>
-                        <a href='subject_details.php?subj=Math&subjID=1'><img class='image' src='assets/img/smartphone.png' draggable='false' /></a>
-                        <a href='subject_details.php?subj=Physics&subjID=2'><img class='image' src='assets/img/smartphone.png' draggable='false' /></a>
-                        <a href='subject_details.php?subj=Chemistry&subjID=3'><img class='image' src='assets/img/smartphone.png' draggable='false' /></a>
+                        <%--<c:forEach items="${list}" var="item">--%>
+                            <!--{item.getPath()} sto src-->
+                            <div class='product'>
+                                <a class="product-image" href='subject_details.php?subj=${item.getCode()}'>
+                                  <img src='assets/img/smartphone.png' draggable='false' />
+                                </a>
+                                <c:if test="${logineduser.getUserName()=='tomcruz'}">
+                                    <p class="image-left">
+                                        <a class="fas fa-bars" href='urltoedit'></a>
+                                    </p>
+                                    <p class="image-right">
+                                        <a href='urltodelete'>
+                                            <img class="small-icon" src='assets/img/delete.png' draggable='false' />
+                                        </a>
+                                    </p>
+                                </c:if>
+                                <p class="image-left image-bottom">${item.getName()}Product Name can't be longer 1 2 3</p>
+                                <p class="image-right image-bottom">${item.getPrice()}1.000$</p>
+                            </div>                            
+                        <%--</c:forEach>--%>
+                            
+                        <a href='subject_details.php?subj=Math&subjID=1'><img class='product' src='assets/img/smartphone.png' draggable='false' /></a>
+                        <a href='subject_details.php?subj=Physics&subjID=2'><img class='product' src='assets/img/smartphone.png' draggable='false' /></a>
+                        <a href='subject_details.php?subj=Chemistry&subjID=3'><img class='product' src='assets/img/smartphone.png' draggable='false' /></a>
                     </div>
                     
                     <!-- Item slider end-->
                 </div>
                 <br>
                 <div class="layout"><h4>Products</h4></div>
-                <div class="layout track-container border-yellow">
+                <div class="layout track-container border-yellow" id="trackcontainer2">
                     <!-- Item slider-->
                     <div id='image-track2' class="image-track" data-mouse-down-at='0' data-prev-percentage='0'>
-                        <a href='subject_details.php?subj=Math&subjID=1'><img class='image' src='assets/img/smartphone.png' draggable='false' /></a>
-                        <a href='subject_details.php?subj=Physics&subjID=2'><img class='image' src='assets/img/smartphone.png' draggable='false' /></a>
-                        <a href='subject_details.php?subj=Chemistry&subjID=3'><img class='image' src='assets/img/smartphone.png' draggable='false' /></a>
+                        <%--<c:forEach items="${list}" var="item">--%>
+                            <!--{item.getPath()} sto src-->
+                            <div class='product'>
+                                <a class="product-image" href='subject_details.php?subj=${item.getCode()}'>
+                                  <img src='assets/img/smartphone.png' draggable='false' />
+                                </a>
+                                <c:if test="${logineduser.getUserName()=='tomcruz'}">
+                                    <p class="image-left">
+                                        <a class="fas fa-bars" href='urltoedit'></a>
+                                    </p>
+                                    <p class="image-right">
+                                        <a href='urltodelete'>
+                                            <img class="small-icon" src='assets/img/delete.png' draggable='false' />
+                                        </a>
+                                    </p>
+                                </c:if>
+                                <p class="image-left image-bottom">${item.getName()}Product Name can't be longer 1 2 3</p>
+                                <p class="image-right image-bottom">${item.getPrice()}1.000$</p>
+                            </div>                            
+                        <%--</c:forEach>--%>
+                            
+                        <a href='subject_details.php?subj=Math&subjID=1'><img class='product' src='assets/img/smartphone.png' draggable='false' /></a>
+                        <a href='subject_details.php?subj=Physics&subjID=2'><img class='product' src='assets/img/smartphone.png' draggable='false' /></a>
+                        <a href='subject_details.php?subj=Chemistry&subjID=3'><img class='product' src='assets/img/smartphone.png' draggable='false' /></a>
+                        <a href='subject_details.php?subj=Math&subjID=1'><img class='product' src='assets/img/smartphone.png' draggable='false' /></a>
+                        <a href='subject_details.php?subj=Physics&subjID=2'><img class='product' src='assets/img/smartphone.png' draggable='false' /></a>
+                        <a href='subject_details.php?subj=Chemistry&subjID=3'><img class='product' src='assets/img/smartphone.png' draggable='false' /></a>
+                        <a href='subject_details.php?subj=Math&subjID=1'><img class='product' src='assets/img/smartphone.png' draggable='false' /></a>
+                        <a href='subject_details.php?subj=Physics&subjID=2'><img class='product' src='assets/img/smartphone.png' draggable='false' /></a>
+                        <a href='subject_details.php?subj=Chemistry&subjID=3'><img class='product' src='assets/img/delete.png' draggable='false' /></a>
                     </div>
                     
                     <!-- Item slider end-->
