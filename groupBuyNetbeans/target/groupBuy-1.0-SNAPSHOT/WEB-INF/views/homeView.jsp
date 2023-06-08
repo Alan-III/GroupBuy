@@ -20,12 +20,12 @@
         <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css" />
         <link href="https://fonts.googleapis.com/css?family=Roboto+Slab:400,100,300,700" rel="stylesheet" type="text/css" />
         <!-- Core theme CSS (includes Bootstrap)-->
-        <link href="styles/styles.css" rel="stylesheet" />
+        <link href="styles/BootstrapStyles.css" rel="stylesheet" />
     </head>
     <body>
         <!-- Navigation-->
         <jsp:include page="_menu.jsp"></jsp:include>
-            <!-- Masthead-->
+        <!-- Masthead-->
         <header class="masthead">
             <div class="container">
                 <div class="masthead-subheading">Welcome To Our App!</div>
@@ -36,7 +36,7 @@
 
                             <input class="typewriter" type="text" placeholder="Type here to search..."/>
 
-                        <button onClick="document.getElementById('categories').scrollIntoView();">Search</button>
+                        <button onClick="window.location.href = 'http://localhost:8080/groupbuy/productlist';">Search</button>
                     </div>
                 </div> 
                 <a class="btn btn-primary btn-xl text-uppercase" href="#categories">Browse Categories</a>

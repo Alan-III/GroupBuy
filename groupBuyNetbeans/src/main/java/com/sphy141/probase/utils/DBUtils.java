@@ -5,6 +5,7 @@
  */
 package com.sphy141.probase.utils;
 
+import com.sphy141.probase.beans.BusinessAccount;
 import com.sphy141.probase.beans.Product;
 import com.sphy141.probase.beans.UserAccount;
 import java.sql.Connection;
@@ -20,12 +21,12 @@ import java.util.List;
  */
 public class DBUtils {
 
-    public static UserAccount findUser(Connection conn, String loginName, String password) throws SQLException {
-        String sql = "SELECT firstName, lastName, userID, phoneNum, balance, userName, bankAccount, u.email as email FROM users u INNER JOIN login l ON u.email=l.email WHERE (u.email = ? OR u.userName=?) AND password = ?";
+    public static UserAccount findUser(Connection conn, String loginEmail, String password) throws SQLException {
+        String sql = "SELECT firstName, lastName, userID, phoneNum, balance, userName, bankAccount, u.email as email FROM users u INNER JOIN login l "
+                + "ON u.email=l.email WHERE u.email = ?  AND password = ? AND enabled = 1";
         PreparedStatement pst = conn.prepareStatement(sql);
-        pst.setString(1, loginName);
-        pst.setString(2, loginName);
-        pst.setString(3, password);
+        pst.setString(1, loginEmail);
+        pst.setString(2, password);
         ResultSet rs = pst.executeQuery();
         while (rs.next()) {
             UserAccount user = new UserAccount();
@@ -43,11 +44,11 @@ public class DBUtils {
         return null;
     }//findUser
 
-    public static UserAccount findUser(Connection conn, String loginName) throws SQLException {
-        String sql = "SELECT firstName, lastName, userID, phoneNum, balance, userName, bankAccount, u.email as email FROM users u INNER JOIN login l ON u.email=l.email WHERE u.email = ? OR u.userName=?";
+    public static UserAccount findUser(Connection conn, String loginEmail) throws SQLException {
+        String sql = "SELECT firstName, lastName, userID, phoneNum, balance, userName, bankAccount, u.email as email FROM users u INNER JOIN login l "
+                + "ON u.email=l.email WHERE u.email = ?  AND enabled = 1";
         PreparedStatement pst = conn.prepareStatement(sql);
-        pst.setString(1, loginName);
-        pst.setString(2, loginName);
+        pst.setString(1, loginEmail);
         ResultSet rs = pst.executeQuery();
         while (rs.next()) {
             UserAccount user = new UserAccount();
@@ -64,6 +65,66 @@ public class DBUtils {
         }
         return null;
     }//findUser
+    
+    public static int insertUser(Connection conn, UserAccount user) throws SQLException {
+        //insertDetails
+        String sql = "INSERT INTO users (firstName, lastName, email, userName, verificationCode) VALUES(?,?,?,?, ?)";
+        PreparedStatement pst = conn.prepareCall(sql);
+        pst.setString(1, user.getFirstName());
+        pst.setString(2, user.getLastName());
+        pst.setString(3, user.getEmail());
+        pst.setString(4, user.getUserName());
+        pst.setString(5, user.getVerificationCode());
+        pst.executeUpdate();
+        //insertPassword
+        String sql1 = "INSERT INTO login (email, password) VALUES(?, ?)";
+        PreparedStatement pst1 = conn.prepareCall(sql1);
+        pst1 = conn.prepareCall(sql1);
+        pst1.setString(1, user.getEmail());
+        pst1.setString(2, user.getPassword());
+        pst1.executeUpdate();
+        
+        sql = "SELECT userID FROM users WHERE email = ?";
+        pst = conn.prepareStatement(sql);
+        pst.setString(1, user.getEmail());
+        ResultSet rs = pst.executeQuery();
+        while (rs.next()) {
+            return Integer.parseInt(rs.getString("userID"));
+        }
+        return -1;   
+    }//insertUser
+    
+    public static void updateUser(Connection conn, UserAccount user) throws SQLException {
+        String sql = "UPDATE Product SET firstName=?, lastName=?, phoneNum=?, balance=?, userName=?, bankAccount=? WHERE email=?";
+        PreparedStatement pst = conn.prepareCall(sql);
+        pst.setString(1, user.getFirstName());
+        pst.setString(2, user.getLastName());
+        pst.setString(3, user.getPhoneNum());
+        pst.setDouble(4, user.getBalance());
+        pst.setString(5, user.getUserName());
+        pst.setString(6, user.getBankAccount());
+        pst.setString(7, user.getEmail());
+        pst.executeUpdate();
+    }//updateUser
+    
+    public static boolean verifyUser(Connection conn, UserAccount user) throws SQLException {
+        //insertDetails
+        String sql = "SELECT * FROM users WHERE userID = ? AND verificationCode=?";
+        PreparedStatement pst = conn.prepareStatement(sql);
+        pst.setInt(1, user.getUserID());
+        pst.setString(2, user.getVerificationCode());
+        ResultSet rs = pst.executeQuery();
+        while (rs.next()) {
+            String sql1 = "UPDATE users SET enabled=? WHERE userID=?";
+            PreparedStatement pst1 = conn.prepareCall(sql1);
+            pst1 = conn.prepareCall(sql1);
+            pst1.setInt(1, 1);
+            pst1.setInt(2, user.getUserID());
+            pst1.executeUpdate();
+            return true;
+        }
+        return false;
+    }//verifyBusiness
 
     public static List<Product> queryProduct(Connection conn) throws SQLException {
         String sql = "SELECT * FROM Product";
@@ -120,4 +181,65 @@ public class DBUtils {
         pst.setString(1, code);
         pst.executeUpdate();
     }//deleteProduct
+    
+    public static BusinessAccount findBusiness(Connection conn, String loginEmail) throws SQLException {
+        String sql = "SELECT businessID, supervisorFirstName, supervisorLastName, balance, businessName,"
+                + " bankAccount,AFM, b.email as email FROM business b INNER JOIN login l ON b.email=l.email WHERE b.email = ?  AND enabled = 1";
+        PreparedStatement pst = conn.prepareStatement(sql);
+        pst.setString(1, loginEmail);
+        ResultSet rs = pst.executeQuery();
+        while (rs.next()) {
+            BusinessAccount business = new BusinessAccount();
+            business.setBusinessID(Integer.parseInt(rs.getString("businessID")));
+            business.setSupervisorFirstName(rs.getString("supervisorFirstName"));
+            business.setSupervisorLastName(rs.getString("supervisorLastName"));
+            business.setEmail(rs.getString("email"));
+            business.setBalance(Double.parseDouble(rs.getString("balance")));
+            business.setBusinessName(rs.getString("businessName"));
+            business.setBankAccount(rs.getString("bankAccount"));
+            business.setAfm(rs.getString("AFM"));
+            business.setPassword(rs.getString("password"));
+            return business;
+        }
+        return null;
+    }//findBusiness
+    
+    public static void insertBusiness(Connection conn, BusinessAccount business) throws SQLException {
+        //insertDetails
+        String sql = "INSERT INTO business (supervisorFirstName, supervisorLastName, email, businessName, verificationCode) VALUES(?,?,?,?,?)";
+        PreparedStatement pst = conn.prepareCall(sql);
+        pst.setString(1, business.getSupervisorFirstName());
+        pst.setString(2, business.getSupervisorLastName());
+        pst.setString(3, business.getEmail());
+        pst.setString(4, business.getBusinessName());
+        pst.setString(5, business.getVerificationCode());
+        pst.executeUpdate();
+        //insertPassword
+        String sql1 = "INSERT INTO login (email, password) VALUES(?, ?)";
+        PreparedStatement pst1 = conn.prepareCall(sql1);
+        pst1 = conn.prepareCall(sql1);
+        pst1.setString(1, business.getEmail());
+        pst1.setString(2, business.getPassword());
+        pst1.executeUpdate();
+    }//insertBusiness
+    
+    public static boolean verifyBusiness(Connection conn, BusinessAccount business) throws SQLException {
+        //insertDetails
+        String sql = "SELECT * FROM business WHERE businessID = ? AND verificationCode=?";
+        PreparedStatement pst = conn.prepareStatement(sql);
+        pst.setInt(1, business.getBusinessID());
+        pst.setString(2, business.getVerificationCode());
+        ResultSet rs = pst.executeQuery();
+        while (rs.next()) {
+            String sql1 = "UPDATE business SET AFM=?, bankAccount=?, enabled=?";
+            PreparedStatement pst1 = conn.prepareCall(sql1);
+            pst1 = conn.prepareCall(sql1);
+            pst1.setString(1, business.getAfm());
+            pst1.setString(2, business.getBankAccount());
+            pst1.setInt(3, 1);
+            pst1.executeUpdate();
+            return true;
+        }
+        return false;
+    }//verifyBusiness
 }

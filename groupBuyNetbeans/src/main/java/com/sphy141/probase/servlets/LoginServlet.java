@@ -7,12 +7,14 @@ package com.sphy141.probase.servlets;
 
 import com.sphy141.probase.beans.UserAccount;
 import com.sphy141.probase.utils.DBUtils;
+import com.sphy141.probase.utils.MailUtils;
 import com.sphy141.probase.utils.MyUtils;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.mail.MessagingException;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -36,7 +38,7 @@ public class LoginServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        String username = req.getParameter("loginName");
+        String email = req.getParameter("loginEmail");
         String password = req.getParameter("loginPassword");
         String remember = req.getParameter("loginCheck");
         boolean rememberMe = "Y".equals(remember);
@@ -44,16 +46,16 @@ public class LoginServlet extends HttpServlet {
         boolean hasError = false;
         UserAccount user = null;
         
-        if(username == null || password == null || username.length()==0 || password.length()==0){
+        if(email == null || password == null || email.length()==0 || password.length()==0){
             hasError=true;
-            errorString = "username and password should be provided";
+            errorString = "email and password should be provided";
         }
         Connection conn = MyUtils.getStoredConnection(req);
         try {
-            user = DBUtils.findUser(conn, username, password);
+            user = DBUtils.findUser(conn, email, password);
             if(user==null){
                 hasError=true;
-                errorString = "username or password is wrong";
+                errorString = "email or password is wrong, does not exist or email not verified";
             }
         } catch (SQLException ex) {
             ex.printStackTrace();
@@ -63,13 +65,13 @@ public class LoginServlet extends HttpServlet {
         //
         if (hasError){
             user = new UserAccount();
-            user.setUserName(username);
+            user.setEmail(email);
             user.setPassword(password);
             
             req.setAttribute("errorString", errorString);
-            req.setAttribute("logineduser", user);
+            //req.setAttribute("logineduser", user);
             RequestDispatcher dispatcher=this.getServletContext().getRequestDispatcher("/WEB-INF/views/loginView.jsp");
-        dispatcher.forward(req, resp);
+            dispatcher.forward(req, resp);
         }
         else{
             HttpSession session = req.getSession();
@@ -80,7 +82,7 @@ public class LoginServlet extends HttpServlet {
             else{
                 MyUtils.deleteUserCookie(resp);
             }
-            resp.sendRedirect(req.getContextPath()+"/userinfo");
+            resp.sendRedirect(req.getContextPath()+"/home");
         }
     }//doPost
 }

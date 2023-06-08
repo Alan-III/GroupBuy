@@ -7,10 +7,15 @@ package com.sphy141.probase.servlets;
 
 import com.sphy141.probase.beans.UserAccount;
 import com.sphy141.probase.utils.DBUtils;
+import com.sphy141.probase.utils.MailUtils;
 import com.sphy141.probase.utils.MyUtils;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.mail.MessagingException;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -34,27 +39,37 @@ public class RegisterUserServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        String fullname = req.getParameter("registerName");
-        String username = req.getParameter("registerUsername");
-        String email = req.getParameter("registerEmail");
-        String password = req.getParameter("registerPassword");
-        String confirmPassword = req.getParameter("registerRepeatPassword");
-        String terms = req.getParameter("registerCheck");
-        boolean termsCheck = "Y".equals(terms);
+        String firstName = req.getParameter("registerFirstNameU");
+        String lastName = req.getParameter("registerLastNameU");
+        String username = req.getParameter("registerUsernameU");
+        String email = req.getParameter("registerEmailU");
+        String password = req.getParameter("registerPasswordU");
+        String confirmPassword = req.getParameter("registerRepeatPasswordU");
+        String terms = req.getParameter("registerCheckU");
+        boolean termsCheck = terms==null ? false : true;
         String errorString = null;
         boolean hasError = false;
         UserAccount user = null;
         
-        if(username == null || password == null || username.length()==0 || password.length()==0){
+        if(username == null || password == null || email == null || confirmPassword == null || username.length()==0 
+                || password.length()==0 || email.length()==0 || email.length()==0 || confirmPassword.length()==0){
             hasError=true;
-            errorString = "username and password should be provided";
+            errorString = "email, username and password should be provided";
+        }
+        if(!(password.equals(confirmPassword))){
+            hasError=true;
+            errorString = "passwords don't match";
+        }
+        if(!termsCheck){
+            hasError=true;
+            errorString = "please agree to the Terms";
         }
         Connection conn = MyUtils.getStoredConnection(req);
         try {
-            user = DBUtils.findUser(conn, username, password);
-            if(user==null){
+            user = DBUtils.findUser(conn, email);
+            if(user!=null){
                 hasError=true;
-                errorString = "username or password is wrong";
+                errorString = "email already exists";
             }
         } catch (SQLException ex) {
             ex.printStackTrace();
@@ -63,25 +78,37 @@ public class RegisterUserServlet extends HttpServlet {
         }
         //
         if (hasError){
-            user = new UserAccount();
-            user.setUserName(username);
-            user.setPassword(password);
-            
             req.setAttribute("errorString", errorString);
-            req.setAttribute("logineduser", user);
             RequestDispatcher dispatcher=this.getServletContext().getRequestDispatcher("/WEB-INF/views/loginView.jsp");
         dispatcher.forward(req, resp);
         }
         else{
-            HttpSession session = req.getSession();
-            MyUtils.storeLoginedUser(session, user);
-            if(termsCheck){
-                MyUtils.storeUserCookie(resp, user);
+            try {
+                user = new UserAccount();
+                user.setFirstName(firstName);
+                user.setLastName(lastName);
+                user.setEmail(email);
+                user.setUserName(username);
+                user.setPassword(password);
+                String verificationCode = UUID.randomUUID().toString().substring(0, 20);
+                user.setVerificationCode(verificationCode);
+                user.setUserID(DBUtils.insertUser(conn, user));
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+                errorString = ex.getMessage();
+                req.setAttribute("errorString", errorString);
+                RequestDispatcher dispatcher=this.getServletContext().getRequestDispatcher("/WEB-INF/views/loginView.jsp");
+                dispatcher.forward(req, resp);
+                return;
             }
-            else{
-                MyUtils.deleteUserCookie(resp);
+            try {
+                System.out.println("Mail Sent to: "+user.getEmail());
+                MailUtils.sendMail(user);
+                
+            } catch (MessagingException ex) {
+                Logger.getLogger(LoginServlet.class.getName()).log(Level.SEVERE, null, ex);
             }
-            resp.sendRedirect(req.getContextPath()+"/userinfo");
+            resp.sendRedirect(req.getContextPath()+"/home");
         }
     }//doPost
 }

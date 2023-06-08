@@ -5,7 +5,7 @@
 --%>
 
 <%@page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-
+<%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
         
 <nav class="navbar navbar-expand-lg navbar-dark fixed-top" id="mainNav">
             <div class="container">
@@ -20,7 +20,10 @@
                         <li class="nav-item"><a class="nav-link" href="/groupbuy/home#about">About</a></li>
                         <li class="nav-item"><a class="nav-link" href="/groupbuy/home#team">Team</a></li>
                         <li class="nav-item"><a class="nav-link" href="/groupbuy/home#contact">Contact</a></li>
+                        <c:if test="${logineduser==null}">
                         <li class="nav-item"><a class="nav-link" href="/groupbuy/login">Sign In/Up</a></li>
+                        </c:if>
+                        <li class="nav-item"><a class="nav-link" href="/groupbuy/userInfo">${logineduser.getUserName()}</a></li>
                     </ul>
                 </div>
             </div>
