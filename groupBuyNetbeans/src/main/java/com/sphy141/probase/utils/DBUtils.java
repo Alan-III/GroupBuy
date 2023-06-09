@@ -23,7 +23,7 @@ public class DBUtils {
 
     public static UserAccount findUser(Connection conn, String loginEmail, String password) throws SQLException {
         String sql = "SELECT firstName, lastName, userID, phoneNum, balance, userName, bankAccount, u.email as email FROM users u INNER JOIN login l "
-                + "ON u.email=l.email WHERE u.email = ?  AND password = ? AND enabled = 1";
+                + "ON u.email=l.email WHERE u.email = ?  AND password = ? AND delete = 1";
         PreparedStatement pst = conn.prepareStatement(sql);
         pst.setString(1, loginEmail);
         pst.setString(2, password);
@@ -46,7 +46,7 @@ public class DBUtils {
 
     public static UserAccount findUser(Connection conn, String loginEmail) throws SQLException {
         String sql = "SELECT firstName, lastName, userID, phoneNum, balance, userName, bankAccount, u.email as email FROM users u INNER JOIN login l "
-                + "ON u.email=l.email WHERE u.email = ?  AND enabled = 1";
+                + "ON u.email=l.email WHERE u.email = ?  AND delete = 1";
         PreparedStatement pst = conn.prepareStatement(sql);
         pst.setString(1, loginEmail);
         ResultSet rs = pst.executeQuery();
@@ -115,7 +115,7 @@ public class DBUtils {
         pst.setString(2, user.getVerificationCode());
         ResultSet rs = pst.executeQuery();
         while (rs.next()) {
-            String sql1 = "UPDATE users SET enabled=? WHERE userID=?";
+            String sql1 = "UPDATE users SET delete=? WHERE userID=?";
             PreparedStatement pst1 = conn.prepareCall(sql1);
             pst1 = conn.prepareCall(sql1);
             pst1.setInt(1, 1);
@@ -184,7 +184,7 @@ public class DBUtils {
     
     public static BusinessAccount findBusiness(Connection conn, String loginEmail) throws SQLException {
         String sql = "SELECT businessID, supervisorFirstName, supervisorLastName, balance, businessName,"
-                + " bankAccount,AFM, b.email as email FROM business b INNER JOIN login l ON b.email=l.email WHERE b.email = ?  AND enabled = 1";
+                + " bankAccount,AFM, b.email as email FROM business b INNER JOIN login l ON b.email=l.email WHERE b.email = ?  AND delete = 1";
         PreparedStatement pst = conn.prepareStatement(sql);
         pst.setString(1, loginEmail);
         ResultSet rs = pst.executeQuery();
@@ -231,7 +231,7 @@ public class DBUtils {
         pst.setString(2, business.getVerificationCode());
         ResultSet rs = pst.executeQuery();
         while (rs.next()) {
-            String sql1 = "UPDATE business SET AFM=?, bankAccount=?, enabled=?";
+            String sql1 = "UPDATE business SET AFM=?, bankAccount=?, delete=?";
             PreparedStatement pst1 = conn.prepareCall(sql1);
             pst1 = conn.prepareCall(sql1);
             pst1.setString(1, business.getAfm());
