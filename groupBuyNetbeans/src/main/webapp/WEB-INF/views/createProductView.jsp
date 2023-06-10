@@ -97,6 +97,7 @@
                 <p>Product Name: ${loginedbusiness.getBusinessName()}</p>
                 <p>Product Barcode: ${loginedbusiness.getSupervisorLastName()} ${loginedbusiness.getSupervisorFirstName()}</p>
                 <p>Price: ${loginedbusiness.getEmail()}</p>
+                <p>Details: ${loginedbusiness.getAfm()}</p>
                 <p>Image: ${loginedbusiness.getAfm()}</p>
                 </div>
             </div>
