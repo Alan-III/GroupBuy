@@ -13,6 +13,24 @@ public class Product {
 
     private String code;
     private String name;
+    private String details;
+    private String imagePath;
+
+    public String getDetails() {
+        return details;
+    }
+
+    public void setDetails(String details) {
+        this.details = details;
+    }
+
+    public String getImagePath() {
+        return imagePath;
+    }
+
+    public void setImagePath(String imagePath) {
+        this.imagePath = imagePath;
+    }
     private float price;
 
     public Product() {

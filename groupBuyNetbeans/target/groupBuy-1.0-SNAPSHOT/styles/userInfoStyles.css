@@ -14,8 +14,8 @@
 .main_box{
   position: relative;
   top: 0;
-  margin-top: 72px;
-  padding-top:  40px;
+  margin-top: calc(1rem + 1rem + 1.5rem);
+  padding-top: 1rem; 
   background: url("../assets/img/sidebar-bg.jpg") no-repeat;
   background-size: 100% 100%;
   display: inline-flex;
@@ -138,12 +138,14 @@
   align-items: center;
   position: relative;
   top: 10px;
-  left: 50px;
-  margin: auto;
+  left: 0;
   margin-top: 0;
   color: white;
-  width: calc(100vw - 480px);
+  width: 100%;
   transition: all 0.3s linear;
+}
+.layout h3{
+  margin: auto;
 }
 .track-container{
     height: 30vh;
@@ -246,7 +248,7 @@ width:250px;
 .main-menu {
 background:#212121;
 border-right:1px solid #e5e5e5;
-position:fixed;
+position:relative;
 top:0;
 bottom:0;
 height:100%;
@@ -262,8 +264,8 @@ z-index:1000;
 .main-menu > ul {
   display: flex;
   position: relative;
+  padding-top: calc(72px - 0.5rem);
   flex-direction: column;
-  justify-content: center;
   height: 100%;
 }
 .main-menu li {

@@ -47,25 +47,16 @@
                         </li>
                         <li class="has-subnav">
                             <a href="#">
-                                <i class="fa fa-qrcode fa-2x"></i>
+                                <i class="fa fa-book fa-2x"></i>
                                 <span class="nav-text">
-                                    My Coupons
-                                </span>
-                            </a>
-
-                        </li>
-                        <li class="has-subnav">
-                            <a href="#">
-                                <i class="fa fa-circle fa-2x"></i>
-                                <span class="nav-text">
-                                    My Wishlist
+                                    My Products
                                 </span>
                             </a>
 
                         </li>
                         <li>
                             <a href="#">
-                                <i class="fa fa-comments fa-2x"></i>
+                                <i class="fa fa-info fa-2x"></i>
                                 <span class="nav-text">
                                     Notifications
                                 </span>
@@ -73,17 +64,9 @@
                         </li>
                         <li>
                             <a href="#">
-                                <i class="fa fa-book fa-2x"></i>
-                                <span class="nav-text">
-                                    My Payments
-                                </span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#">
                                 <i class="fa fa-cogs fa-2x"></i>
                                 <span class="nav-text">
-                                    Tools & Resources
+                                    Account Settings
                                 </span>
                             </a>
                         </li>
@@ -92,14 +75,6 @@
                                 <i class="fa fa-map-marker fa-2x"></i>
                                 <span class="nav-text">
                                     Member Map
-                                </span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#">
-                                <i class="fa fa-info fa-2x"></i>
-                                <span class="nav-text">
-                                    Documentation
                                 </span>
                             </a>
                         </li>
@@ -129,7 +104,13 @@
                 </div>
             </div>
             </div>
-            
+            <script>
+            window.addEventListener('load', function() {
+              var mainNavHeight = document.getElementById('mainNav').offsetHeight;
+              var mainBox = document.getElementById('mainBox');
+              mainBox.style.marginTop = mainNavHeight + 'px';
+            });
+          </script>
             <!-- Footer-->
         <jsp:include page="_footer.jsp"></jsp:include>
         <!-- Bootstrap core JS-->

@@ -128,15 +128,16 @@ public class DBUtils {
     }//verifyBusiness
 
     public static List<Product> queryProduct(Connection conn) throws SQLException {
-        String sql = "SELECT * FROM Product";
+        String sql = "SELECT * FROM products p INNER JOIN productphoto pp ON p.productID=pp.productID";
         List<Product> list = new ArrayList<Product>();
         PreparedStatement pst = conn.prepareStatement(sql);
         ResultSet rs = pst.executeQuery();
         while (rs.next()) {
             Product prod = new Product();
-            prod.setCode(rs.getString("Code"));
-            prod.setName(rs.getString("Name"));
-            prod.setPrice(rs.getFloat("Price"));
+            prod.setCode(rs.getString("productCode"));
+            prod.setName(rs.getString("productName"));
+            prod.setDetails(rs.getString("details"));
+            prod.setImagePath(rs.getString("path"));
             list.add(prod);
         }//while
         return list;
