@@ -185,29 +185,27 @@
 
 .product p{
   position: absolute;
-  width: 100%;
+  /*width: 100%;*/
   color: #fff;
-  padding: 5px;
-  padding-top: 0;
+  padding: 3px;
   margin: 0;
   font-size: 14px;
   overflow: hidden;
   max-height: 30px;
-  border-radius: 15px;
+  border-radius: 10px;
 }
 .product p.image-left {
-  width: 70%;
+  max-width: 70%;
   left: 0;
 }
 .product p.image-right {
   right: 0;
-  width: 30%;
-  padding-left: 0;
+  max-width: 30%;
   text-align: right;
 }
 .product p.image-bottom {
   bottom: 0;
-  background-color: rgba(0,0,0,0.7);
+  background-color: rgba(50,0,0,0.7);
 }
 .small-icon, .product a img.small-icon {
     width: 20px;
@@ -215,4 +213,12 @@
 }
 .menu{
     overflow-y: hidden;
+}
+.add-product-btn{
+    height: 3rem;
+    padding: 0;
+    width: 200px;
+    font-family: "Montserrat", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+    font-size: 1.125rem;
+    font-weight: 700;
 }

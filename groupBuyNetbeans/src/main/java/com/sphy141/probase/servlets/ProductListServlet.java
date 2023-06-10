@@ -5,6 +5,7 @@
  */
 package com.sphy141.probase.servlets;
 
+import com.sphy141.probase.beans.BusinessAccount;
 import com.sphy141.probase.beans.Product;
 import com.sphy141.probase.beans.UserAccount;
 import com.sphy141.probase.utils.DBUtils;
@@ -31,11 +32,19 @@ public class ProductListServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         HttpSession session = req.getSession();
-//        UserAccount user = MyUtils.getLoginedUser(session);
-//        if(user==null){
-//            resp.sendRedirect(req.getContextPath()+"/login");
-//            return;
-//        }
+        UserAccount user = MyUtils.getLoginedUser(session);
+        if(user!=null)
+            req.setAttribute("logineduser", user);
+        else{
+            req.setAttribute("logineduser", null);
+        
+            BusinessAccount business = MyUtils.getLoginedBusiness(session);
+            if(business!=null)
+                req.setAttribute("loginedbusiness", business);
+            else
+                req.setAttribute("loginedbusiness", null);
+        }
+        
         Connection conn = MyUtils.getStoredConnection(req);
         List<Product> list = null;
         String errorString = null;

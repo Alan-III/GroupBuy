@@ -5,8 +5,8 @@
  */
 package com.sphy141.probase.servlets;
 
+import com.sphy141.probase.beans.BusinessAccount;
 import com.sphy141.probase.beans.Product;
-import com.sphy141.probase.beans.UserAccount;
 import com.sphy141.probase.utils.DBUtils;
 import com.sphy141.probase.utils.MyUtils;
 import java.io.IOException;
@@ -30,9 +30,12 @@ public class CreateProductServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         HttpSession session = req.getSession();
-        UserAccount user = MyUtils.getLoginedUser(session);
-        if (user == null || !user.getUserName().equals("tomcruz")) {
-            resp.sendRedirect(req.getContextPath() + "/login");
+        BusinessAccount business = MyUtils.getLoginedBusiness(session);
+        String errorString = null;
+        if (business == null) {
+            errorString = "You don't have access to that page";
+            req.setAttribute("errorString", errorString);
+            resp.sendRedirect(req.getContextPath() + "/home");
             return;
         }
         RequestDispatcher dispatcher = this.getServletContext()
