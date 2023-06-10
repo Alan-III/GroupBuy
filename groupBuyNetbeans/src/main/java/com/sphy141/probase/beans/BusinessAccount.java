@@ -18,7 +18,7 @@ public class BusinessAccount {
     private String afm;
     private double balance;
     //private String userName;
-    private String bankAccount;
+    private String IBAN;
     private String password;
     private String verificationCode;
 
@@ -89,12 +89,12 @@ public class BusinessAccount {
         this.balance = balance;
     }
 
-    public String getBankAccount() {
-        return bankAccount;
+    public String getIBAN() {
+        return IBAN;
     }
 
-    public void setBankAccount(String bankAccount) {
-        this.bankAccount = bankAccount;
+    public void setIBAN(String IBAN) {
+        this.IBAN = IBAN;
     }
 
     public String getPassword() {

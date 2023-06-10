@@ -31,11 +31,11 @@ public class ProductListServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         HttpSession session = req.getSession();
-        UserAccount user = MyUtils.getLoginedUser(session);
-        if(user==null){
-            resp.sendRedirect(req.getContextPath()+"/login");
-            return;
-        }
+//        UserAccount user = MyUtils.getLoginedUser(session);
+//        if(user==null){
+//            resp.sendRedirect(req.getContextPath()+"/login");
+//            return;
+//        }
         Connection conn = MyUtils.getStoredConnection(req);
         List<Product> list = null;
         String errorString = null;
@@ -49,7 +49,7 @@ public class ProductListServlet extends HttpServlet {
         }
             req.setAttribute("errorString", errorString);
             req.setAttribute("list", list);
-            req.setAttribute("logineduser", user);
+//            req.setAttribute("logineduser", user);
             RequestDispatcher dispatcher=this.getServletContext().getRequestDispatcher("/WEB-INF/views/productListView.jsp");
         dispatcher.forward(req, resp);
     }//doGet

@@ -107,7 +107,7 @@
 
                     <ul class="logout">
                         <li>
-                            <a href="#">
+                            <a href="/groupbuy/logout">
                                 <i class="fa fa-power-off fa-2x"></i>
                                 <span class="nav-text">
                                     Logout
@@ -119,7 +119,6 @@
                 <div id="userinfo" class="layout">
                 <h3 class="text-center text-white pt-5">User Details</h3>
                 <div class="container">
-                    <p>${errorString}</p>
                 <p>Username: ${logineduser.getUserName()}</p>
                 <p>Email: ${logineduser.getEmail()}</p>
                 <p>Full Name: ${logineduser.getLastName()} ${logineduser.getFirstName()}</p>

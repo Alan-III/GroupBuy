@@ -1,0 +1,10 @@
+INSERT INTO `group_buy`.`categories` (`genCategory`, `path`) VALUES ('Technology', 'assets/databaseImages/Technology.jpg');
+INSERT INTO `group_buy`.`categories` (`genCategory`, `category`, `path`) VALUES ('Technology', 'Mobile', 'assets/databaseImages/Mobile.jpg');
+INSERT INTO `group_buy`.`categories` (`genCategory`, `category`, `subCategory`, `path`) VALUES ('Technology', 'Mobile', 'Mobile Phones', 'assets/databaseImages/MobilePhones.jpg');
+INSERT INTO `group_buy`.`categories` (`genCategory`, `category`, `subCategory`, `path`) VALUES ('Technology', 'Computers', 'Laptops', 'assets/databaseImages/Laptops.jpg');
+INSERT INTO `group_buy`.`categories` (`genCategory`, `path`) VALUES ('House', 'assets/databaseImages/House.jpg');
+INSERT INTO `group_buy`.`categories` (`genCategory`, `path`) VALUES ('Fashion', 'assets/databaseImages/Fashion.jpg');
+INSERT INTO `group_buy`.`categories` (`genCategory`, `category`, `path`) VALUES ('Technology', 'Computers', 'assets/databaseImages/Computers.jpg');
+
+ALTER TABLE `group_buy`.`business` 
+CHANGE COLUMN `name` `businessName` VARCHAR(45) NOT NULL ;
