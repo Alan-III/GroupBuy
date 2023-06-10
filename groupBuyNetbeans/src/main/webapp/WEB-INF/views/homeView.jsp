@@ -5,6 +5,7 @@
 --%>
 
 <%@page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -25,55 +26,52 @@
     <body>
         <!-- Navigation-->
         <jsp:include page="_menu.jsp"></jsp:include>
-        <!-- Masthead-->
-        <header class="masthead">
-            <div class="container">
-                <div class="masthead-subheading">Welcome To Our App!</div>
-                <div class="masthead-heading text-uppercase">Buy together! Save forever!</div>
-                <div style="display:flex">
-                    <div class="search_bar">
-                        <img src="https://cdn.pixabay.com/photo/2013/07/12/15/55/clues-150586_960_720.png" alt="glass" height="35rem" width="35rem" />
+            <!-- Masthead-->
+            <header class="masthead">
+                <div class="container">
+                    <div class="masthead-subheading">Welcome To Our App!</div>
+                    <div class="masthead-heading text-uppercase">Buy together! Save forever!</div>
+                    <div style="display:flex">
+                        <div class="search_bar">
+                            <img src="https://cdn.pixabay.com/photo/2013/07/12/15/55/clues-150586_960_720.png" alt="glass" height="35rem" width="35rem" />
 
                             <input class="typewriter" type="text" placeholder="Type here to search..."/>
 
-                        <button onClick="window.location.href = 'http://localhost:8080/groupbuy/productlist';">Search</button>
-                    </div>
-                </div> 
-                <a class="btn btn-primary btn-xl text-uppercase" href="#categories">Browse Categories</a>
-            </div>
-        </header>
-        <!-- Categories-->
-        <section class="page-section" id="categories">
-            <div class="container">
-                <div class="text-center">
-                    <h2 class="section-heading text-uppercase">Categories</h2>
-                    <h3 class="section-subheading text-muted">Lorem ipsum dolor sit amet consectetur.</h3>
+                            <button onClick="window.location.href = 'http://localhost:8080/groupbuy/productlist';">Search</button>
+                        </div>
+                    </div> 
+                    <a class="btn btn-primary btn-xl text-uppercase" href="#categories">Browse Categories</a>
                 </div>
-                <div class="row text-center">
-                    <div class="col-md-4">
-                        <span class="fa-stack fa-4x">
-                            <i class="fas fa-circle fa-stack-2x text-primary"></i>
-                            <i class="fas fa-shopping-cart fa-stack-1x fa-inverse"></i>
-                        </span>
-                        <h4 class="my-3">House</h4>
-                        <p class="text-muted">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Minima maxime quam architecto quo inventore harum ex magni, dicta impedit.</p>
+            </header>
+            <!-- Categories-->
+            <section class="page-section" id="categories">
+                <div class="container">
+                    <div class="text-center">
+                        <h2 class="section-heading text-uppercase">Categories</h2>
+                        <h3 class="section-subheading text-muted">Lorem ipsum dolor sit amet consectetur.</h3>
                     </div>
-                    <div class="col-md-4">
-                        <span class="fa-stack fa-4x">
-                            <i class="fas fa-circle fa-stack-2x text-primary"></i>
-                            <i class="fas fa-laptop fa-stack-1x fa-inverse"></i>
-                        </span>
-                        <h4 class="my-3">Technology</h4>
-                        <p class="text-muted">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Minima maxime quam architecto quo inventore harum ex magni, dicta impedit.</p>
-                    </div>
-                    <div class="col-md-4">
-                        <span class="fa-stack fa-4x">
-                            <i class="fas fa-circle fa-stack-2x text-primary"></i>
-                            <i class="fas fa-lock fa-stack-1x fa-inverse"></i>
-                        </span>
-                        <h4 class="my-3">Fashion</h4>
-                        <p class="text-muted">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Minima maxime quam architecto quo inventore harum ex magni, dicta impedit.</p>
-                    </div>
+                    <div class="row text-center">
+                    <c:forEach items="${list}" var="item">
+
+                        <div class="col-md-4">
+                            <a href="http://localhost:8080/groupbuy/productlist?catid=${item.getCategoryID()}">
+                                <span class="fa-stack fa-4x">
+                                    <img class="rounded-circle" src="${item.getCategoryImagePath()}" style="max-width: 100%; max-height: 100%;" />
+                                </span>
+                                <h4 class="my-3">${item.getCategoryName()}</h4>
+
+                            </a>
+                            <p class="text-muted">Lorem ipsum.</p>
+                        </div>
+                    </c:forEach>
+                    <!--                    <div class="col-md-4">
+                                            <span class="fa-stack fa-4x">
+                                                <i class="fas fa-circle fa-stack-2x text-primary"></i>
+                                                <i class="fas fa-laptop fa-stack-1x fa-inverse"></i>
+                                            </span>
+                                            <h4 class="my-3">Technology</h4>
+                                            <p class="text-muted">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Minima maxime quam architecto quo inventore harum ex magni, dicta impedit.</p>
+                                        </div>-->
                 </div>
             </div>
         </section>

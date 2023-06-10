@@ -5,6 +5,7 @@
  */
 package com.sphy141.probase.servlets;
 
+import com.sphy141.probase.beans.BusinessAccount;
 import com.sphy141.probase.beans.UserAccount;
 import com.sphy141.probase.utils.DBUtils;
 import com.sphy141.probase.utils.MailUtils;
@@ -45,6 +46,7 @@ public class LoginServlet extends HttpServlet {
         String errorString = null;
         boolean hasError = false;
         UserAccount user = null;
+        BusinessAccount business = null;
         
         if(email == null || password == null || email.length()==0 || password.length()==0){
             hasError=true;
@@ -54,8 +56,11 @@ public class LoginServlet extends HttpServlet {
         try {
             user = DBUtils.findUser(conn, email, password);
             if(user==null){
-                hasError=true;
-                errorString = "email or password is wrong, does not exist or email not verified";
+                business = DBUtils.findBusiness(conn, email, password);
+                if(business==null){
+                    hasError=true;
+                    errorString = "email or password is wrong, does not exist or email not verified";
+                }
             }
         } catch (SQLException ex) {
             ex.printStackTrace();
@@ -64,23 +69,30 @@ public class LoginServlet extends HttpServlet {
         }
         //
         if (hasError){
-            user = new UserAccount();
-            user.setEmail(email);
-            user.setPassword(password);
-            
             req.setAttribute("errorString", errorString);
-            //req.setAttribute("logineduser", user);
+            
             RequestDispatcher dispatcher=this.getServletContext().getRequestDispatcher("/WEB-INF/views/loginView.jsp");
             dispatcher.forward(req, resp);
         }
         else{
             HttpSession session = req.getSession();
-            MyUtils.storeLoginedUser(session, user);
+            req.setAttribute("logineduser", user);
+            req.setAttribute("loginedbusiness", business);
+            if(user!=null)
+                MyUtils.storeLoginedUser(session, user);
+            else
+                MyUtils.storeLoginedBusiness(session, business);
             if(rememberMe){
-                MyUtils.storeUserCookie(resp, user);
+                if(user!=null)
+                    MyUtils.storeUserCookie(resp, user);
+                else
+                    MyUtils.storeBusinessCookie(resp, business);
             }
             else{
-                MyUtils.deleteUserCookie(resp);
+                if(user!=null)
+                    MyUtils.deleteUserCookie(resp);
+                else
+                    MyUtils.deleteBusinessCookie(resp);
             }
             resp.sendRedirect(req.getContextPath()+"/home");
         }

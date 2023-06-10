@@ -23,6 +23,7 @@
     <body>
         <!-- Navigation-->
         <jsp:include page="_menu.jsp"></jsp:include>
+        
             <div class="main_box">
 
                 <nav class="main-menu">
@@ -65,7 +66,7 @@
                         </li>
                         <li>
                             <a href="#">
-                                <i class="fa fa-comments fa-2x"></i>
+                                <i class="fa fa-info fa-2x"></i>
                                 <span class="nav-text">
                                     Notifications
                                 </span>
@@ -95,19 +96,11 @@
                                 </span>
                             </a>
                         </li>
-                        <li>
-                            <a href="#">
-                                <i class="fa fa-info fa-2x"></i>
-                                <span class="nav-text">
-                                    Documentation
-                                </span>
-                            </a>
-                        </li>
                     </ul>
 
                     <ul class="logout">
                         <li>
-                            <a href="#">
+                            <a href="/groupbuy/logout">
                                 <i class="fa fa-power-off fa-2x"></i>
                                 <span class="nav-text">
                                     Logout
@@ -119,7 +112,6 @@
                 <div id="userinfo" class="layout">
                 <h3 class="text-center text-white pt-5">User Details</h3>
                 <div class="container">
-                    <p>${errorString}</p>
                 <p>Username: ${logineduser.getUserName()}</p>
                 <p>Email: ${logineduser.getEmail()}</p>
                 <p>Full Name: ${logineduser.getLastName()} ${logineduser.getFirstName()}</p>
@@ -129,7 +121,13 @@
                 </div>
             </div>
             </div>
-            
+            <script>
+            window.addEventListener('load', function() {
+              var mainNavHeight = document.getElementById('mainNav').offsetHeight;
+              var mainBox = document.getElementById('mainBox');
+              mainBox.style.marginTop = mainNavHeight + 'px';
+            });
+          </script>
             <!-- Footer-->
         <jsp:include page="_footer.jsp"></jsp:include>
         <!-- Bootstrap core JS-->

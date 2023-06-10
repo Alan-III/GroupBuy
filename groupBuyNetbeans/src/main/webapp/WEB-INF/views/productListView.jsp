@@ -111,7 +111,7 @@
                                 <a class="product-image" href='subject_details.php?subj=${item.getCode()}'>
                                   <img src='assets/img/smartphone.png' draggable='false' />
                                 </a>
-                                <c:if test="${logineduser.getUserName()=='tomcruz'}">
+                                <c:if test="${logineduser.getUserName()!='tomcruz'}">
                                     <p class="image-left">
                                         <a class="fas fa-bars" href='urltoedit'></a>
                                     </p>
@@ -121,8 +121,8 @@
                                         </a>
                                     </p>
                                 </c:if>
-                                <p class="image-left image-bottom">${item.getName()}Product Name can't be longer 1 2 3</p>
-                                <p class="image-right image-bottom">${item.getPrice()}1.000$</p>
+                                <p class="image-left image-bottom">${item.getName()}</p>
+                                <p class="image-right image-bottom">${item.getPrice()}$</p>
                             </div>                            
                         <%--</c:forEach>--%>
                             
@@ -138,13 +138,13 @@
                 <div class="layout track-container border-yellow" id="trackcontainer2">
                     <!-- Item slider-->
                     <div id='image-track2' class="image-track" data-mouse-down-at='0' data-prev-percentage='0'>
-                        <%--<c:forEach items="${list}" var="item">--%>
+                        <c:forEach items="${list}" var="item">
                             <!--{item.getPath()} sto src-->
                             <div class='product'>
                                 <a class="product-image" href='subject_details.php?subj=${item.getCode()}'>
-                                  <img src='assets/img/smartphone.png' draggable='false' />
+                                  <img src='${item.getImagePath()}' draggable='false' />
                                 </a>
-                                <c:if test="${logineduser.getUserName()=='tomcruz'}">
+                                <c:if test="${logineduser.getUserName()!='tomcruz'}">
                                     <p class="image-left">
                                         <a class="fas fa-bars" href='urltoedit'></a>
                                     </p>
@@ -154,10 +154,10 @@
                                         </a>
                                     </p>
                                 </c:if>
-                                <p class="image-left image-bottom">${item.getName()}Product Name can't be longer 1 2 3</p>
-                                <p class="image-right image-bottom">${item.getPrice()}1.000$</p>
+                                <p class="image-left image-bottom">${item.getName()}</p>
+                                <p class="image-right image-bottom">${item.getPrice()}$</p>
                             </div>                            
-                        <%--</c:forEach>--%>
+                        </c:forEach>
                             
                         <a href='subject_details.php?subj=Math&subjID=1'><img class='product' src='assets/img/smartphone.png' draggable='false' /></a>
                         <a href='subject_details.php?subj=Physics&subjID=2'><img class='product' src='assets/img/smartphone.png' draggable='false' /></a>

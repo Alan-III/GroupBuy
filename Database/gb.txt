@@ -1,0 +1,600 @@
+CREATE SCHEMA IF NOT EXISTS `group_buy` DEFAULT CHARACTER SET utf8mb4 ;
+USE `group_buy` ;
+
+-- -----------------------------------------------------
+-- Table `group_buy`.`admin`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS admin (
+  admin_id INT(11) NOT NULL AUTO_INCREMENT,
+  email VARCHAR(45) NOT NULL,
+  balance DECIMAL(10,2) NOT NULL DEFAULT 0.00,
+  PRIMARY KEY (admin_id),
+  UNIQUE INDEX email_UNIQUE (email ASC));
+
+
+
+-- -----------------------------------------------------
+-- Table `group_buy`.`business`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `group_buy`.`business` (
+  `businessID` INT(11) NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(45) NOT NULL,
+  `email` VARCHAR(45) NOT NULL,
+  `supervisorFirstname` VARCHAR(45) NOT NULL DEFAULT 'null',
+  `supervisorLastname` VARCHAR(45) NULL DEFAULT NULL,
+  `AFM` VARCHAR(45) NOT NULL,
+  `balance` DECIMAL(10,2) NOT NULL DEFAULT 0.00,
+  `IBAN` VARCHAR(45) NOT NULL,
+  `pathProfile` VARCHAR(45) NULL DEFAULT NULL,
+  `delete` INT(11) NOT NULL DEFAULT 0,
+  `verificationCode` VARCHAR(45) NULL DEFAULT NULL,
+  PRIMARY KEY (`businessID`),
+  UNIQUE INDEX `businessID_UNIQUE` (`businessID` ASC),
+  UNIQUE INDEX `email_UNIQUE` (`email` ASC),
+  UNIQUE INDEX `AFM_UNIQUE` (`AFM` ASC));
+
+
+
+-- -----------------------------------------------------
+-- Table `group_buy`.`businessphoto`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `group_buy`.`businessphoto` (
+  `photoid` INT(11) NOT NULL,
+  `businessID` INT(11) NOT NULL,
+  `path` VARCHAR(45) NOT NULL,
+  PRIMARY KEY (`photoid`),
+  INDEX `srtfhsr_idx` (`businessID` ASC) ,
+  CONSTRAINT `srtfhsr`
+    FOREIGN KEY (`businessID`)
+    REFERENCES `group_buy`.`business` (`businessID`));
+
+
+
+-- -----------------------------------------------------
+-- Table `group_buy`.`categories`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `group_buy`.`categories` (
+  `categoryID` INT(11) NOT NULL AUTO_INCREMENT,
+  `genCategory` VARCHAR(45) NOT NULL,
+  `category` VARCHAR(45) NULL DEFAULT NULL,
+  `subCategory` VARCHAR(45) NULL DEFAULT NULL,
+  `path` VARCHAR(100) NULL DEFAULT NULL,
+  PRIMARY KEY (`categoryID`),
+  UNIQUE INDEX `categoryID_UNIQUE` (`categoryID` ASC) );
+
+
+-- -----------------------------------------------------
+-- Table `group_buy`.`products`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `group_buy`.`products` (
+  `productID` INT(11) NOT NULL,
+  `productCode` VARCHAR(45) NOT NULL,
+  `productName` VARCHAR(45) NOT NULL,
+  `details` VARCHAR(45) NOT NULL,
+  `belong` INT(11) NULL DEFAULT 0,
+  PRIMARY KEY (`productID`),
+  UNIQUE INDEX `productCode_UNIQUE` (`productCode` ASC) ,
+  INDEX `dfdsaf_idx` (`belong` ASC) ,
+  CONSTRAINT `dfdsaf`
+    FOREIGN KEY (`belong`)
+    REFERENCES `group_buy`.`categories` (`categoryID`));
+
+
+
+-- -----------------------------------------------------
+-- Table `group_buy`.`businessproducts`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `group_buy`.`businessproducts` (
+  `businessID` INT(11) NOT NULL,
+  `productCode` VARCHAR(45) NOT NULL,
+  `proID` INT(11) NOT NULL AUTO_INCREMENT,
+  PRIMARY KEY (`proID`),
+  UNIQUE INDEX `proID_UNIQUE` (`proID` ASC) ,
+  INDEX `awesidgfasjkgfkasj_idx` (`businessID` ASC) ,
+  INDEX `asdkfjbsdjklf_idx` (`productCode` ASC) ,
+  CONSTRAINT `awesidgfasjkgfkasj`
+    FOREIGN KEY (`businessID`)
+    REFERENCES `group_buy`.`business` (`businessID`),
+  CONSTRAINT `oihbjkbjl`
+    FOREIGN KEY (`productCode`)
+    REFERENCES `group_buy`.`products` (`productCode`));
+
+
+
+-- -----------------------------------------------------
+-- Table `group_buy`.`users`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `group_buy`.`users` (
+  `userID` INT(11) NOT NULL AUTO_INCREMENT,
+  `firstName` VARCHAR(45) NOT NULL,
+  `lastName` VARCHAR(45) NOT NULL,
+  `email` VARCHAR(45) NOT NULL,
+  `phoneNum` VARCHAR(45) NOT NULL DEFAULT 'null',
+  `userName` VARCHAR(45) NOT NULL,
+  `delete` INT(11) NOT NULL DEFAULT 0,
+  `bankAccount` VARCHAR(45) NULL DEFAULT NULL,
+  `balance` DECIMAL(10,0) NOT NULL DEFAULT 0,
+  `couponAmount` DECIMAL(10,0) NOT NULL DEFAULT 0,
+  `doB` DATE NULL DEFAULT NULL,
+  `town` VARCHAR(45) NULL DEFAULT NULL,
+  `verificationCode` VARCHAR(45) NULL DEFAULT NULL,
+  PRIMARY KEY (`userID`),
+  UNIQUE INDEX `email_UNIQUE` (`email` ASC) );
+
+
+
+-- -----------------------------------------------------
+-- Table `group_buy`.`offers`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `group_buy`.`offers` (
+  `offerID` INT(11) NOT NULL AUTO_INCREMENT,
+  `title` VARCHAR(45) NOT NULL,
+  `finalPrice` DECIMAL(10,2) NOT NULL,
+  `descount` DECIMAL(10,2) NOT NULL,
+  `couponPrice` DECIMAL(10,2) NOT NULL,
+  `offerExpire` DATETIME NOT NULL,
+  `couponExpire` INT(11) NOT NULL,
+  `details` VARCHAR(45) NOT NULL,
+  `groupSize` INT(11) NOT NULL,
+  `email` VARCHAR(45) NULL DEFAULT NULL,
+  `active` TINYINT(4) NULL DEFAULT NULL,
+  PRIMARY KEY (`offerID`),
+  UNIQUE INDEX `offerID_UNIQUE` (`offerID` ASC) ,
+  INDEX `ajksbdfh_idx` (`email` ASC) ,
+  CONSTRAINT `ajksbdfh`
+    FOREIGN KEY (`email`)
+    REFERENCES `group_buy`.`business` (`email`));
+
+
+
+-- -----------------------------------------------------
+-- Table `group_buy`.`coupontokens`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `group_buy`.`coupontokens` (
+  `token` VARCHAR(45) NOT NULL,
+  `offerID` INT(11) NOT NULL,
+  `email` VARCHAR(45) NULL DEFAULT NULL,
+  `date` DATETIME NULL DEFAULT NULL,
+  INDEX `ASASD_idx` (`offerID` ASC) ,
+  INDEX `sadsdg_idx` (`email` ASC) ,
+  CONSTRAINT `sadsdg`
+    FOREIGN KEY (`email`)
+    REFERENCES `group_buy`.`users` (`email`),
+  CONSTRAINT `wkj`
+    FOREIGN KEY (`offerID`)
+    REFERENCES `group_buy`.`offers` (`offerID`));
+
+
+
+-- -----------------------------------------------------
+-- Table `group_buy`.`dailyresults`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `group_buy`.`dailyresults` (
+  `dailyID` INT(11) NOT NULL AUTO_INCREMENT,
+  `productCode` VARCHAR(45) NULL DEFAULT NULL,
+  `offerID` INT(11) NULL DEFAULT NULL,
+  `count` INT(11) NULL DEFAULT NULL,
+  `email` VARCHAR(45) NULL DEFAULT NULL,
+  `IP` VARCHAR(45) NULL DEFAULT NULL,
+  PRIMARY KEY (`dailyID`),
+  UNIQUE INDEX `dailyID_UNIQUE` (`dailyID` ASC) );
+
+
+
+-- -----------------------------------------------------
+-- Table `group_buy`.`filters`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `group_buy`.`filters` (
+  `filtersID` INT(11) NOT NULL AUTO_INCREMENT,
+  `categoryID` INT(11) NOT NULL,
+  `filtersName` VARCHAR(45) NULL DEFAULT NULL,
+  PRIMARY KEY (`filtersID`),
+  INDEX `gfwef_idx` (`categoryID` ASC) ,
+  CONSTRAINT `gfwef`
+    FOREIGN KEY (`categoryID`)
+    REFERENCES `group_buy`.`categories` (`categoryID`));
+
+
+
+-- -----------------------------------------------------
+-- Table `group_buy`.`filtersdetails`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `group_buy`.`filtersdetails` (
+  `filtersID` INT(11) NOT NULL,
+  `value` VARCHAR(45) NULL DEFAULT NULL,
+  INDEX `ertwert_idx` (`filtersID` ASC) ,
+  CONSTRAINT `ertwert`
+    FOREIGN KEY (`filtersID`)
+    REFERENCES `group_buy`.`filters` (`filtersID`));
+
+
+
+-- -----------------------------------------------------
+-- Table `group_buy`.`login`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `group_buy`.`login` (
+  `email` VARCHAR(45) NOT NULL,
+  `password` VARCHAR(45) NOT NULL,
+  `status` VARCHAR(45) NULL DEFAULT NULL,
+  PRIMARY KEY (`email`),
+  UNIQUE INDEX `email_UNIQUE` (`email` ASC) ,
+  CONSTRAINT `asfkgahskd`
+    FOREIGN KEY (`email`)
+    REFERENCES `group_buy`.`users` (`email`),
+  CONSTRAINT `cxasdas`
+    FOREIGN KEY (`email`)
+    REFERENCES `group_buy`.`business` (`email`),
+  CONSTRAINT `ojhkvb`
+    FOREIGN KEY (`email`)
+    REFERENCES `group_buy`.`admin` (`email`));
+
+
+
+-- -----------------------------------------------------
+-- Table `group_buy`.`monthlyresults`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `group_buy`.`monthlyresults` (
+  `monthlyID` INT(11) NOT NULL AUTO_INCREMENT,
+  `productCode` VARCHAR(45) NULL DEFAULT NULL,
+  `count` INT(11) NULL DEFAULT NULL,
+  PRIMARY KEY (`monthlyID`),
+  UNIQUE INDEX `monthlyID_UNIQUE` (`monthlyID` ASC) );
+
+
+
+-- -----------------------------------------------------
+-- Table `group_buy`.`mywish`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `group_buy`.`mywish` (
+  `productCode` VARCHAR(45) NULL DEFAULT NULL,
+  `email` VARCHAR(45) NOT NULL,
+  `offerID` INT(11) NULL DEFAULT NULL,
+  INDEX `fghdfgb_idx` (`productCode` ASC) ,
+  INDEX `alkdsbfn_idx` (`email` ASC) ,
+  INDEX `ERF_idx` (`offerID` ASC) ,
+  CONSTRAINT `ERF`
+    FOREIGN KEY (`offerID`)
+    REFERENCES `group_buy`.`offers` (`offerID`),
+  CONSTRAINT `alkdsbfn`
+    FOREIGN KEY (`email`)
+    REFERENCES `group_buy`.`users` (`email`),
+  CONSTRAINT `jhcgvhj`
+    FOREIGN KEY (`productCode`)
+    REFERENCES `group_buy`.`products` (`productCode`));
+
+
+
+-- -----------------------------------------------------
+-- Table `group_buy`.`notifications`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `group_buy`.`notifications` (
+  `productCode` VARCHAR(45) NOT NULL,
+  `seen` TINYINT(4) NOT NULL,
+  `offerID` INT(11) NOT NULL,
+  INDEX `asfasf_idx` (`offerID` ASC) ,
+  INDEX `SDFHGH_idx` (`productCode` ASC) ,
+  CONSTRAINT `SDFHGH`
+    FOREIGN KEY (`productCode`)
+    REFERENCES `group_buy`.`products` (`productCode`),
+  CONSTRAINT `asfasf`
+    FOREIGN KEY (`offerID`)
+    REFERENCES `group_buy`.`offers` (`offerID`));
+
+
+
+-- -----------------------------------------------------
+-- Table `group_buy`.`offerdetails`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `group_buy`.`offerdetails` (
+  `offerID` INT(11) NOT NULL,
+  `productCode` VARCHAR(45) NOT NULL,
+  INDEX `FASDFAS_idx` (`offerID` ASC) ,
+  INDEX `aSEKNDLF_idx` (`productCode` ASC) ,
+  CONSTRAINT `FASDFAS`
+    FOREIGN KEY (`offerID`)
+    REFERENCES `group_buy`.`offers` (`offerID`),
+  CONSTRAINT `aSEKNDLF`
+    FOREIGN KEY (`productCode`)
+    REFERENCES `group_buy`.`products` (`productCode`));
+
+
+
+-- -----------------------------------------------------
+-- Table `group_buy`.`offerphoto`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `group_buy`.`offerphoto` (
+  `offerID` INT(11) NOT NULL,
+  `path` VARCHAR(45) NOT NULL,
+  INDEX `sdafa_idx` (`offerID` ASC) ,
+  CONSTRAINT `sdafa`
+    FOREIGN KEY (`offerID`)
+    REFERENCES `group_buy`.`offers` (`offerID`));
+
+
+
+-- -----------------------------------------------------
+-- Table `group_buy`.`payments`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `group_buy`.`payments` (
+  `paymentID` INT(11) NOT NULL AUTO_INCREMENT,
+  `businessEmail` VARCHAR(45) NULL DEFAULT NULL,
+  `userEmail` VARCHAR(45) NULL DEFAULT NULL,
+  `amount` DECIMAL(10,2) NOT NULL,
+  `level` VARCHAR(45) NULL DEFAULT NULL,
+  `details` VARCHAR(100) NOT NULL,
+  `date` DATE NOT NULL,
+  `InOut` VARCHAR(10) NOT NULL DEFAULT 'in',
+  PRIMARY KEY (`paymentID`),
+  UNIQUE INDEX `paymentID_UNIQUE` (`paymentID` ASC) ,
+  INDEX `QWEWE_idx` (`businessEmail` ASC) ,
+  INDEX `SDKFG_idx` (`userEmail` ASC) ,
+  CONSTRAINT `dfgsdfg`
+    FOREIGN KEY (`userEmail`)
+    REFERENCES `group_buy`.`users` (`email`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `sdf`
+    FOREIGN KEY (`businessEmail`)
+    REFERENCES `group_buy`.`business` (`email`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION);
+
+
+
+-- -----------------------------------------------------
+-- Table `group_buy`.`searches`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `group_buy`.`searches` (
+  `searchID` INT(11) NOT NULL,
+  `email` VARCHAR(45) NULL DEFAULT NULL,
+  `keyWord` VARCHAR(45) NOT NULL,
+  `date` DATETIME NOT NULL,
+  `IP` VARCHAR(20) NOT NULL,
+  PRIMARY KEY (`searchID`),
+  INDEX `adsgsd_idx` (`email` ASC) ,
+  CONSTRAINT `adsgsd`
+    FOREIGN KEY (`email`)
+    REFERENCES `group_buy`.`users` (`email`));
+
+
+
+-- -----------------------------------------------------
+-- Table `group_buy`.`searchdetails`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `group_buy`.`searchdetails` (
+  `searchID` INT(11) NOT NULL,
+  `productCode` VARCHAR(45) NULL DEFAULT NULL,
+  `offerID` INT(11) NULL DEFAULT NULL,
+  INDEX `zdfgsd_idx` (`searchID` ASC) ,
+  INDEX `ZFDGDSF_idx` (`productCode` ASC) ,
+  INDEX `DFS_idx` (`offerID` ASC) ,
+  CONSTRAINT `ASD`
+    FOREIGN KEY (`searchID`)
+    REFERENCES `group_buy`.`searches` (`searchID`),
+  CONSTRAINT `DFS`
+    FOREIGN KEY (`offerID`)
+    REFERENCES `group_buy`.`offers` (`offerID`),
+  CONSTRAINT `ZFDGDSF`
+    FOREIGN KEY (`productCode`)
+    REFERENCES `group_buy`.`products` (`productCode`));
+
+
+
+-- -----------------------------------------------------
+-- Table `group_buy`.`store`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `group_buy`.`store` (
+  `storeID` INT(11) NOT NULL,
+  `email` VARCHAR(45) NOT NULL,
+  `town` VARCHAR(45) NOT NULL,
+  `address` VARCHAR(45) NOT NULL,
+  `addressNum` VARCHAR(45) NOT NULL,
+  `phoneNum` VARCHAR(45) NOT NULL,
+  PRIMARY KEY (`storeID`),
+  UNIQUE INDEX `storeID_UNIQUE` (`storeID` ASC) ,
+  INDEX `msdbfn_idx` (`email` ASC) ,
+  CONSTRAINT `msdbfn`
+    FOREIGN KEY (`email`)
+    REFERENCES `group_buy`.`business` (`email`));
+
+
+
+-- -----------------------------------------------------
+-- Table `group_buy`.`subscriptions`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `group_buy`.`subscriptions` (
+  `level` INT(11) NOT NULL,
+  `status` VARCHAR(45) NOT NULL,
+  `email` VARCHAR(45) NOT NULL,
+  UNIQUE INDEX `email_UNIQUE` (`email` ASC),
+  CONSTRAINT `sdfgsd`
+    FOREIGN KEY (`email`)
+    REFERENCES `group_buy`.`payments` (`businessEmail`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION);
+
+
+
+-- -----------------------------------------------------
+-- Table `group_buy`.`weeklyresults`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `group_buy`.`weeklyresults` (
+  `weeklyID` INT(11) NOT NULL AUTO_INCREMENT,
+  `offerID` INT(11) NULL DEFAULT NULL,
+  `productCode` VARCHAR(45) NULL DEFAULT NULL,
+  `count` INT(11) NULL DEFAULT NULL,
+  PRIMARY KEY (`weeklyID`),
+  UNIQUE INDEX `weeklyID_UNIQUE` (`weeklyID` ASC) );
+
+
+USE `group_buy`;
+
+DELIMITER $$
+USE `group_buy`$$
+CREATE
+DEFINER=`root`@`localhost`
+TRIGGER `group_buy`.`products_BEFORE_DELETE`
+BEFORE DELETE ON `group_buy`.`products`
+FOR EACH ROW
+BEGIN
+/*ΔΙΑΓΡΑΑΦΗ ΤΩΝ ΕΠΙΘΥΜΙΩΝ ΠΟΥ ΕΧΟΥΝ ΑΥΤΟΝ ΤΟΝ ΚΨΔΙΚΟ ΠΡΟΙΟΝΤΟΣ*/
+DELETE FROM mywish where productCode=old.productCode;
+delete from notifications where productCode=old.productCode;
+
+/* Διαγραφή των προιόντων που αναζητήθηκαν ΚΑΤΑ ΣΕΙΡΑ ΒΑΡΥΤΗΤΑΣ ΜΗΝΑΣ-ΕΒΔΟΜΑΔΑ-ΗΜΕΡΑ-ΑΝΑΖΗΤΗΣΕΙΣ */
+delete from monthlyResults where productCode= old.productCode;
+delete from weeklyResults where productCode= old.productCode;
+delete from dailyResults where productCode= old.productCode;
+delete from searchdetails where productCode= old.productCode;
+
+END$$
+
+USE `group_buy`$$
+CREATE
+DEFINER=`root`@`localhost`
+TRIGGER `group_buy`.`offers_AFTER_UPDATE`
+AFTER UPDATE ON `group_buy`.`offers`
+FOR EACH ROW
+BEGIN
+declare current_size int;
+declare dif int;
+
+IF new.active=0 THEN
+        update coupontokens set date = current_date() where offerID= new.offerID; 
+END IF;
+
+/*ΕΚΤΕΛΕΣΗ ΤΩΝ ΣΥΝΑΛΛΑΓΩΝ ΜΟΛΙΣ ΚΑΙ ΑΠΟΡΗΨΗ ΤΩΝ ΤΕΛΕΥΤΑΙΩΝ ΟΤΑΝ Η ΕΠΙΧΕΙΡΗΣΗ ΑΛΛAΞΕΙ ΤΟ ΜΕΓΕΘΟΣ ΤΗΣ ΟΜΑΔΑΣ ΚΑΙ ΑΥΤΟ ΕΙΝΑΙ ΜΙΚΡΟΤΕΡΟ ΤΩΝ ΣΥΜΜΕΤΟΧΩΝ
+ΕΚΕΙ ΕΠΙΣΤΡΕΦΟΝΤΑΙ ΤΑ ΧΡΗΜΑΤΑ ΣΤΟΥΣ ΠΕΛΑΤΕΣ
+*/
+select (new.groupSize-old.groupSize) INTO dif;
+
+IF (dif<0 AND new.active=0) then
+select count(email) into current_size from coupontokens where offerID=new.offerID;
+DELETE FROM coupontokens where offerID=old.offerID ORDER BY DATE DESC limit dif;
+END IF;
+
+END$$
+
+USE `group_buy`$$
+CREATE
+DEFINER=`root`@`localhost`
+TRIGGER `group_buy`.`offers_BEFORE_DELETE`
+BEFORE DELETE ON `group_buy`.`offers`
+FOR EACH ROW
+BEGIN
+
+/*ΔΙΑΓΡΑΦΗ ΕΠΙΘΙΜΙΩΝ ΜΕΤΑ ΤΗΝ ΔΙΑΓΡΑΦΗ ΤΗΣ ΠΡΟΣΦΟΡΑΣ*/
+Delete from mywish where offerID=old.offerID;
+DELETE FROM notifications where offerID=old.offerID;
+
+/*ΔΙΑΓΡΑΦΗ ΤΩΝ OFFERDETAILS ΚΑΙ OFFERPHOTOS*/
+
+DELETE FROM offerdetails where offerID=old.offerID;
+delete from offerphoto where offerID=OLD.offerID;
+
+/* Διαγραφή των προσφορών που αναζητήθηκαν */
+delete from monthlyResults where offerID=OLD.offerID;
+delete from weeklyResults where offerID=OLD.offerID;
+delete from dailyResults where offerID=OLD.offerID;
+delete from resultdetails where offerID=OLD.offerID;
+
+/*ΠΡΙΝ ΔΙΑΓΡΑΦΕΙ Η ΠΡΟΣΦΟΡΑ ΕΠΙΣΤΡΕΦΟΝΤΑΙ ΤΑ ΤΟΚΕΝΣ KAI TA XRHMATA TOYΣ*/
+
+DELETE FROM coupontokens where offerID=old.offerID ORDER BY DATE asc; ###ΜΕΣΑ ΣΕ ΑΥΤΗΝ ΤΗΝ ΑΝΑΖΗΤΗΣΗ ΜΕΤΑΦΕΡΟΝΤΑΙ ΚΑΙ ΤΑ ΧΡΗΜΑΤΑ
+
+
+
+END$$
+
+USE `group_buy`$$
+CREATE
+DEFINER=`root`@`localhost`
+TRIGGER `group_buy`.`coupontokens_AFTER_UPDATE`
+AFTER UPDATE ON `group_buy`.`coupontokens`
+FOR EACH ROW
+BEGIN
+declare price DECIMAL(10,2);
+declare group_size int;
+
+SELECT  groupSize into @group_size from offers where offerID=new.offerID;
+
+if ((SELECT count(email) from coupontokens where offerID=new.offerID)=@group_size AND NEW.DATE=NULL ) THEN
+UPDATE OFFERS SET active=0 where offerID=NEW.offerID;
+END IF;
+
+IF (new.date is not null) then 
+
+select couponPrice INTO @price FROM offers where offerID=old.offerID;
+
+UPDATE users SET couponAmount = couponAmount - @price, balance=balance+price where email=old.email;
+update business set balance=balance + @price;
+insert into payments (businessEmail,userEmail,details,date,amount) values ((select email from offers where offerID=new.offerID),new.email,new.token,new.date,@price);
+
+end if;
+END$$
+
+USE `group_buy`$$
+CREATE
+DEFINER=`root`@`localhost`
+TRIGGER `group_buy`.`coupontokens_BEFORE_DELETE`
+BEFORE DELETE ON `group_buy`.`coupontokens`
+FOR EACH ROW
+BEGIN
+/*ΟΤΑΝ ΔΙΑΓΡΑΦΕΤΑΙ ΤΟ ΚΟΥΠΟΝΙ ΠΡΕΠΕΙ ΝΑ ΕΠΙΣΤΡΑΦΟΥΝ ΤΑ ΧΡΗΜΑΤΑ ΣΤΟΥΣ USER*/
+
+declare price DECIMAL(10,2);
+
+select couponPrice INTO @price FROM offers where offerID=old.offerID;
+
+UPDATE users SET couponAmount = couponAmount - price, balance=balance+price where email=old.email;
+
+END$$
+
+USE `group_buy`$$
+CREATE
+DEFINER=`root`@`localhost`
+TRIGGER `group_buy`.`payments_AFTER_INSERT`
+AFTER INSERT ON `group_buy`.`payments`
+FOR EACH ROW
+BEGIN
+    /* ΚΑΘΕ ΦΟΡΑ ΠΟΥ Η ΕΤΑΙΡΙΑ ΠΛΗΡΩΝΕΙ ΤΗΝ ΣΥΝΔΡΟΜΗ ΤΗΣ ΠΡΟΣ ΤΗΝ ΣΕΛΙΔΑ, ΕΠΙΛΕΓΕΙ ΚΑΙ ΑΛΛΑΖΕΙ ΤΟ LEVEL ΤΗΣ */
+    IF (NEW.level IS NOT NULL) THEN
+        UPDATE subscriptions SET level = NEW.level WHERE email = NEW.business.email;
+        UPDATE business SET balance = balance - NEW.amount;
+        UPDATE admin SET balance = balance + NEW.amount;
+    END IF;
+
+    /* ΜΕΤΑ ΤΗΝ ΕΚΤΕΛΕΣΗ ΤΗΣ ΠΛΗΡΩΜΗΣ, ΜΕΤΑΒΑΛΩ ΚΑΙ ΤΟ ΣΥΝΟΛΙΚΟ ΥΠΟΛΟΙΠΟ ΤΗΣ ΕΠΙΧΕΙΡΗΣΗ */
+    IF (NEW.businessEmail IS NULL) THEN
+        IF (NEW.InOut = 'in') THEN
+            UPDATE user SET balance = balance + NEW.amount;
+        ELSEIF (NEW.InOut = 'out') THEN
+            UPDATE user SET balance = balance - NEW.amount;
+        END IF;
+    END IF;
+
+    /* ΜΕΤΑ ΤΗΝ ΕΚΤΕΛΕΣΗ ΤΗΣ ΠΛΗΡΩΜΗΣ, ΜΕΤΑΒΑΛΩ ΚΑΙ ΤΟ ΣΥΝΟΛΙΚΟ ΥΠΟΛΟΙΠΟ ΤΟΥ ΧΡΗΣΤΗ */
+    IF (NEW.userEmail IS NULL) THEN
+        IF (NEW.InOut = 'in') THEN
+            UPDATE business SET balance = balance + NEW.amount;
+        ELSEIF (NEW.InOut = 'out') THEN
+            UPDATE business SET balance = balance - NEW.amount;
+        END IF;
+    END IF;
+END$$
+
+USE `group_buy`$$
+CREATE
+DEFINER=`root`@`localhost`
+TRIGGER `group_buy`.`searches_AFTER_INSERT`
+AFTER INSERT ON `group_buy`.`searches`
+FOR EACH ROW
+BEGIN
+if (new.email <> null)  then #ΣΥΣΧΕΤΗΣΗ IP & EMAIL ΜΕΤΑ ΤΗΝ ΠΡΩΤΗ ΕΓΓΡΑΦΗ ΑΝΑΖΗΤΗΣΗΣ ΓΙΑ ΤΟΝ ΧΡΗΣΤΗ ΠΟΥ ΕΙΝΑΙ ΣΥΝΔΕΔΕΜΕΝΟΣ
+ update searches set email=new.email where ip=new.ip; 
+ update dailyResults set email=ne.emai where ip=new.ip;
+ end if;
+END$$
+
+
+DELIMITER ;

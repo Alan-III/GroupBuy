@@ -1,0 +1,99 @@
+INSERT INTO `group_buy`.`categories` (`genCategory`, `path`) VALUES ('Technology', 'assets/databaseImages/Technology.jpg');
+INSERT INTO `group_buy`.`categories` (`genCategory`, `category`, `path`) VALUES ('Technology', 'Mobile', 'assets/databaseImages/Mobile.jpg');
+INSERT INTO `group_buy`.`categories` (`genCategory`, `category`, `subCategory`, `path`) VALUES ('Technology', 'Mobile', 'Mobile Phones', 'assets/databaseImages/MobilePhones.jpg');
+INSERT INTO `group_buy`.`categories` (`genCategory`, `category`, `subCategory`, `path`) VALUES ('Technology', 'Computers', 'Laptops', 'assets/databaseImages/Laptops.jpg');
+INSERT INTO `group_buy`.`categories` (`genCategory`, `path`) VALUES ('House', 'assets/databaseImages/House.jpg');
+INSERT INTO `group_buy`.`categories` (`genCategory`, `path`) VALUES ('Fashion', 'assets/databaseImages/Fashion.jpg');
+INSERT INTO `group_buy`.`categories` (`genCategory`, `category`, `path`) VALUES ('Technology', 'Computers', 'assets/databaseImages/Computers.jpg');
+
+ALTER TABLE `group_buy`.`products` 
+CHANGE COLUMN `productID` `productID` INT(11) NOT NULL AUTO_INCREMENT ;
+
+ALTER TABLE `group_buy`.`business` 
+CHANGE COLUMN `name` `businessName` VARCHAR(45) NOT NULL ;
+
+ALTER TABLE `group_buy`.`filtersdetails` 
+ADD PRIMARY KEY (`filtersID`);
+;
+
+ALTER TABLE `group_buy`.`filters` 
+DROP COLUMN `filtersName`;
+
+ALTER TABLE `group_buy`.`filtersdetails` 
+ADD COLUMN `filterName` VARCHAR(45) NULL AFTER `filtersID`;
+DROP COLUMN `value`;
+
+ALTER TABLE `group_buy`.`filters` 
+RENAME TO  `group_buy`.`catergoryfilters` ;
+
+ALTER TABLE `group_buy`.`filtersdetails` 
+CHANGE COLUMN `filtersID` `filtersID` INT(11) NOT NULL AUTO_INCREMENT ;
+ALTER TABLE `group_buy`.`filtersdetails` 
+ALTER TABLE `group_buy`.`filtersdetails` 
+DROP FOREIGN KEY `ertwert`;
+
+CREATE TABLE `group_buy`.`productfilters` (
+  `filtersID` INT(11) NOT NULL,
+  `productID` INT(11) NOT NULL,
+  `filtervalue` VARCHAR(45) NULL DEFAULT NULL);
+
+ALTER TABLE `group_buy`.`productfilters` 
+ADD CONSTRAINT `proid`
+  FOREIGN KEY (`productID`)
+  REFERENCES `group_buy`.`products` (`productID`),
+ADD CONSTRAINT `filid`
+  FOREIGN KEY (`filtersID`)
+  REFERENCES `group_buy`.`filtersdetails` (`filtersID`);
+ALTER TABLE `group_buy`.`productfilters` 
+ADD PRIMARY KEY (`filtersID`, `productID`);
+;
+
+INSERT INTO `group_buy`.`filtersdetails` (`filterName`) VALUES ('Manufacturer');
+INSERT INTO `group_buy`.`filtersdetails` (`filterName`) VALUES ('Availability');
+INSERT INTO `group_buy`.`filtersdetails` (`filterName`) VALUES ('RAM');
+INSERT INTO `group_buy`.`filtersdetails` (`filterName`) VALUES ('Features');
+INSERT INTO `group_buy`.`filtersdetails` (`filterName`) VALUES ('Storage Capacity');
+INSERT INTO `group_buy`.`filtersdetails` (`filterName`) VALUES ('Year of Release');
+INSERT INTO `group_buy`.`filtersdetails` (`filterName`) VALUES ('Screen Size');
+INSERT INTO `group_buy`.`filtersdetails` (`filterName`) VALUES ('Battery');
+INSERT INTO `group_buy`.`filtersdetails` (`filterName`) VALUES ('OS');
+INSERT INTO `group_buy`.`filtersdetails` (`filterName`) VALUES ('CPU');
+
+INSERT INTO `group_buy`.`catergoryfilters` (`filtersID`, `categoryID`) VALUES ('2', '3');
+INSERT INTO `group_buy`.`catergoryfilters` (`filtersID`, `categoryID`) VALUES ('3', '3');
+INSERT INTO `group_buy`.`catergoryfilters` (`filtersID`, `categoryID`) VALUES ('4', '3');
+INSERT INTO `group_buy`.`catergoryfilters` (`filtersID`, `categoryID`) VALUES ('5', '3');
+INSERT INTO `group_buy`.`catergoryfilters` (`filtersID`, `categoryID`) VALUES ('6', '3');
+INSERT INTO `group_buy`.`catergoryfilters` (`filtersID`, `categoryID`) VALUES ('7', '3');
+INSERT INTO `group_buy`.`catergoryfilters` (`filtersID`, `categoryID`) VALUES ('8', '3');
+INSERT INTO `group_buy`.`catergoryfilters` (`filtersID`, `categoryID`) VALUES ('9', '3');
+INSERT INTO `group_buy`.`catergoryfilters` (`filtersID`, `categoryID`) VALUES ('10', '3');
+INSERT INTO `group_buy`.`catergoryfilters` (`filtersID`, `categoryID`) VALUES ('11', '3');
+
+ALTER TABLE `group_buy`.`products` 
+CHANGE COLUMN `details` `details` VARCHAR(5001) NOT NULL ;
+
+INSERT INTO `group_buy`.`products` (`productCode`, `productName`, `details`, `belong`) VALUES ('885909950652', 'iPhone 6', ' iPhone 6 is perfect in every way. Large yet dramatically thin. Powerful but remarkably power efficient. With a smooth metal surface that seamlessly meets the Retina HD display. Its one continuous form where hardware and software function in perfect unison.Developing an iPhone with a larger more advanced display meant pushing the edge of design. From the seamless transition of glass and metal to the streamlined profile every detail was carefully considered to enhance your experience. So while its display is larger iPhone 6 feels just right.It s one thing to make a bigger display. It s something else entirely to make a bigger multitouch display with brilliant colors and higher contrast at even wider viewing angles. But that s exactly about the Retina HD display.Built on 64-bit desktop-class architecture the A8 chip delivers more power even while driving a larger display. The M8 motion coprocessor efficiently gathers data from advanced sensors and a barometer. And with increased battery life iPhone 6 lets you do more for longer than ever.More people take more photos with iPhone than with any other camera. And now the iSight camera has a sensor with Focus Pixels and amazing video features like 1080p HD at 60 fps slo-mo at 240 fps and time-lapse video mode. So you ll have more reasons to capture more moments on video too.iPhone 6 has faster LTE download speeds and it supports more LTE bands than any other smartphone so you can roam in more places. And when connected to Wi-Fi you ll get up to 3x faster speeds.The breakthrough Touch ID technology lets you securely access your iPhone with the perfect password: your fingerprint. This device has been certified by our industry leading software and is 100% fully functional. This device will show some signs of use such as scratches scuffs & nicks on the housing and screen. Wall block and USB cable included. Sim card and earbuds are NOT included.', '3');
+
+INSERT INTO `group_buy`.`productfilters` (`filtersID`, `productID`, `filtervalue`) VALUES ('2', '1', 'Apple');
+INSERT INTO `group_buy`.`productfilters` (`filtersID`, `productID`, `filtervalue`) VALUES ('6', '1', '16GB');
+
+CREATE TABLE `group_buy`.`productphoto` (
+  `productID` INT NOT NULL,
+  `path` VARCHAR(65) NULL);
+
+ALTER TABLE `group_buy`.`productphoto` 
+ADD COLUMN `photoID` INT(11) NOT NULL AUTO_INCREMENT FIRST,
+ADD PRIMARY KEY (`photoID`);
+;
+
+UPDATE `group_buy`.`categories` SET `path` = 'assets/databaseImages/categories/Technology.jpg' WHERE (`categoryID` = '1');
+UPDATE `group_buy`.`categories` SET `path` = 'assets/databaseImages/categories/Mobile.jpg' WHERE (`categoryID` = '2');
+UPDATE `group_buy`.`categories` SET `path` = 'assets/databaseImages/categories/MobilePhones.jpg' WHERE (`categoryID` = '3');
+UPDATE `group_buy`.`categories` SET `path` = 'assets/databaseImages/categories/Laptops.jpg' WHERE (`categoryID` = '4');
+UPDATE `group_buy`.`categories` SET `path` = 'assets/databaseImages/categories/House.jpg' WHERE (`categoryID` = '5');
+UPDATE `group_buy`.`categories` SET `path` = 'assets/databaseImages/categories/Fashion.jpg' WHERE (`categoryID` = '6');
+UPDATE `group_buy`.`categories` SET `path` = 'assets/databaseImages/categories/Computers.jpg' WHERE (`categoryID` = '7');
+
+
+INSERT INTO `group_buy`.`productphoto` (`productID`, `path`) VALUES ('1', 'assets/databaseImages/products/885909950652.jpg');

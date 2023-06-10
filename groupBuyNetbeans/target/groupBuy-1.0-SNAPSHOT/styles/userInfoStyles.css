@@ -14,8 +14,8 @@
 .main_box{
   position: relative;
   top: 0;
-  margin-top: 72px;
-  padding-top:  40px;
+  margin-top: calc(1rem + 1rem + 1.5rem);
+  padding-top: 1rem; 
   background: url("../assets/img/sidebar-bg.jpg") no-repeat;
   background-size: 100% 100%;
   display: inline-flex;
@@ -134,13 +134,18 @@
   left: 310px;
 }
 .layout{
+  display: block;
+  align-items: center;
   position: relative;
   top: 10px;
-  left: 50px;
-  margin-left: 100px;
+  left: 0;
+  margin-top: 0;
   color: white;
-  width: calc(100vw - 480px);
+  width: 100%;
   transition: all 0.3s linear;
+}
+.layout h3{
+  margin: auto;
 }
 .track-container{
     height: 30vh;
@@ -244,9 +249,9 @@ width:250px;
 background:#212121;
 border-right:1px solid #e5e5e5;
 position:relative;
-top:1%;
+top:0;
 bottom:0;
-height:99%;
+height:100%;
 left:0;
 width:60px;
 overflow:hidden;
@@ -256,10 +261,13 @@ transition:width .05s linear;
 z-index:1000;
 }
 
-.main-menu>ul {
-margin:7px 0;
+.main-menu > ul {
+  display: flex;
+  position: relative;
+  padding-top: calc(72px - 0.5rem);
+  flex-direction: column;
+  height: 100%;
 }
-
 .main-menu li {
 position:relative;
 display:block;
@@ -303,6 +311,9 @@ width:190px;
 position:absolute;
 left:0;
 bottom:0;
+display: block;
+
+  height: fit-content;
 }
 
 .no-touch .scrollable.hover {

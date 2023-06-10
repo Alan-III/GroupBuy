@@ -5,9 +5,15 @@
  */
 package com.sphy141.probase.servlets;
 
+import com.sphy141.probase.beans.BusinessAccount;
+import com.sphy141.probase.beans.Category;
 import com.sphy141.probase.beans.UserAccount;
+import com.sphy141.probase.utils.DBUtils;
 import com.sphy141.probase.utils.MyUtils;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.List;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -29,8 +35,29 @@ public class HomeServlet extends HttpServlet {
         UserAccount user = MyUtils.getLoginedUser(session);
         if(user!=null)
             req.setAttribute("logineduser", user);
-        else
+        else{
             req.setAttribute("logineduser", null);
+        
+            BusinessAccount business = MyUtils.getLoginedBusiness(session);
+            if(business!=null)
+                req.setAttribute("loginedbusiness", business);
+            else
+                req.setAttribute("loginedbusiness", null);
+        }
+        Connection conn = MyUtils.getStoredConnection(req);
+        List<Category> list = null;
+        String errorString = null;
+        try {
+            list = DBUtils.queryCategories(conn);
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        if(list==null){
+            errorString = "There was a problem with products";
+        }
+        req.setAttribute("errorString", errorString);
+        req.setAttribute("list", list);
+            
         RequestDispatcher dispatcher=this.getServletContext().getRequestDispatcher("/WEB-INF/views/homeView.jsp");
         dispatcher.forward(req, resp);
     }//doGet
