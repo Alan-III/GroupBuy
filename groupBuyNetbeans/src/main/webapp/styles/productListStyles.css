@@ -131,6 +131,9 @@
   left: 310px;
 }
 .layout{
+  display: flex;
+  align-items: center;
+  gap: 10px;
   position: relative;
   top: 10px;
   left: 50px;
@@ -139,6 +142,7 @@
   width: calc(100vw - 480px);
   transition: all 0.3s linear;
 }
+
 .track-container{
     height: 30vh;
     /*width: calc(100vw - 480px);*/
@@ -215,9 +219,8 @@
     overflow-y: hidden;
 }
 .add-product-btn{
-    height: 3rem;
     padding: 0;
-    width: 200px;
+    width: 150px;
     font-family: "Montserrat", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
     font-size: 1.125rem;
     font-weight: 700;

@@ -95,19 +95,19 @@
                 </div>
 
                 <div class="layout">
-                    <div style="display: flex; width: 100%; gap: 10px;">
                         <div class="search_bar-small" style="width: inherit;">
                             <img src="https://cdn.pixabay.com/photo/2013/07/12/15/55/clues-150586_960_720.png" alt="glass" height="35rem" width="35rem" />
                             <input class="typewriter" type="text" placeholder="Type here to search..."/>
                         </div>
-                        <c:if test="${loginedbusiness!=null}">
-                        <button class="add-product-btn btn btn-primary  text-uppercase" onClick="window.location.href = 'http://localhost:8080/groupbuy/createproduct';">Add Product</button>
-                        </c:if>
-                    </div>
                 </div>
                 
                 <br>
-                <div class="layout"><h4>Offers</h4></div>
+                <div class="layout mb-2">
+                    <h4>Offers</h4>
+                    <c:if test="${loginedbusiness!=null}">
+                        <button class="add-product-btn btn btn-primary  text-uppercase" onClick="window.location.href = 'http://localhost:8080/groupbuy/createoffer';">Add Offer</button>
+                    </c:if>
+                </div>
                 <div class="layout track-container border-red" id="trackcontainer">
                     <!-- Item slider-->
                     <div id='image-track' class="image-track" data-mouse-down-at='0' data-prev-percentage='0'>
@@ -140,7 +140,12 @@
                     <!-- Item slider end-->
                 </div>
                 <br>
-                <div class="layout"><h4>Products</h4></div>
+                <div class="layout mb-2">
+                    <h4>Products</h4>
+                    <c:if test="${loginedbusiness!=null}">
+                        <button class="add-product-btn btn btn-primary  text-uppercase" onClick="window.location.href = 'http://localhost:8080/groupbuy/createproduct';">Add Product</button>
+                    </c:if>
+                </div>
                 <div class="layout track-container border-yellow" id="trackcontainer2">
                     <!-- Item slider-->
                     <div id='image-track2' class="image-track" data-mouse-down-at='0' data-prev-percentage='0'>

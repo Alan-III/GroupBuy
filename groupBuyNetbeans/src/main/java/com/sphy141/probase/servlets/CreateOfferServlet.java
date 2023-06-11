@@ -30,17 +30,16 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.Part;
 
-/** 3.3.8 3.3.1
+/**
  *
  * @author Alan
  */
-@WebServlet(urlPatterns = {"/createproduct"})
+@WebServlet(urlPatterns = {"/createoffer"})
 @MultipartConfig(
     fileSizeThreshold= 1024 *1024 * 1,
     maxRequestSize= 1024 *1024 * 100
 )
-public class CreateProductServlet extends HttpServlet {
-
+public class CreateOfferServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         HttpSession session = req.getSession();
@@ -54,10 +53,10 @@ public class CreateProductServlet extends HttpServlet {
             req.setAttribute("loginedbusiness", business);
         
         RequestDispatcher dispatcher = this.getServletContext()
-                .getRequestDispatcher("/WEB-INF/views/createProductView.jsp");
+                .getRequestDispatcher("/WEB-INF/views/createOfferView.jsp");
         dispatcher.forward(req, resp);
     }
-
+    
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         HttpSession session = req.getSession();
@@ -70,6 +69,14 @@ public class CreateProductServlet extends HttpServlet {
         else
             req.setAttribute("loginedbusiness", business);
         
+        req.setAttribute("errorString", "Servlet not implemented yet");
+        if(true){
+            RequestDispatcher dispatcher = this.getServletContext()
+                    .getRequestDispatcher("/WEB-INF/views/productListView.jsp");
+            dispatcher.forward(req, resp);
+        }
+            
+            
         String name = req.getParameter("pname");
         String barcode = req.getParameter("pbarcode");
         String strPrice = req.getParameter("pprice");
@@ -167,7 +174,6 @@ public class CreateProductServlet extends HttpServlet {
         }//if
         if (errorString != null) {
             req.setAttribute("errorString", errorString);
-            req.setAttribute("product", product);
             RequestDispatcher dispatcher = this.getServletContext()
                     .getRequestDispatcher("/WEB-INF/views/createProductView.jsp");
             dispatcher.forward(req, resp);

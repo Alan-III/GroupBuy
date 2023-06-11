@@ -109,7 +109,7 @@
                     <label class="form-label" for="pprice">Price</label> 
                     </div>
                     <div class="input-field">
-                    <input type="number" class="form-control" required="required" id="pcat" name="pcat" value="0"/>
+                    <input type="number" class="form-control" required="required" id="pcat" name="pcat" value="1" min="1"/>
                     <label class="form-label" for="pprice">Category TEMP</label> 
                     </div>
                     <div class="input-field">
