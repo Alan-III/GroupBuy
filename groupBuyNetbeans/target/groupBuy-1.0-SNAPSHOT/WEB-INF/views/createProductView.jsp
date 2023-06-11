@@ -92,23 +92,39 @@
                     </ul>
                 </nav>-->
                 <div id="userinfo" class="layout">
-                <h3 class="text-center text-white pt-5">Business Details</h3>
-                <div class="container">
-                <p>Product Name: ${loginedbusiness.getBusinessName()}</p>
-                <p>Product Barcode: ${loginedbusiness.getSupervisorLastName()} ${loginedbusiness.getSupervisorFirstName()}</p>
-                <p>Price: ${loginedbusiness.getEmail()}</p>
-                <p>Details: ${loginedbusiness.getAfm()}</p>
-                <p>Image: ${loginedbusiness.getAfm()}</p>
-                </div>
+                <h3 class="text-center text-white pt-5">Create Product</h3>
+                <br>
+                <div class="loginclamp">
+                <form class="form-container" method="post" action="${pageContext.request.contextPath}/createproduct" enctype="multipart/form-data">
+                    <div class="input-field">
+                    <input type="text" class="form-control" required="required" id="pname" name="pname" />
+                    <label class="form-label" for="pname" >Product Name</label> 
+                    </div>
+                    <div class="input-field">
+                    <input type="text" class="form-control" required="required" id="pbarcode" name="pbarcode" />
+                    <label class="form-label" for="pbarcode">Product Barcode</label> 
+                    </div>
+                    <div class="input-field">
+                    <input type="text" class="form-control" required="required" id="pprice" name="pprice" />
+                    <label class="form-label" for="pprice">Price</label> 
+                    </div>
+                    <div class="input-field">
+                    <input type="number" class="form-control" required="required" id="pcat" name="pcat" value="0"/>
+                    <label class="form-label" for="pprice">Category TEMP</label> 
+                    </div>
+                    <div class="input-field">
+                    <input type="text" class="form-control" required="required" id="pdetails" name="pdetails" rows="4" cols="50" />
+                    <label class="form-label" for="pdetails">Details</label> 
+                    </div>
+                    <div class="input-field">
+                    <input type="file" class="form-control" required="required" id="pimage" name="pimage[]" multiple/>
+                    <label class="input-label-focused" for="pimage">Images</label> 
+                    </div>
+                    <button type="submit" name="submit" class="btn btn-primary btn-block mb-4">Submit</button>
+                </form>
             </div>
             </div>
-            <script>
-            window.addEventListener('load', function() {
-              var mainNavHeight = document.getElementById('mainNav').offsetHeight;
-              var mainBox = document.getElementById('mainBox');
-              mainBox.style.marginTop = mainNavHeight + 'px';
-            });
-          </script>
+            </div>
             <!-- Footer-->
         <jsp:include page="_footer.jsp"></jsp:include>
         <!-- Bootstrap core JS-->

@@ -148,7 +148,7 @@
                             <!--{item.getPath()} sto src-->
                             <div class='product'>
                                 <a class="product-image" href='subject_details.php?subj=${item.getCode()}'>
-                                  <img src='${item.getImagePath()}' draggable='false' />
+                                  <img src='${item.getFirstImagePath()}' draggable='false' />
                                 </a>
                                 <c:if test="${logineduser.getUserName()!='tomcruz'}">
                                     <p class="image-left">

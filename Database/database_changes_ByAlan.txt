@@ -97,3 +97,46 @@ UPDATE `group_buy`.`categories` SET `path` = 'assets/databaseImages/categories/C
 
 
 INSERT INTO `group_buy`.`productphoto` (`productID`, `path`) VALUES ('1', 'assets/databaseImages/products/885909950652.jpg');
+
+UPDATE `group_buy`.`productphoto` SET `path` = 'assets/databaseImages/products/885909950652/imgname.jpg' WHERE (`photoID` = '1');
+
+ALTER TABLE `group_buy`.`products` 
+ADD COLUMN `price` DECIMAL(10,2) NOT NULL AFTER `details`;
+
+UPDATE `group_buy`.`products` SET `price` = '500.00' WHERE (`productID` = '1');
+
+ALTER TABLE `group_buy`.`notifications` 
+ADD PRIMARY KEY (`productCode`, `offerID`);
+;
+ALTER TABLE `group_buy`.`mywish` 
+DROP FOREIGN KEY `jhcgvhj`;
+ALTER TABLE `group_buy`.`mywish` 
+CHANGE COLUMN `productCode` `productCode` VARCHAR(45) NOT NULL ,
+ADD PRIMARY KEY (`email`, `productCode`);
+;
+ALTER TABLE `group_buy`.`mywish` 
+ADD CONSTRAINT `jhcgvhj`
+  FOREIGN KEY (`productCode`)
+  REFERENCES `group_buy`.`products` (`productCode`);
+
+DROP TRIGGER IF EXISTS `group_buy`.`products_BEFORE_DELETE`;
+
+DELIMITER $$
+USE `group_buy`$$
+CREATE DEFINER=`root`@`localhost` TRIGGER `group_buy`.`products_BEFORE_DELETE`
+BEFORE DELETE ON `group_buy`.`products`
+FOR EACH ROW
+BEGIN
+/*ΔΙΑΓΡΑΑΦΗ ΤΩΝ ΕΠΙΘΥΜΙΩΝ ΠΟΥ ΕΧΟΥΝ ΑΥΤΟΝ ΤΟΝ ΚΨΔΙΚΟ ΠΡΟΙΟΝΤΟΣ*/
+DELETE FROM mywish where productCode=old.productCode;
+delete from notifications where productCode=old.productCode;
+
+/* Διαγραφή των προιόντων που αναζητήθηκαν ΚΑΤΑ ΣΕΙΡΑ ΒΑΡΥΤΗΤΑΣ ΜΗΝΑΣ-ΕΒΔΟΜΑΔΑ-ΗΜΕΡΑ-ΑΝΑΖΗΤΗΣΕΙΣ */
+delete from monthlyResults where productCode= old.productCode AND monthlyID;
+delete from weeklyResults where productCode= old.productCode AND weeklyID;
+delete from dailyResults where productCode= old.productCode AND dailyID;
+delete from searchdetails where productCode= old.productCode AND searchID;
+
+END$$
+DELIMITER ;
+
