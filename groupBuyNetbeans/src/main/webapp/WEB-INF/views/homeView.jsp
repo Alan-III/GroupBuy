@@ -37,7 +37,7 @@
 
                             <input class="typewriter" type="text" placeholder="Type here to search..."/>
 
-                            <button onClick="window.location.href = 'http://localhost:8080/groupbuy/productlist';">Search</button>
+                            <button onClick="window.location.href = '${pageContext.request.contextPath}/productlist';">Search</button>
                         </div>
                     </div> 
                     <a class="btn btn-primary btn-xl text-uppercase" href="#categories">Browse Categories</a>
@@ -54,7 +54,7 @@
                     <c:forEach items="${list}" var="item">
 
                         <div class="col-md-4">
-                            <a href="http://localhost:8080/groupbuy/productlist?catid=${item.getCategoryID()}">
+                            <a href="${pageContext.request.contextPath}/productlist?catid=${item.getCategoryID()}">
                                 <span class="fa-stack fa-4x">
                                     <img class="rounded-circle" src="${item.getCategoryImagePath()}" style="max-width: 100%; max-height: 100%;" />
                                 </span>

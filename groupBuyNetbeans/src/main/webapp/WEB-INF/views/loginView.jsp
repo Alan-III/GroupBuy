@@ -209,6 +209,16 @@
                             <input type="email" id="registerEmailC" name="registerEmailC" class="form-control" required="required" />
                             <label class="form-label" for="registerEmailC">Email Address</label>
                         </div>
+                        <!-- IBAN input -->
+                        <div class="form-outline mb-4 input-field">
+                            <input type="email" id="registeriban" name="registeriban" class="form-control" required="required" />
+                            <label class="form-label" for="registeriban">IBAN</label>
+                        </div>
+                        <!-- AFM input -->
+                        <div class="form-outline mb-4 input-field">
+                            <input type="email" id="registerafm" name="registerafm" class="form-control" required="required" />
+                            <label class="form-label" for="registerafm">Tax Code</label>
+                        </div>
                         
                         <h4>Company Representative</h4>
                         <!-- SUpervisor First Name input -->

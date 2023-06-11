@@ -244,13 +244,15 @@ public class DBUtils {
     
     public static void insertBusiness(Connection conn, BusinessAccount business) throws SQLException {
         //insertDetails
-        String sql = "INSERT INTO business (supervisorFirstName, supervisorLastName, email, businessName, verificationCode) VALUES(?,?,?,?,?)";
+        String sql = "INSERT INTO business (supervisorFirstName, supervisorLastName, email, businessName, verificationCode, AFM, IBAN) VALUES(?,?,?,?,?,?,?)";
         PreparedStatement pst = conn.prepareCall(sql);
         pst.setString(1, business.getSupervisorFirstName());
         pst.setString(2, business.getSupervisorLastName());
         pst.setString(3, business.getEmail());
         pst.setString(4, business.getBusinessName());
         pst.setString(5, business.getVerificationCode());
+        pst.setString(6, business.getAfm());
+        pst.setString(7, business.getIBAN());
         pst.executeUpdate();
         //insertPassword
         String sql1 = "INSERT INTO login (email, password) VALUES(?, ?)";

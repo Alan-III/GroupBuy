@@ -105,7 +105,8 @@
                 <div class="layout mb-2">
                     <h4>Offers</h4>
                     <c:if test="${loginedbusiness!=null}">
-                        <button class="add-product-btn btn btn-primary  text-uppercase" onClick="window.location.href = 'http://localhost:8080/groupbuy/createoffer';">Add Offer</button>
+                        <button class="add-product-btn btn btn-primary  text-uppercase" 
+                                onClick="window.location.href = 'http://localhost:8080/groupbuy/createoffer';">Create Offer</button>
                     </c:if>
                 </div>
                 <div class="layout track-container border-red" id="trackcontainer">
@@ -143,7 +144,8 @@
                 <div class="layout mb-2">
                     <h4>Products</h4>
                     <c:if test="${loginedbusiness!=null}">
-                        <button class="add-product-btn btn btn-primary  text-uppercase" onClick="window.location.href = 'http://localhost:8080/groupbuy/createproduct';">Add Product</button>
+                        <button class="add-product-btn btn btn-primary  text-uppercase" 
+                                onClick="window.location.href = 'http://localhost:8080/groupbuy/createproduct';">Create Product</button>
                     </c:if>
                 </div>
                 <div class="layout track-container border-yellow" id="trackcontainer2">

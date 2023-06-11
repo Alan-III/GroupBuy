@@ -45,6 +45,9 @@ public class ProductListServlet extends HttpServlet {
                 req.setAttribute("loginedbusiness", null);
         }
         
+        String businessIdParam = req.getParameter("businessId");
+        String categoryIdParam = req.getParameter("catid");
+        
         Connection conn = MyUtils.getStoredConnection(req);
         List<Product> list = null;
         String errorString = null;
