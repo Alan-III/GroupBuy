@@ -37,7 +37,7 @@
 
                             <input class="typewriter" type="text" placeholder="Type here to search..."/>
 
-                            <button onClick="window.location.href = 'http://localhost:8080/groupbuy/productlist';">Search</button>
+                            <button onClick="window.location.href = '${pageContext.request.contextPath}/productlist';">Search</button>
                         </div>
                     </div> 
                     <a class="btn btn-primary btn-xl text-uppercase" href="#categories">Browse Categories</a>
@@ -54,7 +54,7 @@
                     <c:forEach items="${list}" var="item">
 
                         <div class="col-md-4">
-                            <a href="http://localhost:8080/groupbuy/productlist?catid=${item.getCategoryID()}">
+                            <a href="${pageContext.request.contextPath}/productlist?catid=${item.getCategoryID()}">
                                 <span class="fa-stack fa-4x">
                                     <img class="rounded-circle" src="${item.getCategoryImagePath()}" style="max-width: 100%; max-height: 100%;" />
                                 </span>
@@ -84,7 +84,7 @@
                 </div>
                 <ul class="timeline">
                     <li>
-                        <div class="timeline-image"><img class="rounded-circle img-fluid" src="assets/img/about/1.jpg" alt="..." /></div>
+                        <div class="timeline-image"><img class="rounded-circle img-fluid" src="assets/img/about/idea.jpg" alt="..." /></div>
                         <div class="timeline-panel">
                             <div class="timeline-heading">
                                 <h4>April 2023</h4>
@@ -94,7 +94,7 @@
                         </div>
                     </li>
                     <li class="timeline-inverted">
-                        <div class="timeline-image"><img class="rounded-circle img-fluid" src="assets/img/about/2.jpg" alt="..." /></div>
+                        <div class="timeline-image"><img class="rounded-circle img-fluid" src="assets/img/about/agency.jpg" alt="..." /></div>
                         <div class="timeline-panel">
                             <div class="timeline-heading">
                                 <h4>January 2024</h4>
@@ -104,21 +104,11 @@
                         </div>
                     </li>
                     <li>
-                        <div class="timeline-image"><img class="rounded-circle img-fluid" src="assets/img/about/3.jpg" alt="..." /></div>
+                        <div class="timeline-image"><img class="rounded-circle img-fluid" src="assets/img/about/navbar-logo.png" alt="..." /></div>
                         <div class="timeline-panel">
                             <div class="timeline-heading">
                                 <h4>December 2024</h4>
                                 <h4 class="subheading">Transition to Full Service</h4>
-                            </div>
-                            <div class="timeline-body"><p class="text-muted">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sunt ut voluptatum eius sapiente, totam reiciendis temporibus qui quibusdam, recusandae sit vero unde, sed, incidunt et ea quo dolore laudantium consectetur!</p></div>
-                        </div>
-                    </li>
-                    <li class="timeline-inverted">
-                        <div class="timeline-image"><img class="rounded-circle img-fluid" src="assets/img/about/4.jpg" alt="..." /></div>
-                        <div class="timeline-panel">
-                            <div class="timeline-heading">
-                                <h4>2025...</h4>
-                                <h4 class="subheading">Phase Two Expansion</h4>
                             </div>
                             <div class="timeline-body"><p class="text-muted">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sunt ut voluptatum eius sapiente, totam reiciendis temporibus qui quibusdam, recusandae sit vero unde, sed, incidunt et ea quo dolore laudantium consectetur!</p></div>
                         </div>
@@ -147,12 +137,12 @@
                 <div class="row">
                     <div class="col-lg-4">
                         <div class="team-member">
-                            <img class="mx-auto rounded-circle" src="assets/img/team/1.jpg" alt="..." />
+                            <img class="mx-auto rounded-circle" src="assets/img/team/AlanImage.jpg" alt="..." />
                             <h4>Alexandros A. Karagiannis</h4>
                             <p class="text-muted">Lead Developer</p>
-                            <a class="btn btn-dark btn-social mx-2" href="#!" aria-label="Parveen Anand Twitter Profile"><i class="fab fa-twitter"></i></a>
-                            <a class="btn btn-dark btn-social mx-2" href="#!" aria-label="Parveen Anand Facebook Profile"><i class="fab fa-facebook-f"></i></a>
-                            <a class="btn btn-dark btn-social mx-2" href="#!" aria-label="Parveen Anand LinkedIn Profile"><i class="fab fa-linkedin-in"></i></a>
+                            <a class="btn btn-dark btn-social mx-2" href="https://github.com/Alan-III" aria-label="Parveen Anand Github Profile" target="_blank"><i class="fab fa-github"></i></a>
+                            <a class="btn btn-dark btn-social mx-2" href="https://www.facebook.com/alexandros.karagiannis.940/" aria-label="Parveen Anand Facebook Profile" target="_blank"><i class="fab fa-facebook-f"></i></a>
+                            <a class="btn btn-dark btn-social mx-2" href="https://www.linkedin.com/in/alexandros-karagiannis-8586251b7/" aria-label="Parveen Anand LinkedIn Profile" target="_blank"><i class="fab fa-linkedin-in"></i></a>
                         </div>
                     </div>
                     <div class="col-lg-4">
@@ -210,30 +200,30 @@
                 <!-- To make this form functional, sign up at-->
                 <!-- https://startbootstrap.com/solution/contact-forms-->
                 <!-- to get an API token!-->
-                <form id="contactForm" data-sb-form-api-token="API_TOKEN">
+                <form id="contactForm" method="post" action="${pageContext.request.contextPath}/home">
                     <div class="row align-items-stretch mb-5">
                         <div class="col-md-6">
                             <div class="form-group">
                                 <!-- Name input-->
-                                <input class="form-control" id="name" type="text" placeholder="Your Name *" data-sb-validations="required" />
+                                <input class="form-control" id="name" name="name" type="text" placeholder="Your Name *" required="required" />
                                 <div class="invalid-feedback" data-sb-feedback="name:required">A name is required.</div>
                             </div>
                             <div class="form-group">
                                 <!-- Email address input-->
-                                <input class="form-control" id="email" type="email" placeholder="Your Email *" data-sb-validations="required,email" />
+                                <input class="form-control" id="email" name="email" type="email" placeholder="Your Email *" required="required,email" />
                                 <div class="invalid-feedback" data-sb-feedback="email:required">An email is required.</div>
                                 <div class="invalid-feedback" data-sb-feedback="email:email">Email is not valid.</div>
                             </div>
                             <div class="form-group mb-md-0">
                                 <!-- Phone number input-->
-                                <input class="form-control" id="phone" type="tel" placeholder="Your Phone *" data-sb-validations="required" />
+                                <input class="form-control" id="phone" name="phone" type="tel" placeholder="Your Phone" />
                                 <div class="invalid-feedback" data-sb-feedback="phone:required">A phone number is required.</div>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="form-group form-group-textarea mb-md-0">
                                 <!-- Message input-->
-                                <textarea class="form-control" id="message" placeholder="Your Message *" data-sb-validations="required"></textarea>
+                                <textarea class="form-control" id="message" name="msg" placeholder="Your Message *" required="required"></textarea>
                                 <div class="invalid-feedback" data-sb-feedback="message:required">A message is required.</div>
                             </div>
                         </div>
@@ -256,7 +246,7 @@
                     <!-- an error submitting the form-->
                     <div class="d-none" id="submitErrorMessage"><div class="text-center text-danger mb-3">Error sending message!</div></div>
                     <!-- Submit Button-->
-                    <div class="text-center"><button class="btn btn-primary btn-xl text-uppercase disabled" id="submitButton" type="submit">Send Message</button></div>
+                    <div class="text-center"><button class="btn btn-primary btn-xl text-uppercase" id="submitButton" type="submit">Send Message</button></div>
                 </form>
             </div>
         </section>

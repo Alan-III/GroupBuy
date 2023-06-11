@@ -45,6 +45,8 @@ public class RegisterCompanyServlet extends HttpServlet{
         String supervisorLastName = req.getParameter("registerLastNameC");
         String businessName = req.getParameter("registerNameC");
         String email = req.getParameter("registerEmailC");
+        String afm = req.getParameter("registerafm");
+        String iban = req.getParameter("registeriban");
         String password = req.getParameter("registerPasswordC");
         String confirmPassword = req.getParameter("registerRepeatPasswordC");
         //String terms = req.getParameter("registerCheckC");
@@ -53,11 +55,11 @@ public class RegisterCompanyServlet extends HttpServlet{
         boolean hasError = false;
         BusinessAccount business = null;
         
-        if(businessName == null || password == null || email == null || confirmPassword == null || supervisorFirstName == null || supervisorLastName == null 
+        if(iban == null || afm == null || businessName == null || password == null || email == null || confirmPassword == null || supervisorFirstName == null || supervisorLastName == null 
                 || supervisorFirstName.length()==0|| supervisorLastName.length()==0  || businessName.length()==0 
-                || password.length()==0 || email.length()==0 || email.length()==0 || confirmPassword.length()==0){
+                || password.length()==0 || iban.length()==0 || afm.length()==0|| email.length()==0 || email.length()==0 || confirmPassword.length()==0){
             hasError=true;
-            errorString = "company name, email, supervisor name and password should be provided";
+            errorString = "Fill in all the fields";
         }
         if(!(password.equals(confirmPassword))){
             hasError=true;
@@ -91,6 +93,8 @@ public class RegisterCompanyServlet extends HttpServlet{
                 business.setSupervisorFirstName(supervisorFirstName);
                 business.setSupervisorLastName(supervisorLastName);
                 business.setEmail(email);
+                business.setAfm(afm);
+                business.setIBAN(iban);
                 business.setBusinessName(businessName);
                 business.setPassword(password);
                 String verificationCode = UUID.randomUUID().toString().substring(0, 20);

@@ -89,4 +89,34 @@ public class MailUtils {
         msg.setContent(emailContent, "text/html; charset=utf-8");
         Transport.send(msg);
     }
+
+    public static void sendMail(String name, String email, String phone, String context) throws AddressException, MessagingException {
+        String fromEmail = "mygroupbuy8@gmail.com";
+        String password = "ohbmbkantkphspho";
+        
+        Properties props = new Properties();
+        props.put("mail.smtp.host", "smtp.gmail.com");
+        props.put("mail.smtp.port", "587");
+        props.put("mail.smtp.auth", "true");
+        props.put("mail.smtp.ssl.protocols", "TLSv1.2");
+        props.put("mail.smtp.starttls.enable", "true");
+        //paaqixermthcsqsc
+        
+        Session session = Session.getInstance(props, new Authenticator() {
+            @Override
+            protected PasswordAuthentication getPasswordAuthentication(){
+                return new PasswordAuthentication(fromEmail,password);
+            }
+        }); // gives the authentication to send email
+        
+        Message msg = new MimeMessage(session);
+        
+        msg.setFrom(new InternetAddress(fromEmail));
+        msg.setRecipient(Message.RecipientType.TO, new InternetAddress(fromEmail));
+        
+        msg.setSubject("Contact from "+name);
+        String emailContent = "Email: "+email+"\nName: "+name+"\nPhone: "+phone+"\nMessage: "+context;
+        msg.setText(emailContent);
+        Transport.send(msg);
+    }
 }

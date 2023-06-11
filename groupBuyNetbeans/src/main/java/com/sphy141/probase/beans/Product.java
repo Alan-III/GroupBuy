@@ -5,17 +5,37 @@
  */
 package com.sphy141.probase.beans;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  *
  * @author USER
  */
 public class Product {
 
+    private int id;
     private String code;
     private String name;
     private String details;
-    private String imagePath;
+    private int categoryID;
+    private float price;
+    private List<String> imagePaths;
 
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+    public int getCategoryID() {
+        return categoryID;
+    }
+
+    public void setCategoryID(int categoryID) {
+        this.categoryID = categoryID;
+    }
     public String getDetails() {
         return details;
     }
@@ -24,16 +44,26 @@ public class Product {
         this.details = details;
     }
 
-    public String getImagePath() {
-        return imagePath;
+    public List<String> getImagePaths() {
+        return imagePaths;
+    }
+    public String getFirstImagePath() {
+        if (imagePaths != null && !imagePaths.isEmpty()) {
+        return imagePaths.get(0);
+    }
+    return null; // Return null if the imagePath is empty or null
     }
 
-    public void setImagePath(String imagePath) {
-        this.imagePath = imagePath;
+    public void setImagePaths(List<String> imagePath) {
+        this.imagePaths = imagePath;
     }
-    private float price;
+    public void addImagePath(String imagePath) {
+        this.imagePaths.add(imagePath);
+    }
+    
 
     public Product() {
+        this.imagePaths = new ArrayList<String>();
     }
 
     public String getCode() {

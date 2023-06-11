@@ -128,7 +128,7 @@ public class DBUtils {
     }//verifyBusiness
 
     public static List<Product> queryProduct(Connection conn) throws SQLException {
-        String sql = "SELECT * FROM products p INNER JOIN productphoto pp ON p.productID=pp.productID";
+        String sql = "SELECT * FROM products p INNER JOIN productphoto pp ON p.productID=pp.productID GROUP BY p.productID";
         List<Product> list = new ArrayList<Product>();
         PreparedStatement pst = conn.prepareStatement(sql);
         ResultSet rs = pst.executeQuery();
@@ -137,30 +137,32 @@ public class DBUtils {
             prod.setCode(rs.getString("productCode"));
             prod.setName(rs.getString("productName"));
             prod.setDetails(rs.getString("details"));
-            prod.setImagePath(rs.getString("path"));
+            prod.setPrice(rs.getFloat("price"));
+            prod.addImagePath(rs.getString("path"));
             list.add(prod);
         }//while
         return list;
     }//queryProduct
 
     public static Product findProduct(Connection conn, String code) throws SQLException {
-        String sql = "SELECT *  FROM Product WHERE  code = ? ";
+        String sql = "SELECT *  FROM products WHERE  productCode = ? ";
         List<Product> list = new ArrayList<Product>();
         PreparedStatement pst = conn.prepareStatement(sql);
         pst.setString(1, code);
         ResultSet rs = pst.executeQuery();
         while (rs.next()) {
             Product prod = new Product();
-            prod.setCode(rs.getString("Code"));
-            prod.setName(rs.getString("Name"));
-            prod.setPrice(rs.getFloat("Price"));
+            prod.setCode(rs.getString("productCode"));
+            prod.setName(rs.getString("productName"));
+            prod.setPrice(rs.getFloat("price"));
+            prod.setId(rs.getInt("productID"));
             return prod;
         }//while
         return null;
     }//findProduct
 
     public static void updateProduct(Connection conn, Product product) throws SQLException {
-        String sql = "UPDATE Product SET name=?,Price=? WHERE code = ?";
+        String sql = "UPDATE products SET name=?,Price=? WHERE code = ?";
         PreparedStatement pst = conn.prepareCall(sql);
         pst.setString(1, product.getName());
         pst.setFloat(2, product.getPrice());
@@ -169,16 +171,28 @@ public class DBUtils {
     }//updateProduct
 
     public static void insertProduct(Connection conn, Product product) throws SQLException {
-        String sql = "INSERT INTO Product (code,name,Price) VALUES(?,?,?)";
+        String sql = "INSERT INTO products (productCode,productName,details,belong,price) VALUES(?,?,?,?,?)";
         PreparedStatement pst = conn.prepareCall(sql);
         pst.setString(1, product.getCode());
         pst.setString(2, product.getName());
-        pst.setFloat(3, product.getPrice());
+        pst.setString(3, product.getDetails());
+        pst.setInt(4, product.getCategoryID());
+        pst.setDouble(5, product.getPrice());
         pst.executeUpdate();
+        
+        List<String> paths = product.getImagePaths();
+        Product productNew = findProduct(conn, product.getCode());
+        for (String path : paths) {
+            String sql2 = "INSERT INTO productphoto (productID,path) VALUES(?,?)";
+            PreparedStatement pst2 = conn.prepareCall(sql2);
+            pst2.setInt(1, productNew.getId());
+            pst2.setString(2, path);
+            pst2.executeUpdate();
+        }
     }//insertProduct
     
     public static void deleteProduct(Connection conn, String code) throws SQLException {
-        String sql = "DELETE FROM Product WHERE code=? ";
+        String sql = "DELETE FROM products WHERE code=? ";
         PreparedStatement pst = conn.prepareStatement(sql);
         pst.setString(1, code);
         pst.executeUpdate();
@@ -230,13 +244,15 @@ public class DBUtils {
     
     public static void insertBusiness(Connection conn, BusinessAccount business) throws SQLException {
         //insertDetails
-        String sql = "INSERT INTO business (supervisorFirstName, supervisorLastName, email, businessName, verificationCode) VALUES(?,?,?,?,?)";
+        String sql = "INSERT INTO business (supervisorFirstName, supervisorLastName, email, businessName, verificationCode, AFM, IBAN) VALUES(?,?,?,?,?,?,?)";
         PreparedStatement pst = conn.prepareCall(sql);
         pst.setString(1, business.getSupervisorFirstName());
         pst.setString(2, business.getSupervisorLastName());
         pst.setString(3, business.getEmail());
         pst.setString(4, business.getBusinessName());
         pst.setString(5, business.getVerificationCode());
+        pst.setString(6, business.getAfm());
+        pst.setString(7, business.getIBAN());
         pst.executeUpdate();
         //insertPassword
         String sql1 = "INSERT INTO login (email, password) VALUES(?, ?)";
@@ -275,14 +291,57 @@ public class DBUtils {
             cat.setCategoryID(rs.getInt("CategoryID"));
             if(rs.getString("subCategory")!=null){
                 cat.setCategoryName(rs.getString("subCategory"));
+                cat.setSubCategory(rs.getString("subCategory"));
+                cat.setMidCategory(rs.getString("category"));
+                cat.setGenCategory(rs.getString("genCategory"));
             }else if(rs.getString("category")!=null){
                 cat.setCategoryName(rs.getString("category"));
+                cat.setMidCategory(rs.getString("category"));
+                cat.setGenCategory(rs.getString("genCategory"));
             }else{
                 cat.setCategoryName(rs.getString("genCategory"));
+                cat.setGenCategory(rs.getString("genCategory"));
             }
             cat.setCategoryImagePath(rs.getString("path"));
             list.add(cat);
         }//while
         return list;
     }//queryCategories
+
+    public static Category findCategory(Connection conn, Category category) throws SQLException {
+        String sql;
+        if(category.getMidCategory()==null){
+            sql = "SELECT * FROM categories WHERE genCategory = ? AND category IS NULL AND subCategory IS NULL";
+        } else if(category.getSubCategory()==null){
+            sql = "SELECT * FROM categories WHERE genCategory = ? AND category = ? AND subCategory IS NULL";
+        }else{
+            sql = "SELECT * FROM categories WHERE genCategory = ? AND category = ? AND subCategory = ?";
+        }
+        PreparedStatement pst = conn.prepareStatement(sql);
+        if(category.getMidCategory()==null){
+            pst.setString(1, category.getGenCategory());
+        } else if(category.getSubCategory()==null){
+            sql = "SELECT * FROM categories WHERE genCategory = ? AND category = ? AND subCategory IS NULL";
+            pst.setString(1, category.getGenCategory());
+            pst.setString(2, category.getMidCategory());
+        }else{
+            sql = "SELECT * FROM categories WHERE genCategory = ? AND category = ? AND subCategory = ?";
+            pst.setString(1, category.getGenCategory());
+            pst.setString(2, category.getMidCategory());
+            pst.setString(3, category.getSubCategory());
+        }
+        ResultSet rs = pst.executeQuery();
+        while (rs.next()) {
+            if(category.getSubCategory()!=null)
+                category.setCategoryName(category.getSubCategory());
+            else if(category.getMidCategory()!=null)
+                category.setCategoryName(category.getMidCategory());
+            else
+                category.setCategoryName(category.getGenCategory());
+            category.setCategoryID(rs.getInt("categoryID"));
+            category.setCategoryImagePath(rs.getString("path"));
+            return category;
+        }//while
+        return null;
+    }
 }

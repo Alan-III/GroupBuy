@@ -95,18 +95,25 @@
                 </div>
 
                 <div class="layout">
-                    <div class="search_bar-small">
-                        <img src="https://cdn.pixabay.com/photo/2013/07/12/15/55/clues-150586_960_720.png" alt="glass" height="35rem" width="35rem" />
-                        <input class="typewriter" type="text" placeholder="Type here to search..."/>
-                    </div>
-                </div> 
+                        <div class="search_bar-small" style="width: inherit;">
+                            <img src="https://cdn.pixabay.com/photo/2013/07/12/15/55/clues-150586_960_720.png" alt="glass" height="35rem" width="35rem" />
+                            <input class="typewriter" type="text" placeholder="Type here to search..."/>
+                        </div>
+                </div>
+                
                 <br>
-                <div class="layout"><h4>Offers</h4></div>
+                <div class="layout mb-2">
+                    <h4>Offers</h4>
+                    <c:if test="${loginedbusiness!=null}">
+                        <button class="add-product-btn btn btn-primary  text-uppercase" 
+                                onClick="window.location.href = '${pageContext.request.contextPath}/createoffer';">Create Offer</button>
+                    </c:if>
+                </div>
                 <div class="layout track-container border-red" id="trackcontainer">
                     <!-- Item slider-->
                     <div id='image-track' class="image-track" data-mouse-down-at='0' data-prev-percentage='0'>
                         <%--<c:forEach items="${list}" var="item">--%>
-                            <!--{item.getPath()} sto src-->
+                            <!--LIST OF OFFERS WITH IMAGES ETC -->
                             <div class='product'>
                                 <a class="product-image" href='subject_details.php?subj=${item.getCode()}'>
                                   <img src='assets/img/smartphone.png' draggable='false' />
@@ -134,15 +141,21 @@
                     <!-- Item slider end-->
                 </div>
                 <br>
-                <div class="layout"><h4>Products</h4></div>
+                <div class="layout mb-2">
+                    <h4>Products</h4>
+                    <c:if test="${loginedbusiness!=null}">
+                        <button class="add-product-btn btn btn-primary  text-uppercase" 
+                                onClick="window.location.href = '${pageContext.request.contextPath}/createproduct';">Create Product</button>
+                    </c:if>
+                </div>
                 <div class="layout track-container border-yellow" id="trackcontainer2">
                     <!-- Item slider-->
                     <div id='image-track2' class="image-track" data-mouse-down-at='0' data-prev-percentage='0'>
                         <c:forEach items="${list}" var="item">
                             <!--{item.getPath()} sto src-->
                             <div class='product'>
-                                <a class="product-image" href='subject_details.php?subj=${item.getCode()}'>
-                                  <img src='${item.getImagePath()}' draggable='false' />
+                                <a class="product-image" href='${pageContext.request.contextPath}/productdetails?productCode=${item.getCode()}'>
+                                  <img src='${item.getFirstImagePath()}' draggable='false' />
                                 </a>
                                 <c:if test="${logineduser.getUserName()!='tomcruz'}">
                                     <p class="image-left">
