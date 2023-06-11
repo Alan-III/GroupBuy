@@ -1,0 +1,328 @@
+DELIMITER //
+
+
+#Δημιουργία procedure για την εγγραφή των αναζητήσεων του χρήστη στο προφίλ του
+DROP PROCEDURE IF EXISTS searchInsert //
+
+CREATE PROCEDURE searchInsert(
+    IN emailA VARCHAR(45),
+    IN ipA VARCHAR(45),
+    IN categoryIDA INT,
+    IN dateA DATE,
+    IN keywordA VARCHAR(45),
+    IN productCodeA VARCHAR(45),
+    IN offerIDA INT
+)
+BEGIN
+    ## Εισαγωγή δεδομένων στον πίνακα search
+    INSERT INTO search (email, ip, categoryID, date, keyword)
+    VALUES (emailA, ipA, categoryIDA, dateA, keywordA);
+    
+    ## Εισαγωγή δεδομένων στον πίνακα searchDetails
+    INSERT INTO search_details (productCode, offerID)
+    VALUES (productCodeA, offerIDA);
+    
+##ΚΑΤΑΣΚΕΥΗ ΤΗΣ ΒΑΣΗΣ ΤΟΥ RECOMMENDER SYSTEM
+
+  ## Έλεγχος αν υπάρχει καταχώρηση με το ίδιο email και categoryID στον πίνακα "recommendodds"
+    IF EXISTS (SELECT * FROM recommendodds WHERE email = emailA AND categoryID = categoryIDA) THEN
+        ## Ενημέρωση της υπάρχουσας καταχώρησης
+        UPDATE recommendodds
+        SET sum = sum + 1
+        WHERE email = emailA AND categoryID = categoryIDA;
+    ELSE
+		## Εισαγωγή νέας καταχώρησης
+        INSERT INTO recommendodds (email, insertDate, categoryID, sum)
+        VALUES (emailA, dateA, categoryIDA, 1);
+    END IF;
+
+    ## Έλεγχος αν υπάρχει καταχώρηση με το ίδιο email και categoryID στον πίνακα "recommend"
+    IF EXISTS (SELECT * FROM recommend WHERE email = emailA AND categoryID = categoryIDA) THEN
+        ## Ενημέρωση της υπάρχουσας καταχώρησης
+        UPDATE recommend
+        SET sum = sum + 1
+        WHERE email = emailA AND categoryID = categoryIDA;
+    ELSE
+        ## Εισαγωγή νέας καταχώρησης
+        INSERT INTO recommend (email, categoryID, sum)
+        VALUES (emailA, categoryIDA, 1);
+    END IF;
+    
+END //
+
+DELIMITER ;
+
+
+#Δημιουργία view  για τις κατηγορίες που ο χρήστης διαχρονικά χρησιμοποιεί
+DROP VIEW IF EXISTS recommendView;
+CREATE VIEW recommendView AS
+SELECT r.*, c.genCategory, c.category, c.subcategory
+FROM recommend r
+INNER JOIN categories c ON r.categoryID = c.categoryID;
+
+#Δημιουργία view  για τις κατηγορίες που ο χρήστης τις τελευταίες 3 μέρες χρησιμοποιεί
+DROP VIEW IF EXISTS recommendOddsView;
+CREATE VIEW recommendOddsView AS
+SELECT r.*, c.genCategory, c.category, c.subcategory
+FROM recommendodds r
+INNER JOIN categories c ON r.categoryID = c.categoryID;
+
+
+##Δημιουργία μίας procedure που φέρνει στο προσκήνιο το ποσοστό των προτιμήσεων του χρήστη ανά κατηγορία και επίπεδο
+##HOME=LAYER 0
+##ΜΕΣΑ ΣΕ ΜΊΑ ΓΕΝΙΚΗ ΚΑΤΗΓΟΡΊΑ = LAYER1
+##ΜΕΣΑ ΣΕ ΜΙΑ ΚΑΤΗΓΟΡΙΑ LAYER2
+##ΜΕΣΑ ΣΕ ΜΙΑ ΥΠΟΚΑΤΗΓΟΡΙΑ LAYER3
+
+DELIMITER //
+
+DROP PROCEDURE IF EXISTS productRecommend //
+
+CREATE PROCEDURE productRecommend(
+    IN layer INT,
+    IN categoryIDA INT,
+    in proIDA INT
+)
+BEGIN
+    DECLARE maxSum INT;
+    DECLARE genCategory VARCHAR(45);
+    DECLARE Category INT;
+    
+	##ΓΕΝ.ΚΑΤΗΓΟΡΙΑ ΜΕ ΤΟ ΜΕΓΑΛΥΤΕΡΟ ΑΘΡΟΙΣΜΑ sum ΑΠΟ ΤΟ recommendView
+IF layer = 0 THEN
+	## Υπολογισμός totalSum
+    SELECT SUM(totalSum) INTO maxSum
+    FROM (
+        SELECT SUM(sum) AS totalSum
+        FROM recommendView
+        GROUP BY genCategory
+    ) AS subquery;
+
+    ## Υπολογισμός του ποσοστού 
+    SELECT genCategory,category=null,subCategory=null, SUM(sum) / maxSum AS percentage
+    INTO genCategory, maxSum
+    FROM recommendView
+    GROUP BY genCategory
+    ORDER BY percentage DESC;
+    
+    ##ΕΠΑΝΑΛΗΨΗ ΔΙΑΔΙΚΑΣΙΑΣ ΚΑΙ ΓΙΑ ΤΙΣ ΑΛΛΕΣ ΠΕΡΙΠΤΩΣΕΙΣ
+ELSEIF layer = 1 THEN
+
+    SELECT SUM(totalSum) INTO maxSum
+    FROM (
+        SELECT SUM(sum) AS totalSum
+        FROM recommendView
+        WHERE genCategory = (SELECT genCategory FROM categories WHERE categoryID = categoryIDA)
+        GROUP BY Category
+    ) AS subquery;
+
+    SELECT genCategory, category, subcategory=null, SUM(sum) / maxSum AS percentage
+    INTO genCategory, Category, maxSum
+    FROM recommendView
+    WHERE genCategory = (SELECT genCategory FROM categories WHERE categoryID = categoryIDA)
+    GROUP BY category
+    ORDER BY percentage DESC;
+ELSEIF layer = 2 THEN
+    -- Υπολογισμός του συνολικού άθροισμα όλων των totalSum για το συγκεκριμένο genCategory και category
+    SELECT SUM(totalSum) INTO maxSum
+    FROM (
+        SELECT SUM(sum) AS totalSum
+        FROM recommendView
+        WHERE genCategory = (SELECT genCategory FROM categories WHERE categoryID = categoryIDA)
+        AND category = (SELECT category FROM categories WHERE categoryID = categoryIDA)
+        GROUP BY subCategory
+    ) AS subquery;
+
+    -- Υπολογισμός του ποσοστού για κάθε γραμμή
+    SELECT genCategory, category, subCategory, SUM(sum) / maxSum AS percentage
+    INTO genCategory, Category, maxSum
+    FROM recommendView
+    WHERE genCategory = (SELECT genCategory FROM categories WHERE categoryID = categoryIDA)
+    AND category = (SELECT category FROM categories WHERE categoryID = categoryIDA)
+    GROUP BY subCategory
+    ORDER BY percentage DESC;
+
+    END IF;
+    
+END //
+
+DELIMITER ;
+
+
+##ΑΝΤΙΣΤΟΙΧΑ ΔΗΜΙΟΥΡΓΟΥΜΕ TA ΙΔΙΑ ΣΤΟΙΧΕΙΑ ΓΙΑ ΤΙΣ ΤΕΛΕΥΤΑΙΕΣ ΗΜΕΡΕΣ 
+DELIMITER //
+
+DROP PROCEDURE IF EXISTS productRecommendOdd //
+
+CREATE PROCEDURE productRecommendOdd(
+    IN layer INT,
+    IN categoryIDA INT,
+    IN proIDA INT
+)
+BEGIN
+    DECLARE maxSum INT;
+    DECLARE genCategory VARCHAR(45);
+    DECLARE Category INT;
+
+    IF layer = 0 THEN
+        SELECT SUM(totalSum) INTO maxSum
+        FROM (
+            SELECT SUM(sum) AS totalSum
+            FROM recommendOddsView
+            GROUP BY genCategory
+        ) AS subquery;
+
+        SELECT genCategory, SUM(sum) / maxSum AS percentage
+        INTO genCategory, maxSum
+        FROM recommendOddsView
+        GROUP BY genCategory
+        ORDER BY percentage DESC
+        LIMIT 5;
+    ELSEIF layer = 1 THEN
+
+        SELECT SUM(totalSum) INTO maxSum
+        FROM (
+            SELECT SUM(sum) AS totalSum
+            FROM recommendOddsView
+            WHERE genCategory = (SELECT genCategory FROM categories WHERE categoryID = categoryIDA)
+            GROUP BY category
+        ) AS subquery;
+
+        SELECT genCategory, category, SUM(sum) / maxSum AS percentage
+        INTO genCategory, Category, maxSum
+        FROM recommendOddsView
+        WHERE genCategory = (SELECT genCategory FROM categories WHERE categoryID = categoryIDA)
+        GROUP BY category
+        ORDER BY percentage DESC
+        LIMIT 5; ##ΒΑΖΟΥΜΕ ΟΡΙΟ 5 ΒΑΣΙΚΩΝ ΚΑΤΗΓΟΡΙΩΝ
+    ELSEIF layer = 2 THEN
+
+        SELECT SUM(totalSum) INTO maxSum
+        FROM (
+            SELECT SUM(sum) AS totalSum
+            FROM recommendOddsView
+            WHERE genCategory = (SELECT genCategory FROM categories WHERE categoryID = categoryIDA)
+            AND category = (SELECT category FROM categories WHERE categoryID = categoryIDA)
+            GROUP BY subCategory
+        ) AS subquery;
+
+        SELECT genCategory, category, subCategory, SUM(sum) / maxSum AS percentage
+        INTO genCategory, Category, maxSum
+        FROM recommendOddsView
+        WHERE genCategory = (SELECT genCategory FROM categories WHERE categoryID = categoryIDA)
+        AND category = (SELECT category FROM categories WHERE categoryID = categoryIDA)
+        GROUP BY subCategory
+        ORDER BY percentage DESC
+        LIMIT 5;
+    
+    END IF;
+END //
+
+DELIMITER ;
+
+
+DELIMITER //
+
+DROP PROCEDURE IF EXISTS categoryResult //
+
+CREATE PROCEDURE categoryResult(
+    IN categoryIDA INT,
+    IN proIDA INT,
+    in layer int
+)
+BEGIN
+## ΔΗΜΙΟΥΡΓΙΑ ΠΡΟΣΟΡΙΝΩΝ ΠΙΝΑΚΩΝ ΓΙΑ ΤΑ ΔΙΑΧΡΟΝΙΑΚΑ ΚΑΙ ΤΑ ΠΡΟΣΩΡΙΝΑ ΣΤΟΙΧΕΙΑ ΤΟΥ ΧΡΗΣΤΗ
+    CREATE TEMPORARY TABLE tempRecommendView (
+        genCategory VARCHAR(45),
+        Category VARCHAR(45),
+        subCategory VARCHAR(45),
+        percentage DECIMAL(10, 2)
+    );
+
+    CREATE TEMPORARY TABLE tempRecommendOddsView (
+       genCategory VARCHAR(45),
+        Category VARCHAR(45),
+        subCategory VARCHAR(45),
+        percentage DECIMAL(10, 2)
+    );
+
+    CALL productRecommend(layer, categoryIDA, proIDA);
+    CALL productRecomendOdd(layer, categoryIDA, proIDA);
+
+    INSERT INTO tempRecommendView
+    SELECT genCategory, Category, subCategory, percentage
+    FROM recommendView;
+
+    INSERT INTO tempRecommendOddsView
+    SELECT genCategory, Category, subCategory, percentage
+    FROM recommendOddsView;
+
+	##καραταω ΚΑΙ ΕΙΣΑΓΩ ΣΤΟ ΠΙΝΑΚΑ temprecommendView ώστε να βρω τα αποτελεσματα της πραξης των ποσοστων
+    UPDATE tempRecommendView
+    INNER JOIN tempRecommendOddsView ON
+        tempRecommendView.genCategory = tempRecommendOddsView.genCategory AND
+        tempRecommendView.Category = tempRecommendOddsView.Category AND
+        tempRecommendView.subCategory = tempRecommendOddsView.subCategory
+    SET tempRecommendView.percentage = tempRecommendView.percentage * tempRecommendOddsView.percentage;
+    
+    SELECT categoryID from categories where tempRecommendView.genCategory=genCategory and tempRecommendView.category=category and tempRecommendView.subCategory=subCategory
+    limit 5;
+    
+    DROP TABLE tempRecommendView;
+    DROP TABLE tempRecommendOddsView;
+END //
+DELIMITER ;
+
+
+##ΔΗΜΙΟΥΡΓΩ ΤΑ ΤΕΛΙΚΑ ΑΠΟΤΕΛΕΣΜΑΤΑ ΠΡΟΣΦΟΡΩΝ ΜΕ ΜΙΑ FUNCTION ΤΗΝ ΟΠΟΙΑ ΘΑ ΚΑΛΩ ΓΙΑ ΝΑ ΜΟΥ ΦΑΙΡΝΕΙ ΤΙΣ ΠΡΟΤΕΙΝΟΜΕΝΕΣ ΠΡΟΣΦΟΡΕΣ
+DELIMITER //
+DROP FUNCTION IF EXISTS offerResult //
+
+CREATE FUNCTION offerResult(
+    categoryIDA INT,
+    proIDA INT,
+    layer INT
+)
+RETURNS VARCHAR(45)
+BEGIN
+    DECLARE result VARCHAR(45);
+
+## ΣΥΣΧΕΤΙΖΩ ΤΙΣ ΚΑΤΗΓΟΡΙΕΣ ΠΟΥ ΒΛΕΠΕΙ Ο ΧΡΗΣΤΗΣ ΜΕ ΤΑ ΗΟΤ ΠΡΟΙΟΝΤΑ ΤΗΣ ΕΒΔΟΜΑΔΑΣ
+
+    IF layer <> 3 THEN
+        SELECT o.offerID INTO result
+        FROM offers o
+        INNER JOIN offerdetails od ON o.offerID = od.offerID
+        INNER JOIN offerphoto op ON o.offerID = op.offerID
+        INNER JOIN businessproducts bp ON od.proID = bp.proID
+        INNER JOIN categories c ON bp.productCode = c.productCode
+        WHERE o.offerID IN (
+            SELECT offerID
+            FROM dailyresults
+        )
+        AND c.productCode IN (select categoryResult(categoryIDA, proIDA, layer))
+        GROUP BY o.offerID
+        HAVING SUM(count)
+        ORDER BY SUM(count) ASC
+        limit 10
+        ;
+        
+    ## ΣΥΣΧΕΤΙΖΩ ΤΑ ΠΡΟΙΟΝΤΑ ΜΕ ΑΛΛΑ ΗΟΤ ΠΡΟΙΟΝΤΑ ΤΟΥ ΚΑΤΑΣΤΗΜΑΤΟΣ ΙΔΙΑΣ ΚΑΤΗΓΟΡΙΑΣ     
+    ELSEIF layer = 3 THEN
+        SELECT o.offerID INTO result
+        FROM offers o
+        INNER JOIN offerdetails od ON o.offerID = od.offerID
+        INNER JOIN offerphoto op ON o.offerID = op.offerID
+        WHERE o.offerID IN (
+            SELECT offerID
+            FROM dailyresults
+            GROUP BY offerID
+            HAVING SUM(count)
+            ORDER BY SUM(count) ASC
+        ) limit 10;
+    END IF;
+
+    RETURN result;
+END //
+
+DELIMITER ;
