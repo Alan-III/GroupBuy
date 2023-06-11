@@ -72,8 +72,9 @@ public class CreateOfferServlet extends HttpServlet {
         req.setAttribute("errorString", "Servlet not implemented yet");
         if(true){
             RequestDispatcher dispatcher = this.getServletContext()
-                    .getRequestDispatcher("/WEB-INF/views/productListView.jsp");
+                .getRequestDispatcher("/WEB-INF/views/createOfferView.jsp");
             dispatcher.forward(req, resp);
+            return;
         }
             
             
