@@ -6,6 +6,7 @@
 package com.sphy141.probase.servlets;
 
 import com.sphy141.probase.beans.BusinessAccount;
+import com.sphy141.probase.beans.Category;
 import com.sphy141.probase.beans.Product;
 import com.sphy141.probase.utils.DBUtils;
 import com.sphy141.probase.utils.MyUtils;
@@ -30,14 +31,15 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.Part;
 
-/** 3.3.8 3.3.1
+/**
+ * 3.3.8 3.3.1
  *
  * @author Alan
  */
 @WebServlet(urlPatterns = {"/createproduct"})
 @MultipartConfig(
-    fileSizeThreshold= 1024 *1024 * 1,
-    maxRequestSize= 1024 *1024 * 100
+        fileSizeThreshold = 1024 * 1024 * 1,
+        maxRequestSize = 1024 * 1024 * 100
 )
 public class CreateProductServlet extends HttpServlet {
 
@@ -49,10 +51,32 @@ public class CreateProductServlet extends HttpServlet {
         if (business == null) {
             resp.sendRedirect(req.getContextPath() + "/home");  // REDIRECT TO ACCESS DENIED PAGE
             return;
-        }
-        else
+        } else {
             req.setAttribute("loginedbusiness", business);
-        
+        }
+
+        Connection conn = MyUtils.getStoredConnection(req);
+        List<Category> listall = null;
+        List<Category> genlist = new ArrayList<>();
+        List<Category> midlist = new ArrayList<>();
+        List<Category> sublist = new ArrayList<>();
+        try {
+            listall = DBUtils.queryCategories(conn);
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        for (Category category : listall) {
+            if (category.getSubCategory() != null) {
+                sublist.add(category);
+            } else if (category.getMidCategory() != null) {
+                midlist.add(category);
+            } else {
+                genlist.add(category);
+            }
+        }
+        req.setAttribute("genCategory", genlist);
+        req.setAttribute("category", midlist);
+        req.setAttribute("subCategory", sublist);
         RequestDispatcher dispatcher = this.getServletContext()
                 .getRequestDispatcher("/WEB-INF/views/createProductView.jsp");
         dispatcher.forward(req, resp);
@@ -66,26 +90,33 @@ public class CreateProductServlet extends HttpServlet {
         if (business == null) {
             resp.sendRedirect(req.getContextPath() + "/home");  // REDIRECT TO ACCESS DENIED PAGE
             return;
-        }
-        else
+        } else {
             req.setAttribute("loginedbusiness", business);
-        
+        }
+
         String name = req.getParameter("pname");
         String barcode = req.getParameter("pbarcode");
         String strPrice = req.getParameter("pprice");
         String details = req.getParameter("pdetails");
-        String strCategory = req.getParameter("pcat");
+        String generalCategory = req.getParameter("generalCategory");
+        String midCategory = req.getParameter("category");
+        String subcategory = req.getParameter("subcategory");
         ServletContext context = getServletContext();
         String realPath = context.getRealPath("/assets/databaseImages/products/");
-        String uploadDirectory = realPath+barcode+"\\";  // Specify the directory where you want to save the files
-        Path directoryPath = Paths.get(uploadDirectory);
+        //TARGET DIRECTORY (DELETED WITH EACH BUILD)
+//        String uploadDirectory = realPath+barcode+"\\";  // Specify the directory where you want to save the files
+        //SRC DIRECTORY (UPDATES TARGET)
+        String srcDirectory = "C:\\Users\\Alan\\Documents\\Repos\\GroupBuy\\groupBuyNetbeans\\src\\main\\webapp\\assets\\databaseImages\\products\\" + barcode + "\\";  // Specify the directory where you want to save the files
+//        Path directoryPath = Paths.get(uploadDirectory);
+        Path directorysrcPath = Paths.get(srcDirectory);
         try {
             // Create the directory if it doesn't exist
-            Files.createDirectories(directoryPath);
-            System.out.println("Directory created: " + directoryPath);
+//            Files.createDirectories(directoryPath);
+            Files.createDirectories(directorysrcPath);
+            System.out.println("Directory created: " + directorysrcPath);
         } catch (IOException e) {
             // Handle the exception if directory creation fails
-            System.out.println("Error creating directory: " + directoryPath);
+            System.out.println("Error creating directory: " + directorysrcPath);
             e.printStackTrace();
         }
         Collection<Part> imageParts = req.getParts();
@@ -94,30 +125,31 @@ public class CreateProductServlet extends HttpServlet {
         // Process the uploaded image files
         for (Part imageFile : imageFiles) {
             // Perform your desired operations with the image file
-            
+
             String fileName = imageFile.getSubmittedFileName();
-            if(fileName==null)
+            if (fileName == null) {
                 continue;
-            Path filePath = Paths.get(uploadDirectory, fileName);
+            }
+//            Path filePath = Paths.get(uploadDirectory, fileName);
+            Path filesrcPath = Paths.get(srcDirectory, fileName);
             try {
                 // Save the file to the specified directory
-                Files.copy(imageFile.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+//                Files.copy(imageFile.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+                Files.copy(imageFile.getInputStream(), filesrcPath, StandardCopyOption.REPLACE_EXISTING);
 //                imageFile.write(filePath.toString());
-                imagePaths.add("assets/databaseImages/products/"+barcode+"/"+fileName);
-                System.out.println("File saved: " + filePath);
+                imagePaths.add("assets/databaseImages/products/" + barcode + "/" + fileName);
+                System.out.println("File saved: " + filesrcPath);
             } catch (IOException e) {
                 // Handle the exception if file saving fails
-                System.out.println("Error saving file: " + filePath);
+                System.out.println("Error saving file: " + filesrcPath);
                 e.printStackTrace();
             }
         }
 
         float price = 0;
-        int category = 0;
         String errorString = null;
         try {
             price = Float.parseFloat(strPrice);
-            category = Integer.parseInt(strCategory);
         } catch (Exception ex) {
             ex.printStackTrace();
             errorString = "The price is not a number";
@@ -138,27 +170,40 @@ public class CreateProductServlet extends HttpServlet {
         if (imagePaths == null) {
             errorString = "Product must have at least 1 image";
         }//
-        
+        if (generalCategory == null) {
+            errorString = "Product must belong to a category";
+        }//
+
         Product product = new Product();
         if (errorString == null) {
-            
-            
+
             Connection conn = MyUtils.getStoredConnection(req);
             try {
                 product = DBUtils.findProduct(conn, barcode);
-                if(product!=null){
+                if (product != null) {
                     errorString = "Product BarCode exists";
-                }else{
-                    product = new Product();
-                    product.setCode(barcode);
-                    product.setName(name);
-                    product.setPrice(price);
-                    product.setDetails(details);
-                    product.setImagePaths(imagePaths);
-                    product.setCategoryID(category);
-                    
-                    DBUtils.insertProduct(conn, product);
-                    resp.sendRedirect(req.getContextPath() + "/productlist");
+                } else {
+                    Category category = new Category();
+                    category.setGenCategory(generalCategory);
+                    category.setMidCategory(midCategory);
+                    category.setSubCategory(subcategory);
+
+                    category = DBUtils.findCategory(conn, category);
+                    if (category == null) {
+                        errorString = "Category doesn't exist";
+                    } else {
+
+                        product = new Product();
+                        product.setCode(barcode);
+                        product.setName(name);
+                        product.setPrice(price);
+                        product.setDetails(details);
+                        product.setImagePaths(imagePaths);
+                        product.setCategoryID(category.getCategoryID());
+
+                        DBUtils.insertProduct(conn, product);
+                        resp.sendRedirect(req.getContextPath() + "/productlist");
+                    }
                 }
             } catch (SQLException ex) {
                 ex.printStackTrace();
@@ -166,8 +211,8 @@ public class CreateProductServlet extends HttpServlet {
             }
         }//if
         if (errorString != null) {
+
             req.setAttribute("errorString", errorString);
-            req.setAttribute("product", product);
             RequestDispatcher dispatcher = this.getServletContext()
                     .getRequestDispatcher("/WEB-INF/views/createProductView.jsp");
             dispatcher.forward(req, resp);

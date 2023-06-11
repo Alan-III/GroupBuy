@@ -291,14 +291,57 @@ public class DBUtils {
             cat.setCategoryID(rs.getInt("CategoryID"));
             if(rs.getString("subCategory")!=null){
                 cat.setCategoryName(rs.getString("subCategory"));
+                cat.setSubCategory(rs.getString("subCategory"));
+                cat.setMidCategory(rs.getString("category"));
+                cat.setGenCategory(rs.getString("genCategory"));
             }else if(rs.getString("category")!=null){
                 cat.setCategoryName(rs.getString("category"));
+                cat.setMidCategory(rs.getString("category"));
+                cat.setGenCategory(rs.getString("genCategory"));
             }else{
                 cat.setCategoryName(rs.getString("genCategory"));
+                cat.setGenCategory(rs.getString("genCategory"));
             }
             cat.setCategoryImagePath(rs.getString("path"));
             list.add(cat);
         }//while
         return list;
     }//queryCategories
+
+    public static Category findCategory(Connection conn, Category category) throws SQLException {
+        String sql;
+        if(category.getMidCategory()==null){
+            sql = "SELECT * FROM categories WHERE genCategory = ? AND category IS NULL AND subCategory IS NULL";
+        } else if(category.getSubCategory()==null){
+            sql = "SELECT * FROM categories WHERE genCategory = ? AND category = ? AND subCategory IS NULL";
+        }else{
+            sql = "SELECT * FROM categories WHERE genCategory = ? AND category = ? AND subCategory = ?";
+        }
+        PreparedStatement pst = conn.prepareStatement(sql);
+        if(category.getMidCategory()==null){
+            pst.setString(1, category.getGenCategory());
+        } else if(category.getSubCategory()==null){
+            sql = "SELECT * FROM categories WHERE genCategory = ? AND category = ? AND subCategory IS NULL";
+            pst.setString(1, category.getGenCategory());
+            pst.setString(2, category.getMidCategory());
+        }else{
+            sql = "SELECT * FROM categories WHERE genCategory = ? AND category = ? AND subCategory = ?";
+            pst.setString(1, category.getGenCategory());
+            pst.setString(2, category.getMidCategory());
+            pst.setString(3, category.getSubCategory());
+        }
+        ResultSet rs = pst.executeQuery();
+        while (rs.next()) {
+            if(category.getSubCategory()!=null)
+                category.setCategoryName(category.getSubCategory());
+            else if(category.getMidCategory()!=null)
+                category.setCategoryName(category.getMidCategory());
+            else
+                category.setCategoryName(category.getGenCategory());
+            category.setCategoryID(rs.getInt("categoryID"));
+            category.setCategoryImagePath(rs.getString("path"));
+            return category;
+        }//while
+        return null;
+    }
 }

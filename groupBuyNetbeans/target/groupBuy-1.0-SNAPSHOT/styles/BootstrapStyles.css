@@ -11397,6 +11397,8 @@ section#contact form#contactForm :-ms-input-placeholder {
 }
 .input-field input:valid ~ label,
 .input-field input:focus ~ label,
+.input-field select:valid ~ label,
+.input-field select:focus ~ label,
 .input-field textarea:valid ~ label,
 .input-field textarea:focus ~ label{
     transform: translateX(10px) translateY(-7px);

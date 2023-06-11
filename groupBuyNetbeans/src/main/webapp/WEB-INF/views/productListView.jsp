@@ -106,7 +106,7 @@
                     <h4>Offers</h4>
                     <c:if test="${loginedbusiness!=null}">
                         <button class="add-product-btn btn btn-primary  text-uppercase" 
-                                onClick="window.location.href = 'http://localhost:8080/groupbuy/createoffer';">Create Offer</button>
+                                onClick="window.location.href = '${pageContext.request.contextPath}/createoffer';">Create Offer</button>
                     </c:if>
                 </div>
                 <div class="layout track-container border-red" id="trackcontainer">
@@ -145,7 +145,7 @@
                     <h4>Products</h4>
                     <c:if test="${loginedbusiness!=null}">
                         <button class="add-product-btn btn btn-primary  text-uppercase" 
-                                onClick="window.location.href = 'http://localhost:8080/groupbuy/createproduct';">Create Product</button>
+                                onClick="window.location.href = '${pageContext.request.contextPath}/createproduct';">Create Product</button>
                     </c:if>
                 </div>
                 <div class="layout track-container border-yellow" id="trackcontainer2">
@@ -154,7 +154,7 @@
                         <c:forEach items="${list}" var="item">
                             <!--{item.getPath()} sto src-->
                             <div class='product'>
-                                <a class="product-image" href='subject_details.php?subj=${item.getCode()}'>
+                                <a class="product-image" href='${pageContext.request.contextPath}/productdetails?productCode=${item.getCode()}'>
                                   <img src='${item.getFirstImagePath()}' draggable='false' />
                                 </a>
                                 <c:if test="${logineduser.getUserName()!='tomcruz'}">
