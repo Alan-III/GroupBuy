@@ -77,8 +77,8 @@ public class HomeServlet extends HttpServlet {
         boolean hasError = false;
         UserAccount user = null;
         
-        if(name == null || phone == null || email == null || msg == null || name.length()==0 
-                || phone.length()==0 || email.length()==0 || email.length()==0 || msg.length()==0){
+        if(name == null || email == null || msg == null || name.length()==0 
+                || email.length()==0 || email.length()==0 || msg.length()==0){
             hasError=true;
             errorString = "Please fill in the form";
         }
@@ -103,8 +103,12 @@ public class HomeServlet extends HttpServlet {
         else{
 
                 System.out.println("Mail Sent from: "+email);
+            try {
                 MailUtils.sendMail(name,email,phone,msg);
                 req.setAttribute("errorString", "Thank you for contacting us!");
+            } catch (MessagingException ex) {
+                req.setAttribute("errorString", "Something went wrong");
+            }
 
             RequestDispatcher dispatcher=this.getServletContext().getRequestDispatcher("/WEB-INF/views/homeView.jsp");
         dispatcher.forward(req, resp);
