@@ -24,34 +24,35 @@
         <link href="styles/BootstrapStyles.css" rel="stylesheet" />
     </head>
     <body>
-        <!-- Navigation-->
-        <jsp:include page="_menu.jsp"></jsp:include>
-            <!-- Masthead-->
-            <header class="masthead">
-                <div class="container">
-                    <div class="masthead-subheading">Welcome To Our App!</div>
-                    <div class="masthead-heading text-uppercase">Buy together! Save forever!</div>
+    <!-- Navigation-->
+    <jsp:include page="_menu.jsp"></jsp:include>
+        <!-- Masthead-->
+        <header class="masthead">
+            <div class="container">
+                <div class="masthead-subheading">Welcome To Our App!</div>
+                <div class="masthead-heading text-uppercase">Buy together! Save forever!</div>
                     <div style="display:flex">
                         <div class="search_bar">
                             <img src="https://cdn.pixabay.com/photo/2013/07/12/15/55/clues-150586_960_720.png" alt="glass" height="35rem" width="35rem" />
-
-                            <input class="typewriter" type="text" placeholder="Type here to search..."/>
-
-                            <button onClick="window.location.href = '${pageContext.request.contextPath}/productlist';">Search</button>
+                            <input class="typewriter" id="search-box" type="text" placeholder="Type here to search..."/>
+                            <button onClick="searchProducts()">Search</button>
                         </div>
                     </div> 
-                    <a class="btn btn-primary btn-xl text-uppercase" href="#categories">Browse Categories</a>
+                <div class="search-recommends">
                 </div>
-            </header>
-            <!-- Categories-->
-            <section class="page-section" id="categories">
-                <div class="container">
-                    <div class="text-center">
-                        <h2 class="section-heading text-uppercase">Categories</h2>
-                        <h3 class="section-subheading text-muted">Lorem ipsum dolor sit amet consectetur.</h3>
-                    </div>
-                    <div class="row text-center">
-                    <c:forEach items="${list}" var="item">
+                <br>
+                <a class="btn btn-primary btn-xl text-uppercase" href="#categories">Browse Categories</a>
+            </div>
+        </header>
+        <!-- Categories-->
+        <section class="page-section" id="categories">
+            <div class="container">
+                <div class="text-center">
+                    <h2 class="section-heading text-uppercase">Categories</h2>
+                    <h3 class="section-subheading text-muted">Lorem ipsum dolor sit amet consectetur.</h3>
+                </div>
+                <div class="row text-center">
+                    <c:forEach items="${categorylist}" var="item">
 
                         <div class="col-md-4">
                             <a href="${pageContext.request.contextPath}/productlist?catid=${item.getCategoryID()}">
@@ -250,6 +251,53 @@
                 </form>
             </div>
         </section>
+        <script>
+            //LOAD NEXT PAGE WITH SEARCH
+            function searchProducts() {
+                var searchValue = document.getElementById("search-box").value;
+                if(searchValue.length)
+                    var url = "${pageContext.request.contextPath}/productlist?search=" + encodeURIComponent(searchValue);
+                else
+                    var url = "${pageContext.request.contextPath}/productlist";
+                    
+                window.location.href = url;
+            }
+    
+            //LOAD KEYWORDS TO SEARCH
+            let availableKeywords = [<c:forEach var="keyword" items="${keywordsList}">"${keyword}",</c:forEach>];
+
+            const recommendsBox = document.querySelector(".search-recommends");
+            const searchBox = document.getElementById("search-box");
+            
+            searchBox.onkeyup = function(){
+                let result = [];
+                let input = searchBox.value;
+                if(input.length){
+                    result = availableKeywords.filter((keyword)=>{
+                        return keyword.toLowerCase().includes(input.toLowerCase());
+                    });
+                }
+                display(result);
+                if(!result.length){
+                    recommendsBox.innerHTML = '';
+                }
+            }
+            
+            function display(result){
+                const maxItems = 10;
+                const limitedResult = result.slice(0, maxItems);
+                const content = limitedResult.map((list)=>{
+                    return "<li onclick=selectInput(this)>" + list + "</li>";
+                });
+                
+                recommendsBox.innerHTML ="<ul>" + content.join('') + "</li>";
+            }
+            
+            function selectInput(list){
+                searchBox.value = list.innerHTML;
+                recommendsBox.innerHTML = '';
+            }
+        </script>
         <!-- Footer-->
         <jsp:include page="_footer.jsp"></jsp:include>
         <!-- Bootstrap core JS-->
