@@ -36,147 +36,155 @@
                     <div class="menu">
                         <div id="side-menu">
                             <ul>
-                                <%--<c:forEach items="${list}" var="item">--%>
-                                <li><i class="fas fa-qrcode"></i>
-                                    <a href="#">RAM</a>
-                                </li>
-                                <li>
-                                    <i class="fas fa-link"></i>
-                                    <a href="#">CPU</a>
-                                </li>
-                                <li>
-                                    <i class="fas fa-link"></i>
-                                    <a href="#">filter</a>
-                                </li>
-                                <li>
-                                    <i class="fas fa-link"></i>
-                                    <a href="#">MAKE filter</a>
-                                </li>
-                                <li>
-                                    <i class="fas fa-link"></i>
-                                    <a href="#">MAKE filter</a>
-                                </li>
-                                <li>
-                                    <i class="fas fa-link"></i>
-                                    <a href="#">MAKE filter</a>
-                                </li>
-                                <li>
-                                    <i class="fas fa-link"></i>
-                                    <a href="#">MAKE filter</a>
-                                </li>
-                                <li>
-                                    <i class="fas fa-link"></i>
-                                    <a href="#">MAKE filter</a>
-                                </li>
-                                <li>
-                                    <i class="fas fa-link"></i>
-                                    <a href="#">MAKE filter</a>
-                                </li>
-                                <li>
-                                    <i class="fas fa-link"></i>
-                                    <a href="#">MAKE filter</a>
-                                </li>
-                                <li>
-                                    <i class="fas fa-link"></i>
-                                    <a href="#">MAKE filter</a>
-                                </li>
-                                <li>
-                                    <i class="fas fa-link"></i>
-                                    <a href="#">MAKE filter</a>
-                                </li>
-                                <li>
-                                    <i class="fas fa-link"></i>
-                                    <a href="#">MAKE filter</a>
-                                </li>
-                                <%--</c:forEach>--%>
-                            </ul>
-                        </div>
+                            <%--<c:forEach items="${list}" var="item">--%>
+                            <li><i class="fas fa-qrcode"></i>
+                                <a href="#">RAM</a>
+                            </li>
+                            <li>
+                                <i class="fas fa-link"></i>
+                                <a href="#">CPU</a>
+                            </li>
+                            <li>
+                                <i class="fas fa-link"></i>
+                                <a href="#">filter</a>
+                            </li>
+                            <li>
+                                <i class="fas fa-link"></i>
+                                <a href="#">MAKE filter</a>
+                            </li>
+                            <li>
+                                <i class="fas fa-link"></i>
+                                <a href="#">MAKE filter</a>
+                            </li>
+                            <li>
+                                <i class="fas fa-link"></i>
+                                <a href="#">MAKE filter</a>
+                            </li>
+                            <li>
+                                <i class="fas fa-link"></i>
+                                <a href="#">MAKE filter</a>
+                            </li>
+                            <li>
+                                <i class="fas fa-link"></i>
+                                <a href="#">MAKE filter</a>
+                            </li>
+                            <li>
+                                <i class="fas fa-link"></i>
+                                <a href="#">MAKE filter</a>
+                            </li>
+                            <li>
+                                <i class="fas fa-link"></i>
+                                <a href="#">MAKE filter</a>
+                            </li>
+                            <li>
+                                <i class="fas fa-link"></i>
+                                <a href="#">MAKE filter</a>
+                            </li>
+                            <li>
+                                <i class="fas fa-link"></i>
+                                <a href="#">MAKE filter</a>
+                            </li>
+                            <li>
+                                <i class="fas fa-link"></i>
+                                <a href="#">MAKE filter</a>
+                            </li>
+                            <%--</c:forEach>--%>
+                        </ul>
                     </div>
                 </div>
-
-                <div class="layout">
-                        <div class="search_bar-small" style="width: inherit;">
-                            <img src="https://cdn.pixabay.com/photo/2013/07/12/15/55/clues-150586_960_720.png" alt="glass" height="35rem" width="35rem" />
-                            <input class="typewriter" type="text" placeholder="Type here to search..."/>
-                        </div>
-                </div>
-                
-                <br>
-                <div class="layout mb-2">
-                    <h4>Offers</h4>
-                    <c:if test="${loginedbusiness!=null}">
-                        <button class="add-product-btn btn btn-primary  text-uppercase" 
-                                onClick="window.location.href = '${pageContext.request.contextPath}/createoffer';">Create Offer</button>
-                    </c:if>
-                </div>
-                <div class="layout track-container border-red" id="trackcontainer">
-                    <!-- Item slider-->
-                    <div id='image-track' class="image-track" data-mouse-down-at='0' data-prev-percentage='0'>
-                        <%--<c:forEach items="${list}" var="item">--%>
-                            <!--LIST OF OFFERS WITH IMAGES ETC -->
-                            <div class='product'>
-                                <a class="product-image" href='subject_details.php?subj=${item.getCode()}'>
-                                  <img src='assets/img/smartphone.png' draggable='false' />
-                                </a>
-                                <c:if test="${logineduser.getUserName()!='tomcruz'}">
-                                    <p class="image-left">
-                                        <a class="fas fa-bars" href='urltoedit'></a>
-                                    </p>
-                                    <p class="image-right">
-                                        <a href='urltodelete'>
-                                            <img class="small-icon" src='assets/img/delete.png' draggable='false' />
-                                        </a>
-                                    </p>
-                                </c:if>
-                                <p class="image-left image-bottom">${item.getName()}</p>
-                                <p class="image-right image-bottom">${item.getPrice()}$</p>
-                            </div>                            
-                        <%--</c:forEach>--%>
-                            
-                    </div>
-                    
-                    <!-- Item slider end-->
-                </div>
-                <br>
-                <div class="layout mb-2">
-                    <h4>Products</h4>
-                    <c:if test="${loginedbusiness!=null}">
-                        <button class="add-product-btn btn btn-primary  text-uppercase" 
-                                onClick="window.location.href = '${pageContext.request.contextPath}/createproduct';">Create Product</button>
-                    </c:if>
-                </div>
-                <div class="layout track-container border-yellow" id="trackcontainer2">
-                    <!-- Item slider-->
-                    <div id='image-track2' class="image-track" data-mouse-down-at='0' data-prev-percentage='0'>
-                        <c:forEach items="${list}" var="item">
-                            <div class='product'>
-                                <a class="product-image" href='${pageContext.request.contextPath}/productdetails?productCode=${item.getCode()}'>
-                                  <img src='${item.getFirstImagePath()}' draggable='false' />
-                                </a>
-                                <c:if test="${logineduser.getUserName()!='tomcruz'}">
-                                    <p class="image-left">
-                                        <a class="fas fa-bars" href='urltoedit'></a>
-                                    </p>
-                                    <p class="image-right">
-                                        <a href='urltodelete'>
-                                            <img class="small-icon" src='assets/img/delete.png' draggable='false' />
-                                        </a>
-                                    </p>
-                                </c:if>
-                                <p class="image-left image-bottom">${item.getName()}</p>
-                                <p class="image-right image-bottom">${item.getPrice()}$</p>
-                            </div>                            
-                        </c:forEach>
-                            
-                    </div>
-                    
-                    <!-- Item slider end-->
-                </div>
-
             </div>
-            <script type='text/javascript' src='js/listTrack.js'></script>
-            <script type='text/javascript' src='js/filterScroll.js'></script>
-            <!-- Footer-->
+
+            <div class="layout">
+                <div class="search_bar-small" style="width: inherit;">
+                    <img src="https://cdn.pixabay.com/photo/2013/07/12/15/55/clues-150586_960_720.png" alt="glass" height="35rem" width="35rem" />
+                    <input class="typewriter" type="text" placeholder="Type here to search..."/>
+                </div>
+            </div>
+
+            <br>
+            <div class="layout mb-2">
+                <h4>Offers</h4>
+                <c:if test="${loginedbusiness!=null}">
+                    <button class="add-product-btn btn btn-primary  text-uppercase" 
+                            onClick="window.location.href = '${pageContext.request.contextPath}/createoffer';">Create Offer</button>
+                </c:if>
+            </div>
+            <div class="layout track-container border-red" id="trackcontainer">
+                <!-- Item slider-->
+                <div id='image-track' class="image-track" data-mouse-down-at='0' data-prev-percentage='0'>
+                    <%--<c:forEach items="${list}" var="item">--%>
+                    <!--LIST OF OFFERS WITH IMAGES ETC -->
+                    <div class='product'>
+                        <a class="product-image" href='subject_details.php?subj=${item.getCode()}'>
+                            <img src='assets/img/smartphone.png' draggable='false' />
+                        </a>
+                        <c:if test="${logineduser.getUserName()!='tomcruz'}">
+                            <p class="image-left">
+                                <a class="fas fa-bars" href='editproduct?proid=${item.getId()}'></a>
+                            </p>
+                            <p class="image-right">
+                                <a href="#" onclick="confirmRedirect(${item.getId()})">
+                                    <img class="small-icon" src='assets/img/delete.png' draggable='false' />
+                                </a>
+                            </p>
+                        </c:if>
+                        <p class="image-left image-bottom">${item.getName()}</p>
+                        <p class="image-right image-bottom">${item.getPrice()}$</p>
+                    </div>                            
+                    <%--</c:forEach>--%>
+
+                </div>
+
+                <!-- Item slider end-->
+            </div>
+            <br>
+            <div class="layout mb-2">
+                <h4>Products</h4>
+                <c:if test="${loginedbusiness!=null}">
+                    <button class="add-product-btn btn btn-primary  text-uppercase" 
+                            onClick="window.location.href = '${pageContext.request.contextPath}/createproduct';">Create Product</button>
+                </c:if>
+            </div>
+            <div class="layout track-container border-yellow" id="trackcontainer2">
+                <!-- Item slider-->
+                <div id='image-track2' class="image-track" data-mouse-down-at='0' data-prev-percentage='0'>
+                    <c:forEach items="${list}" var="item">
+                        <div class='product'>
+                            <a class="product-image" href='${pageContext.request.contextPath}/productdetails?productCode=${item.getCode()}'>
+                                <img src='${item.getFirstImagePath()}' draggable='false' />
+                            </a>
+                            <c:if test="${logineduser.getUserName()!='tomcruz'}">
+                                <p class="image-left">
+                                    <a class="fas fa-bars" href='editproduct?proid=${item.getId()}'></a>
+                                </p>
+                                <p class="image-right">
+                                    <a href="#" onclick="confirmRedirect(${item.getId()})">
+                                        <img class="small-icon" src='assets/img/delete.png' draggable='false' />
+                                    </a>
+                                </p>
+                            </c:if>
+                            <p class="image-left image-bottom">${item.getName()}</p>
+                            <p class="image-right image-bottom">${item.getPrice()}$</p>
+                        </div>                            
+                    </c:forEach>
+
+                </div>
+
+                <!-- Item slider end-->
+            </div>
+
+        </div>
+        <script>
+            function confirmRedirect(productId) {
+                var confirmed = confirm("Are you sure you want to delete this product?");
+                if (confirmed) {
+                    window.location.href = "deleteproduct?proid=" + productId;
+                }
+            }
+        </script>
+        <script type='text/javascript' src='js/listTrack.js'></script>
+        <script type='text/javascript' src='js/filterScroll.js'></script>
+        <!-- Footer-->
         <jsp:include page="_footer.jsp"></jsp:include>
         <!-- Bootstrap core JS-->
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
