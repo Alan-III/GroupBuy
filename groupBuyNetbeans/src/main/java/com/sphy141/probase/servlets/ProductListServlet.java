@@ -6,6 +6,7 @@
 package com.sphy141.probase.servlets;
 
 import com.sphy141.probase.beans.BusinessAccount;
+import com.sphy141.probase.beans.Category;
 import com.sphy141.probase.beans.Product;
 import com.sphy141.probase.beans.UserAccount;
 import com.sphy141.probase.utils.DBUtils;
@@ -13,8 +14,10 @@ import com.sphy141.probase.utils.MyUtils;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -49,18 +52,46 @@ public class ProductListServlet extends HttpServlet {
         String categoryIdParam = req.getParameter("catid");
         
         Connection conn = MyUtils.getStoredConnection(req);
-        List<Product> list = null;
+        List<Product> productList = null;
         String errorString = null;
         try {
-            list = DBUtils.queryProduct(conn);
+            productList = DBUtils.queryProduct(conn);
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
-        if(list==null){
+        if(productList==null){
             errorString = "There was a problem with products";
         }
+        //Check if the keywords exist
+        ServletContext context = req.getServletContext();
+        List<String> keywordsList = (List<String>) context.getAttribute("keywordsList");
+        if (keywordsList == null) {
+            // The keywordsList attribute is not set
+            // Process categories and products for keywords
+            keywordsList = new ArrayList<>();
+            for (Product product : productList) {
+                keywordsList.add(product.getName());
+            }
+            List<Category> categoriesList = null;
+            try {
+                categoriesList = DBUtils.queryCategories(conn);
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+            if(categoriesList==null){
+                errorString = "There was a problem with products";
+            }
+            for (Category category : categoriesList) {
+                keywordsList.add(category.getCategoryName());
+            }
+            // Set keywordsList attribute
+            context.setAttribute("keywordsList", keywordsList);
+        }
+        
+        
             req.setAttribute("errorString", errorString);
-            req.setAttribute("list", list);
+            req.setAttribute("productList", productList);
+            req.setAttribute("keywordsList", keywordsList);
 //            req.setAttribute("logineduser", user);
             RequestDispatcher dispatcher=this.getServletContext().getRequestDispatcher("/WEB-INF/views/productListView.jsp");
         dispatcher.forward(req, resp);

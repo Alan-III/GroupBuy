@@ -97,8 +97,10 @@
             <div class="layout">
                 <div class="search_bar-small" style="width: inherit;">
                     <img src="https://cdn.pixabay.com/photo/2013/07/12/15/55/clues-150586_960_720.png" alt="glass" height="35rem" width="35rem" />
-                    <input class="typewriter" type="text" placeholder="Type here to search..."/>
+                    <input class="typewriter" id="search-box" type="text" placeholder="Type here to search..."/>
                 </div>
+            </div>
+            <div class="search-recommends layout">
             </div>
 
             <br>
@@ -148,7 +150,7 @@
             <div class="layout track-container border-yellow" id="trackcontainer2">
                 <!-- Item slider-->
                 <div id='image-track2' class="image-track" data-mouse-down-at='0' data-prev-percentage='0'>
-                    <c:forEach items="${list}" var="item">
+                    <c:forEach items="${productList}" var="item">
                         <div class='product'>
                             <a class="product-image" href='${pageContext.request.contextPath}/productdetails?productCode=${item.getCode()}'>
                                 <img src='${item.getFirstImagePath()}' draggable='false' />
@@ -175,16 +177,50 @@
 
         </div>
         <script>
+            //DELETE CONFIRM
             function confirmRedirect(productId) {
                 var confirmed = confirm("Are you sure you want to delete this product?");
                 if (confirmed) {
                     window.location.href = "deleteproduct?proid=" + productId;
                 }
             }
-        </script>
-        <script type='text/javascript' src='js/listTrack.js'></script>
-        <script type='text/javascript' src='js/filterScroll.js'></script>
-        <!-- Footer-->
+            //SEARCH RESULTS
+            let availableKeywords = [<c:forEach var="keyword" items="${keywordsList}">"${keyword}",</c:forEach>];
+                    const recommendsBox = document.querySelector(".search-recommends");
+            const searchBox = document.getElementById("search-box");
+
+            searchBox.onkeyup = function () {
+                let result = [];
+                let input = searchBox.value;
+                if (input.length) {
+                    result = availableKeywords.filter((keyword) => {
+                        return keyword.toLowerCase().includes(input.toLowerCase());
+                    });
+                }
+                display(result);
+                if (!result.length) {
+                    recommendsBox.innerHTML = '';
+                }
+            }
+
+            function display(result) {
+                const maxItems = 10;
+                const limitedResult = result.slice(0, maxItems);
+                const content = limitedResult.map((list) => {
+                    return "<li onclick=selectInput(this)>" + list + "</li>";
+                });
+
+                recommendsBox.innerHTML = "<ul>" + content.join('') + "</li>";
+            }
+
+            function selectInput(list) {
+                searchBox.value = list.innerHTML;
+                recommendsBox.innerHTML = '';
+            }
+            </script>
+            <script type='text/javascript' src='js/listTrack.js'></script>
+            <script type='text/javascript' src='js/filterScroll.js'></script>
+            <!-- Footer-->
         <jsp:include page="_footer.jsp"></jsp:include>
         <!-- Bootstrap core JS-->
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>

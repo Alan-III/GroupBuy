@@ -7,6 +7,7 @@ package com.sphy141.probase.servlets;
 
 import com.sphy141.probase.beans.BusinessAccount;
 import com.sphy141.probase.beans.Category;
+import com.sphy141.probase.beans.Product;
 import com.sphy141.probase.beans.UserAccount;
 import com.sphy141.probase.utils.DBUtils;
 import com.sphy141.probase.utils.MailUtils;
@@ -14,12 +15,14 @@ import com.sphy141.probase.utils.MyUtils;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.mail.MessagingException;
 import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -49,19 +52,52 @@ public class HomeServlet extends HttpServlet {
             else
                 req.setAttribute("loginedbusiness", null);
         }
+        
         Connection conn = MyUtils.getStoredConnection(req);
-        List<Category> list = null;
+        List<Category> categoriesList = null;
         String errorString = null;
         try {
-            list = DBUtils.queryCategories(conn);
+            categoriesList = DBUtils.queryCategories(conn);
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
-        if(list==null){
+        if(categoriesList==null){
             errorString = "There was a problem with products";
         }
+        
+        //Load products to find keywords
+        List<Product> productList = null;
+        try {
+            productList = DBUtils.queryProduct(conn);
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        if(categoriesList==null){
+            errorString = "There was a problem with products";
+        }
+        //Check if the keywords exist
+        ServletContext context = req.getServletContext();
+        List<String> keywordsList = (List<String>) context.getAttribute("keywordsList");
+        if (keywordsList == null) {
+            // The keywordsList attribute is not set
+            // Process categories and products for keywords
+            keywordsList = new ArrayList<>();
+            for (Product product : productList) {
+                keywordsList.add(product.getName());
+            }
+            for (Category category : categoriesList) {
+                keywordsList.add(category.getCategoryName());
+            }
+            // Set keywordsList attribute
+            context.setAttribute("keywordsList", keywordsList);
+        }
+
+        
+        
         req.setAttribute("errorString", errorString);
-        req.setAttribute("list", list);
+        req.setAttribute("categorylist", categoriesList);
+        req.setAttribute("keywordsList", keywordsList);
+        
             
         RequestDispatcher dispatcher=this.getServletContext().getRequestDispatcher("/WEB-INF/views/homeView.jsp");
         dispatcher.forward(req, resp);
@@ -69,6 +105,7 @@ public class HomeServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        //For Contact
         String name = req.getParameter("name");
         String email = req.getParameter("email");
         String phone = req.getParameter("phone");
@@ -83,18 +120,7 @@ public class HomeServlet extends HttpServlet {
             errorString = "Please fill in the form";
         }
         Connection conn = MyUtils.getStoredConnection(req);
-//        try {
-//            user = DBUtils.findUser(conn, email);
-//            if(user!=null){
-//                hasError=true;
-//                errorString = "email already exists";
-//            }
-//        } catch (SQLException ex) {
-//            ex.printStackTrace();
-//            hasError=true;
-//            errorString = ex.getMessage();
-//        }
-        //
+
         if (hasError){
             req.setAttribute("errorString", errorString);
             RequestDispatcher dispatcher=this.getServletContext().getRequestDispatcher("/WEB-INF/views/homeView.jsp");
