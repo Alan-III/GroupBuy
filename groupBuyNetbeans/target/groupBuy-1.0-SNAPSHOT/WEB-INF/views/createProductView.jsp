@@ -19,6 +19,7 @@
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css"/>
         <link href="styles/BootstrapStyles.css" rel="stylesheet" />
         <!--<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">-->
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     </head>
     <body>
         <!-- Navigation-->
@@ -42,21 +43,21 @@
                     </div>
                     <div class="menu">
                         <div id="side-menu">
-                            <ul>
+                            <ul id="filtersContainer">
                                 <li><i class="fas fa-qrcode"></i>
-                                    <a href="#">RAM</a>
+                                    <a href="#">Please Select Category</a>
                                 </li>
-                        </ul>
+                            </ul>
+                        </div>
                     </div>
                 </div>
-            </div>
 
 
-            <div id="userinfo" class="layout">
-                <h3 class="text-center text-white pt-5">Create Product</h3>
-                <br>
-                <div class="loginclamp">
-                    <form class="form-container" method="post" action="${pageContext.request.contextPath}/createproduct" enctype="multipart/form-data">
+                <div id="userinfo" class="layout">
+                    <h3 class="text-center text-white pt-5">Create Product</h3>
+                    <br>
+                    <div class="loginclamp">
+                        <form id="createproductform" class="form-container" method="post" action="${pageContext.request.contextPath}/createproduct" enctype="multipart/form-data">
                         <div class="input-field">
                             <input type="text" class="form-control" required="required" id="pname" name="pname" />
                             <label class="form-label" for="pname" >Product Name</label> 
@@ -104,7 +105,9 @@
                             <input type="file" class="form-control" required="required" id="pimage" name="pimage[]" multiple/>
                             <label class="input-label-focused" for="pimage">Images</label> 
                         </div>
-                        <button type="submit" name="submit" class="btn btn-primary btn-block mb-4">Submit</button>
+<!--                        <button type="submit" name="submit" class="btn btn-primary btn-block mb-4">Submit</button>-->
+                         <!-- Button to trigger the submission -->
+                        <button type="button" class="btn btn-primary btn-block mb-4" onclick="submitForm()">Submit</button>
                     </form>
                 </div>
             </div>
@@ -135,6 +138,7 @@
             ],
             </c:forEach>
             };
+            //--------------------//
             // Handle general category selection change
             var generalCategorySelect = document.getElementById("generalCategory");
             generalCategorySelect.addEventListener("change", function () {
@@ -162,6 +166,7 @@
             filtercheck.checked = true;
             populateFilters();
             });
+            //--------------------//
             // Handle category selection change
             var categorySelect = document.getElementById("category");
             categorySelect.addEventListener("change", function () {
@@ -183,11 +188,9 @@
             }
             populateFilters();
             });
-            
-            
+            //--------------------//
             // POPULATE FILTERS
-            var categoryFilters = ${categoryFilters}; // Assuming categoryFilters is a JavaScript object passed from the server
-
+            var categoryFilterMap = JSON.parse('${categoryFilterMapJson}');
             // Function to populate filters based on selected category
             function populateFilters() {
             var selectedCategory = document.getElementById("subcategory").value ||
@@ -197,32 +200,73 @@
             filtersContainer.innerHTML = ""; // Clear existing filters
 
             if (selectedCategory) {
-            var filters = categoryFilters[selectedCategory];
+            var filters = categoryFilterMap[selectedCategory];
             if (filters && filters.length > 0) {
             filters.forEach(function(filter) {
-            var filterElement = document.createElement("li");
-            var filterLink = document.createElement("a");
-            filterLink.href = "#";
-            filterLink.textContent = filter;
-            filterElement.appendChild(filterLink);
+            var filterElement = document.createElement("div");
+            filterElement.className = "input-field mt-2";
+            var filterInput = document.createElement("input");
+            filterInput.type = "text";
+            filterInput.className = "form-control filterinput";
+            filterInput.required = "required";
+            filterInput.id = filter;
+            filterInput.name = filter;
+            var filterLabel = document.createElement("label");
+            filterLabel.className = "form-label";
+            filterLabel.htmlFor = filter;
+            filterLabel.textContent = filter;
+            filterElement.appendChild(filterInput);
+            filterElement.appendChild(filterLabel);
             filtersContainer.appendChild(filterElement);
             });
             } else {
             var noFiltersElement = document.createElement("li");
-            noFiltersElement.textContent = "No filters available for the selected category.";
+            var filterLink = document.createElement("a");
+            filterLink.href = "#";
+            filterLink.textContent = "No filters available for the selected category.";
+            noFiltersElement.appendChild(filterLink);
             filtersContainer.appendChild(noFiltersElement);
             }
             } else {
             var selectCategoryElement = document.createElement("li");
-            selectCategoryElement.textContent = "Please select a category.";
+            var filterLink = document.createElement("a");
+            filterLink.href = "#";
+            filterLink.textContent = "Please select a category.";
+            selectCategoryElement.appendChild(filterLink);
             filtersContainer.appendChild(selectCategoryElement);
             }
             }
 
-            
+
             // Handle subcategory selection change
             var subcategorySelect = document.getElementById("subcategory");
             subcategorySelect.addEventListener("change", populateFilters);
+            //--------------------//
+            //Get filters with submit
+            function submitForm() {
+            // Create an array to store the filter inputs
+            var filterInputs = [];
+            // Iterate over each filter input element
+            $(".filterinput").each(function() {
+                var name = $(this).attr("name");
+                var value = $(this).val();
+            // Create an object with name and value properties
+                var filterInput = {
+                    name: name,
+                    value: value
+            };
+            // Add the filter input object to the array
+            filterInputs.push(filterInput);
+            });
+            // Create a hidden input field for the filter inputs
+            var filterInputsInput = $("<input>")
+                    .attr("type", "hidden")
+                    .attr("name", "filterInputs")
+                    .val(JSON.stringify(filterInputs));
+            $("form").append(filterInputsInput);
+            // Submit the form
+            $("form").submit();
+            }
         </script>
 
 
