@@ -133,9 +133,6 @@
                             </div>                            
                         <%--</c:forEach>--%>
                             
-                        <a href='subject_details.php?subj=Math&subjID=1'><img class='product' src='assets/img/smartphone.png' draggable='false' /></a>
-                        <a href='subject_details.php?subj=Physics&subjID=2'><img class='product' src='assets/img/smartphone.png' draggable='false' /></a>
-                        <a href='subject_details.php?subj=Chemistry&subjID=3'><img class='product' src='assets/img/smartphone.png' draggable='false' /></a>
                     </div>
                     
                     <!-- Item slider end-->
@@ -152,7 +149,6 @@
                     <!-- Item slider-->
                     <div id='image-track2' class="image-track" data-mouse-down-at='0' data-prev-percentage='0'>
                         <c:forEach items="${list}" var="item">
-                            <!--{item.getPath()} sto src-->
                             <div class='product'>
                                 <a class="product-image" href='${pageContext.request.contextPath}/productdetails?productCode=${item.getCode()}'>
                                   <img src='${item.getFirstImagePath()}' draggable='false' />
@@ -172,22 +168,14 @@
                             </div>                            
                         </c:forEach>
                             
-                        <a href='subject_details.php?subj=Math&subjID=1'><img class='product' src='assets/img/smartphone.png' draggable='false' /></a>
-                        <a href='subject_details.php?subj=Physics&subjID=2'><img class='product' src='assets/img/smartphone.png' draggable='false' /></a>
-                        <a href='subject_details.php?subj=Chemistry&subjID=3'><img class='product' src='assets/img/smartphone.png' draggable='false' /></a>
-                        <a href='subject_details.php?subj=Math&subjID=1'><img class='product' src='assets/img/smartphone.png' draggable='false' /></a>
-                        <a href='subject_details.php?subj=Physics&subjID=2'><img class='product' src='assets/img/smartphone.png' draggable='false' /></a>
-                        <a href='subject_details.php?subj=Chemistry&subjID=3'><img class='product' src='assets/img/smartphone.png' draggable='false' /></a>
-                        <a href='subject_details.php?subj=Math&subjID=1'><img class='product' src='assets/img/smartphone.png' draggable='false' /></a>
-                        <a href='subject_details.php?subj=Physics&subjID=2'><img class='product' src='assets/img/smartphone.png' draggable='false' /></a>
-                        <a href='subject_details.php?subj=Chemistry&subjID=3'><img class='product' src='assets/img/delete.png' draggable='false' /></a>
                     </div>
                     
                     <!-- Item slider end-->
                 </div>
 
             </div>
-            <script type='text/javascript' src='js/subjectsTrack.js'></script>
+            <script type='text/javascript' src='js/listTrack.js'></script>
+            <script type='text/javascript' src='js/filterScroll.js'></script>
             <!-- Footer-->
         <jsp:include page="_footer.jsp"></jsp:include>
         <!-- Bootstrap core JS-->

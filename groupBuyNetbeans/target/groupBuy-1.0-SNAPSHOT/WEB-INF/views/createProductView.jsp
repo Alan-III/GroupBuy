@@ -15,87 +15,49 @@
         <meta name="author" content="" />
         <title>GroupBuy - Create Product</title>
         <link rel="stylesheet" href="styles/userInfoStyles.css">
+        <link rel="stylesheet" href="styles/filterSidebarStyles.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css"/>
         <link href="styles/BootstrapStyles.css" rel="stylesheet" />
         <!--<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">-->
-
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     </head>
     <body>
         <!-- Navigation-->
         <jsp:include page="_menu.jsp"></jsp:include>
             <div class="main_box">
 
-                <!--                <nav class="main-menu">
-                                    <ul>
-                                        <li>
-                                            <a href="https://jbfarrow.com">
-                                                <i class="fa fa-home fa-2x"></i>
-                                                <span class="nav-text">
-                                                    Business Details
-                                                </span>
-                                            </a>
-                
-                                        </li>
-                                        <li class="has-subnav">
-                                            <a href="#">
-                                                <i class="fa fa-shopping-cart fa-2x"></i>
-                                                <span class="nav-text">
-                                                    My Offers
-                                                </span>
-                                            </a>
-                
-                                        </li>
-                                        <li class="has-subnav">
-                                            <a href="#">
-                                                <i class="fa fa-book fa-2x"></i>
-                                                <span class="nav-text">
-                                                    My Products
-                                                </span>
-                                            </a>
-                
-                                        </li>
-                                        <li>
-                                            <a href="#">
-                                                <i class="fa fa-info fa-2x"></i>
-                                                <span class="nav-text">
-                                                    Notifications
-                                                </span>
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a href="#">
-                                                <i class="fa fa-cogs fa-2x"></i>
-                                                <span class="nav-text">
-                                                    Account Settings
-                                                </span>
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a href="#">
-                                                <i class="fa fa-map-marker fa-2x"></i>
-                                                <span class="nav-text">
-                                                    Member Map
-                                                </span>
-                                            </a>
-                                        </li>
-                                    </ul>
-                
-                                    <ul class="logout">
-                                        <li>
-                                            <a href="/groupbuy/logout">
-                                                <i class="fa fa-power-off fa-2x"></i>
-                                                <span class="nav-text">
-                                                    Logout
-                                                </span>
-                                            </a>
-                                        </li>  
-                                    </ul>
-                                </nav>-->
+                <input type="checkbox" id="check" title="cb" placeholder="..">
+                <div class="btn_one">
+                    <label for="check">
+                        <i class="fas fa-bars"></i>
+                    </label>
+                </div>
+                <div class="sidebar_menu">
+                    <div class="logo">
+                        <a href="#">Filters</a>
+                    </div>
+                    <div class="btn_two">
+                        <label for="check">
+                            <i class="fas fa-times"></i>
+                        </label>
+                    </div>
+                    <div class="menu">
+                        <div id="side-menu">
+                            <ul id="filtersContainer">
+                                <li><i class="fas fa-qrcode"></i>
+                                    <a href="#">Please Select Category</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+
                 <div id="userinfo" class="layout">
                     <h3 class="text-center text-white pt-5">Create Product</h3>
                     <br>
                     <div class="loginclamp">
-                        <form class="form-container" method="post" action="${pageContext.request.contextPath}/createproduct" enctype="multipart/form-data">
+                        <form id="createproductform" class="form-container" method="post" action="${pageContext.request.contextPath}/createproduct" enctype="multipart/form-data">
                         <div class="input-field">
                             <input type="text" class="form-control" required="required" id="pname" name="pname" />
                             <label class="form-label" for="pname" >Product Name</label> 
@@ -112,7 +74,7 @@
                             <input type="text" class="form-control" required="required" id="pdetails" name="pdetails" rows="4" cols="50" />
                             <label class="form-label" for="pdetails">Details</label> 
                         </div>
-                        
+
                         <div class="input-field">
                             <select id="generalCategory" name="generalCategory" class="form-control" required="required">
                                 <option value="" disabled selected></option>
@@ -143,7 +105,9 @@
                             <input type="file" class="form-control" required="required" id="pimage" name="pimage[]" multiple/>
                             <label class="input-label-focused" for="pimage">Images</label> 
                         </div>
-                        <button type="submit" name="submit" class="btn btn-primary btn-block mb-4">Submit</button>
+<!--                        <button type="submit" name="submit" class="btn btn-primary btn-block mb-4">Submit</button>-->
+                         <!-- Button to trigger the submission -->
+                        <button type="button" class="btn btn-primary btn-block mb-4" onclick="submitForm()">Submit</button>
                     </form>
                 </div>
             </div>
@@ -174,6 +138,7 @@
             ],
             </c:forEach>
             };
+            //--------------------//
             // Handle general category selection change
             var generalCategorySelect = document.getElementById("generalCategory");
             generalCategorySelect.addEventListener("change", function () {
@@ -196,7 +161,12 @@
             categorySelect.disabled = true;
             subcategorySelect.disabled = true;
             }
+            //show filters
+            var filtercheck = document.getElementById("check");
+            filtercheck.checked = true;
+            populateFilters();
             });
+            //--------------------//
             // Handle category selection change
             var categorySelect = document.getElementById("category");
             categorySelect.addEventListener("change", function () {
@@ -216,10 +186,91 @@
             } else {
             subcategorySelect.disabled = true;
             }
+            populateFilters();
             });
+            //--------------------//
+            // POPULATE FILTERS
+            var categoryFilterMap = JSON.parse('${categoryFilterMapJson}');
+            // Function to populate filters based on selected category
+            function populateFilters() {
+            var selectedCategory = document.getElementById("subcategory").value ||
+                    document.getElementById("category").value ||
+                    document.getElementById("generalCategory").value;
+            var filtersContainer = document.getElementById("filtersContainer");
+            filtersContainer.innerHTML = ""; // Clear existing filters
+
+            if (selectedCategory) {
+            var filters = categoryFilterMap[selectedCategory];
+            if (filters && filters.length > 0) {
+            filters.forEach(function(filter) {
+            var filterElement = document.createElement("div");
+            filterElement.className = "input-field mt-2";
+            var filterInput = document.createElement("input");
+            filterInput.type = "text";
+            filterInput.className = "form-control filterinput";
+            filterInput.required = "required";
+            filterInput.id = filter;
+            filterInput.name = filter;
+            var filterLabel = document.createElement("label");
+            filterLabel.className = "form-label";
+            filterLabel.htmlFor = filter;
+            filterLabel.textContent = filter;
+            filterElement.appendChild(filterInput);
+            filterElement.appendChild(filterLabel);
+            filtersContainer.appendChild(filterElement);
+            });
+            } else {
+            var noFiltersElement = document.createElement("li");
+            var filterLink = document.createElement("a");
+            filterLink.href = "#";
+            filterLink.textContent = "No filters available for the selected category.";
+            noFiltersElement.appendChild(filterLink);
+            filtersContainer.appendChild(noFiltersElement);
+            }
+            } else {
+            var selectCategoryElement = document.createElement("li");
+            var filterLink = document.createElement("a");
+            filterLink.href = "#";
+            filterLink.textContent = "Please select a category.";
+            selectCategoryElement.appendChild(filterLink);
+            filtersContainer.appendChild(selectCategoryElement);
+            }
+            }
+
+
+            // Handle subcategory selection change
+            var subcategorySelect = document.getElementById("subcategory");
+            subcategorySelect.addEventListener("change", populateFilters);
+            //--------------------//
+            //Get filters with submit
+            function submitForm() {
+            // Create an array to store the filter inputs
+            var filterInputs = [];
+            // Iterate over each filter input element
+            $(".filterinput").each(function() {
+                var name = $(this).attr("name");
+                var value = $(this).val();
+            // Create an object with name and value properties
+                var filterInput = {
+                    name: name,
+                    value: value
+            };
+            // Add the filter input object to the array
+            filterInputs.push(filterInput);
+            });
+            // Create a hidden input field for the filter inputs
+            var filterInputsInput = $("<input>")
+                    .attr("type", "hidden")
+                    .attr("name", "filterInputs")
+                    .val(JSON.stringify(filterInputs));
+            $("form").append(filterInputsInput);
+            // Submit the form
+            $("form").submit();
+            }
         </script>
 
 
+        <script type='text/javascript' src='js/filterScroll.js'></script>
         <!-- Footer-->
         <jsp:include page="_footer.jsp"></jsp:include>
         <!-- Bootstrap core JS-->
