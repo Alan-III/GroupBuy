@@ -137,6 +137,7 @@ public class DBUtils {
         ResultSet rs = pst.executeQuery();
         while (rs.next()) {
             Product prod = new Product();
+            prod.setId(rs.getInt("productID"));
             prod.setCode(rs.getString("productCode"));
             prod.setName(rs.getString("productName"));
             prod.setDetails(rs.getString("details"));
@@ -194,10 +195,10 @@ public class DBUtils {
         }
     }//insertProduct
 
-    public static void deleteProduct(Connection conn, String code) throws SQLException {
-        String sql = "DELETE FROM products WHERE code=? ";
+    public static void deleteProduct(Connection conn, int id) throws SQLException {
+        String sql = "DELETE FROM products WHERE productID=? ";
         PreparedStatement pst = conn.prepareStatement(sql);
-        pst.setString(1, code);
+        pst.setInt(1, id);
         pst.executeUpdate();
     }//deleteProduct
 
