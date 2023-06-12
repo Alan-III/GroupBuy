@@ -1,0 +1,158 @@
+SELECT * FROM group_buy.business;
+/*ΔΗΜΙΟΥΡΓΙΑ ΑΤΟΜΙΚΟΥ ΛΟΓΑΡΙΑΣΜΟΥ*/ /*to userName είναι περιττο*/
+
+/*πόσοι λογαριασμοί υπάρχουν με το ίδιο email?*/
+SELECT COUNT(*) FROM login where email=?;
+/*εάν είναι 0 τότε ΔΗΜΙΟΥΡΓΙΑ ΕΓΓΡΑΦΗΣ*/
+INSERT INTO users (firstname, lastname,email,phoneNum,userName) values (?,?,?,?,?);
+insert into login (email,password,status) values (?,?,users);
+
+/*επεξεργασία στοιχείων*/
+update users set firstname=?,lastname=?,email=?,phoneNum=?,userName=?,IBAN=? WHERE email=?;
+update login set email=?,password=? where email=?;
+
+
+/*ΑΛΛΑΓΗ PASSWORD*/
+select password from login where email=?;
+update login set password=? where email=?;
+
+/*ΠΑΥΣΗ USER*/
+update users delete= 1 where email=?;
+
+/*ΔΙΑΓΡΑΦΗ ΑΤΟΜΙΚΟΥ ΛΟΓΑΡΙΑΣΜΟΥ*/
+DELETE FROM users where email=?;
+delete from login where email=?;
+
+/*ΔΗΜΙΟΥΡΓΙΑ ΕΤΑΙΡΙΚΟΥ ΛΟΓΑΡΙΑΣΜΟΥ*/
+SELECT COUNT(*) FROM login where email=?;
+insert into business (name,email,supervisor,AFM,bankAccount) values (?,?,?,?,?);
+insert into login (email,password,status) values (?,?,users);
+
+/* ΕΠΕΞΕΡΓΑΣΙΑ ΣΤΟΙΧΕΙΩΝ ΕΤΑΙΡΙΚΟΥ ΛΟΓΑΡΙΑΣΜΟΥ*/
+
+update login set email=?,password=? where email=?;
+update business set name=?,email=?,AFM=?,bankAccount=?,supervisorFirstname=?,supervisorLastname=?,IBAN=? where email=?;
+
+/*ΠΑΥΣΗ ΕΤΑΙΡΙΚΟΥ ΛΟΓΑΡΙΑΣΜΟΥ*/
+UPDATE business delete=1 where email=?;
+
+/*ΟΡΙΣΤΙΚΗ ΔΙΑΓΡΑΦΗ ΕΤΑΙΡΙΚΟΥ ΛΟΓΑΡΙΑΣΜΟΥ*/
+delete from business where email=?;
+delete from login where email=?;
+
+/*upload photos ΓΙΑ ΕΠΙΧΕΙΡΗΣΗ*/
+
+insert into businessphoto (businessID,path) values(?,?);
+select path from businessphoto where businessID =?;
+
+update business set path=? where businessID=?;
+delete from businessphoto where path=? and businessID=?;
+insert into business(pathProfile) values(?) ;
+
+
+/*PRODDUCTS
+ΔΗΜΙΟΥΡΓΙΑ ΠΡΟΙΟΝΤΟΣ*/
+
+insert into products (productCode,productName,details,belong) values (?,?,?,?);
+insert into productphoto (path) values (?) where productCode=?;
+
+/*ΔΙΑΓΡΑΦΗ ΠΡΟΙΟΝΤΟΣ*/
+delete from products where productCode=?;
+delete from productphoto where path=?;
+
+/*ΑΝΑΝΕΩΣΗ ΣΤΟΙΧΕΙΩΝ ΠΡΟΙΟΝΤΟΣ*/
+update products set productName=?,details=? where productCode=?;
+update productphoto set path=? where path=? and productCode=?;
+
+
+/*ΕΠΙΘΥΜΙΕΣ*/
+
+/*ΠΡΟΣΘΗΚΗ  ΕΠΙΘΥΜΙΑΣ*/
+insert into mywish (email,productCode) values (?,?);
+
+/*ΔΙΑΓΡΑΦΗ ΜΙΑΣ ΕΠΙΘΥΜΙΑΣ*/
+delete from mywish where email=? and productcode=?;
+
+/*ΥΠΟΛΟΓΙΣΜΟΣ ΣΥΝΟΛΟΥ ΕΠΙΘΥΜΙΩΝ*/
+select count(productCode) from mywish where email=?;
+ 
+/*ΕΜΦΑΝΙΣΗ ΕΠΙΘΥΜΙΩΝ*/
+SELECT productName, productCode, details, belong from products p inner join mywish w on p.productCode=w.productCode where email=?;
+select path from productphoto where productCode=?;
+/*
+
+/*ΔΗΜΙΟΥΡΓΙΑ ΠΡΟΣΦΟΡΑΣ*/
+insert into offers (title,finalPrice,descount,couponPrice,offerExpire,couponExpire,email,details,groupsize) values (?,?,?,?,?,?,?,?,?);
+insert into offerdetails (productCode,offerID) values (?,?);
+insert into offerphoto (offerID,path) values (?,?);
+insert into notifications (offerID,seen,productCode) values (?,0,?); /*gia kathe ena productCode*/
+select path from offerphoto where offerID=?;
+
+
+/*Διαγραφή Προσφοράς*/
+delete from offers where email=? and offerID=?;
+delete from offerdetails where offerID=?;
+delete from offerphoto where offerID=?;
+
+/*ΕΠΕΞΕΡΓΑΣΙΑ  ΠΡΟΣΦΟΡΑΣ*/
+select * from offers where email=?;
+update offers set title=?,finalPrice=?,descount=?,couponPrice=?,offerExpire=?,couponExpire=?,details=?,groupsize=? WHERE offerID=? and email=?;
+
+/*ΕΜΦΑΝΗΣΗ ΠΡΟΣΦΟΡΩΝ ΣΤΟΥΣ ΠΕΛΑΤΕΣ*/
+
+/*ME BASH THN KATHGORIA PROIONTVN*/
+select offerID,title,finalPrice,descount,couponPrice,offerExpire,couponExpire,details,groupsize,b.businessID,b.businessName FROM offers o inner join offerdetails od on o.offerID= od.offerID 
+inner join products p on p.productCode= od.productCode inner join  categories c on c.categoryID=p.belong inner join business b on
+o.email=b.email where categoryID=?;
+
+/*ME BASH KATHGORIA PROIONTVN KAI POLH */
+select offerID,title,finalPrice,descount,couponPrice,offerExpire,couponExpire,details,groupsize,b.businessID,b.businessName FROM offers o inner join offerdetails od on o.offerID= od.offerID 
+inner join products p on p.productCode= od.productCode inner join  categories c on c.categoryID=p.belong inner join business b on
+o.email=b.email inner join store st on  b.email=st.email  where categoryID=? and town=?;
+
+/*ΜΕ ΒΑΣΗ ΜΟΝΟ ΤΗΝ ΠΟΛΗ*/
+select offerID,title,finalPrice,descount,couponPrice,offerExpire,couponExpire,details,groupsize,b.businessID,b.businessName FROM offers o inner join offerdetails od on o.offerID= od.offerID 
+inner join products p on p.productCode= od.productCode inner join  categories c on c.categoryID=p.belong inner join business b on
+o.email=b.email inner join store st on  b.email=st.email where town=?;
+
+select path from offerphoto where offerID=? LIMIT 1;
+
+/*ΕΜΦΑΝΗΣΗ ΧΩΡΗΓΩΝ LEVEL KAI META TIS PROSFORES TOYS*/
+
+select pathprofile from business b inner join subscriptions s on b.businessID=s.businessID where level=3;
+
+select offerID,title,finalPrice,descount,couponPrice,offerExpire,couponExpire,details,groupsize,b.businessID,b.businessName FROM offers o inner join offerdetails od on o.offerID= od.offerID 
+inner join products p on p.productCode= od.productCode inner join  categories c on c.categoryID=p.belong inner join business b on
+o.email=b.email inner join store st on  b.email=st.email where businessID=? and productCode=?;
+
+select offerID,title,finalPrice,descount,couponPrice,offerExpire,couponExpire,details,groupsize,b.businessID,b.businessName FROM offers o inner join offerdetails od on o.offerID= od.offerID 
+inner join products p on p.productCode= od.productCode inner join  categories c on c.categoryID=p.belong inner join business b on
+o.email=b.email inner join store st on  b.email=st.email where businessID=?; /*gia ekswteriki selida*/
+
+/*ΕΙΔΟΠΟΙΗΣΕΙΣ ΠΡΟΣ ΤΟΥΣ ΧΡΗΣΤΕΣ*/
+/*ο αριθμός στο καμπανακι*/
+select count(offerID) from notifications where seen=0 and email=?;
+
+/*εαν ο χρηστησ δει τις ειδοποιήσεις*/
+update notifications set seen=1 where offerID=? and email=?;
+
+/*εάν ο χρήστης θέλει να σβήσει τις ειδοποιήσεις*/
+update notifications set seen=1 where email=?;
+
+/*ΕΙΔΟΠΟΙΗΣΕΙΣ ΠΡΟΣ ΤΙΣ ΕΤΑΙΡΙΕΣ*/
+
+select productCode from products where (select count(email) from mywish )
+
+
+/*κλείσιμο ομάδας*/
+update offers set active=0 where offerID =?;
+
+/*καταμέτρηση κουπονιών και εμφάνησή τους */
+select count(*) tokens from coupontoken where email=?; /*σύνολο κουπονιών*/
+select count(*) tokens from coupontokens c inner join offers o on c.offerID=o.offerID where email=? and active=1; /* count κλεισμένων/ανοικτών κουπονιών */
+
+
+
+/*balance*/
+select balance from users where email=?;
+
