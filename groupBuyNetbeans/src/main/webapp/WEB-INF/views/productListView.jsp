@@ -36,59 +36,16 @@
                     <div class="menu">
                         <div id="side-menu">
                             <ul>
-                            <%--<c:forEach items="${list}" var="item">--%>
+                            <c:if test="${filtersList==null}">
+                                <li><i class="fas fa-qrcode"></i>
+                                    <a href="#">No filters for this Category</a>
+                                </li>
+                            </c:if>
+                            <c:forEach items="${filtersList}" var="item">
                             <li><i class="fas fa-qrcode"></i>
-                                <a href="#">RAM</a>
+                                <a href="#">${item}</a>
                             </li>
-                            <li>
-                                <i class="fas fa-link"></i>
-                                <a href="#">CPU</a>
-                            </li>
-                            <li>
-                                <i class="fas fa-link"></i>
-                                <a href="#">filter</a>
-                            </li>
-                            <li>
-                                <i class="fas fa-link"></i>
-                                <a href="#">MAKE filter</a>
-                            </li>
-                            <li>
-                                <i class="fas fa-link"></i>
-                                <a href="#">MAKE filter</a>
-                            </li>
-                            <li>
-                                <i class="fas fa-link"></i>
-                                <a href="#">MAKE filter</a>
-                            </li>
-                            <li>
-                                <i class="fas fa-link"></i>
-                                <a href="#">MAKE filter</a>
-                            </li>
-                            <li>
-                                <i class="fas fa-link"></i>
-                                <a href="#">MAKE filter</a>
-                            </li>
-                            <li>
-                                <i class="fas fa-link"></i>
-                                <a href="#">MAKE filter</a>
-                            </li>
-                            <li>
-                                <i class="fas fa-link"></i>
-                                <a href="#">MAKE filter</a>
-                            </li>
-                            <li>
-                                <i class="fas fa-link"></i>
-                                <a href="#">MAKE filter</a>
-                            </li>
-                            <li>
-                                <i class="fas fa-link"></i>
-                                <a href="#">MAKE filter</a>
-                            </li>
-                            <li>
-                                <i class="fas fa-link"></i>
-                                <a href="#">MAKE filter</a>
-                            </li>
-                            <%--</c:forEach>--%>
+                            </c:forEach>
                         </ul>
                     </div>
                 </div>

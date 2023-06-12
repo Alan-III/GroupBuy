@@ -16,6 +16,8 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -53,6 +55,8 @@ public class ProductListServlet extends HttpServlet {
         String searchParam = req.getParameter("search");
         
         Connection conn = MyUtils.getStoredConnection(req);
+        
+        //Get products ALL or Searched
         List<Product> productList = null;
         String errorString = null;
         try {
@@ -67,6 +71,7 @@ public class ProductListServlet extends HttpServlet {
         if(productList==null){
             errorString = "There was a problem with products";
         }
+        
         //Check if the keywords exist
         ServletContext context = req.getServletContext();
         List<String> keywordsList = (List<String>) context.getAttribute("keywordsList");
@@ -93,10 +98,22 @@ public class ProductListServlet extends HttpServlet {
             context.setAttribute("keywordsList", keywordsList);
         }
         
+        //Get filters if category was selected
+        List<String> filtersList = null;
+        if(categoryIdParam!=null){
+            try {
+                Category tempCategory = DBUtils.findCategory(conn, Integer.parseInt(categoryIdParam));
+                filtersList = DBUtils.findCategoryFilters(conn, tempCategory.getCategoryName());
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+                errorString = "There was a problem with database";
+            }
+        }
         
             req.setAttribute("errorString", errorString);
             req.setAttribute("productList", productList);
             req.setAttribute("keywordsList", keywordsList);
+            req.setAttribute("filtersList", filtersList);
 //            req.setAttribute("logineduser", user);
             RequestDispatcher dispatcher=this.getServletContext().getRequestDispatcher("/WEB-INF/views/productListView.jsp");
         dispatcher.forward(req, resp);

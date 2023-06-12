@@ -388,6 +388,34 @@ public class DBUtils {
         }//while
         return null;
     }
+    
+    //FIND SPECIFIC CATEGORY
+    public static Category findCategory(Connection conn, int categoryID) throws SQLException {
+        String sql = "SELECT * FROM categories WHERE categoryID = ?";
+        PreparedStatement pst = conn.prepareStatement(sql);
+        pst.setInt(1, categoryID);
+        ResultSet rs = pst.executeQuery();
+        while (rs.next()) {
+            Category category = new Category();
+            category.setCategoryID(rs.getInt("categoryID"));
+            if (rs.getString("subCategory") != null) {
+                category.setCategoryName(rs.getString("subCategory"));
+                category.setSubCategory(rs.getString("subCategory"));
+                category.setMidCategory(rs.getString("category"));
+                category.setGenCategory(rs.getString("genCategory"));
+            } else if (rs.getString("category") != null) {
+                category.setCategoryName(rs.getString("category"));
+                category.setMidCategory(rs.getString("category"));
+                category.setGenCategory(rs.getString("genCategory"));
+            } else {
+                category.setCategoryName(rs.getString("genCategory"));
+                category.setGenCategory(rs.getString("genCategory"));
+            }
+            category.setCategoryImagePath(rs.getString("path"));
+            return category;
+        }//while
+        return null;
+    }
 
     //GET A LIST OF FILTERS NAMES FOR EACH CATEGORY NAME
     public static Map<String, List<String>> queryCategoryFilters(Connection conn) throws SQLException {
@@ -425,6 +453,24 @@ public class DBUtils {
             }
         }//while
         return categoryFilterMap;
+    }
+    
+    //GET A LIST OF FILTERS NAMES FOR A SPECIFIC CATEGORY NAME
+    public static List<String> findCategoryFilters(Connection conn, String categoryName) throws SQLException {
+        String sql = "SELECT distinct(filterName) FROM catergoryfilters cf inner join filtersdetails f on cf.filtersID=f.filtersID \n"
+                + "inner join categories c on c.categoryID=cf.categoryID WHERE subCategory = ? OR category = ? OR genCategory = ?";
+        PreparedStatement pst = conn.prepareStatement(sql);
+        pst.setString(1, categoryName);
+        pst.setString(2, categoryName);
+        pst.setString(3, categoryName);
+        ResultSet rs = pst.executeQuery();
+        List<String> filtersList = new ArrayList<>();
+        while (rs.next()) {
+            String filterName = rs.getString("filterName");
+            // Filter unique because of distinct, add it to the list
+            filtersList.add(filterName);
+        }//while
+        return filtersList;
     }
     
     //GET SPECIFIC FILTER
