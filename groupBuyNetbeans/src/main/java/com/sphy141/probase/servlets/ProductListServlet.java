@@ -50,12 +50,17 @@ public class ProductListServlet extends HttpServlet {
         
         String businessIdParam = req.getParameter("businessId");
         String categoryIdParam = req.getParameter("catid");
+        String searchParam = req.getParameter("search");
         
         Connection conn = MyUtils.getStoredConnection(req);
         List<Product> productList = null;
         String errorString = null;
         try {
-            productList = DBUtils.queryProduct(conn);
+            if(searchParam==null || searchParam.length()==0)
+                productList = DBUtils.queryProduct(conn);
+            else
+                productList = DBUtils.searchProduct(conn, searchParam);
+                
         } catch (SQLException ex) {
             ex.printStackTrace();
         }

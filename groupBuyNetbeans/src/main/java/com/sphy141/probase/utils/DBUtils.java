@@ -25,6 +25,7 @@ import java.util.Map;
  */
 public class DBUtils {
 
+    //FIND USER WITH EMAIL & PASSWORD
     public static UserAccount findUser(Connection conn, String loginEmail, String password) throws SQLException {
         String sql = "SELECT firstName, lastName, userID, phoneNum, balance, userName, bankAccount, u.email as email FROM users u INNER JOIN login l "
                 + "ON u.email=l.email WHERE u.email = ?  AND password = ? AND enabled = 1";
@@ -48,6 +49,7 @@ public class DBUtils {
         return null;
     }//findUser
 
+    //FIND USER WITH EMAIL
     public static UserAccount findUser(Connection conn, String loginEmail) throws SQLException {
         String sql = "SELECT firstName, lastName, userID, phoneNum, balance, userName, bankAccount, u.email as email FROM users u INNER JOIN login l "
                 + "ON u.email=l.email WHERE u.email = ?  AND enabled = 1";
@@ -69,7 +71,8 @@ public class DBUtils {
         }
         return null;
     }//findUser
-
+    
+    //CREATE NEW USER
     public static int insertUser(Connection conn, UserAccount user) throws SQLException {
         //insertDetails
         String sql = "INSERT INTO users (firstName, lastName, email, userName, verificationCode) VALUES(?,?,?,?,?)";
@@ -98,6 +101,7 @@ public class DBUtils {
         return -1;
     }//insertUser
 
+    //CHANGE USER DETAILS
     public static void updateUser(Connection conn, UserAccount user) throws SQLException {
         String sql = "UPDATE Product SET firstName=?, lastName=?, phoneNum=?, balance=?, userName=?, bankAccount=? WHERE email=?";
         PreparedStatement pst = conn.prepareCall(sql);
@@ -111,6 +115,7 @@ public class DBUtils {
         pst.executeUpdate();
     }//updateUser
 
+    //FIND USER WITH GIVE CODE AND ENABLE HIM
     public static boolean verifyUser(Connection conn, UserAccount user) throws SQLException {
         //insertDetails
         String sql = "SELECT * FROM users WHERE userID = ? AND verificationCode=?";
@@ -130,6 +135,7 @@ public class DBUtils {
         return false;
     }//verifyBusiness
 
+    //LIST OF ALL PRODUCTS
     public static List<Product> queryProduct(Connection conn) throws SQLException {
         String sql = "SELECT * FROM products p INNER JOIN productphoto pp ON p.productID=pp.productID GROUP BY p.productID";
         List<Product> list = new ArrayList<Product>();
@@ -147,7 +153,29 @@ public class DBUtils {
         }//while
         return list;
     }//queryProduct
+    
+    //SEARCH KEYWORD AND BRING LIST OF PRODUCTS
+    public static List<Product> searchProduct(Connection conn, String keyword) throws SQLException {
+        String sql = "SELECT * FROM group_buy.products p INNER JOIN productphoto pp ON p.productID=pp.productID where productName like ? or details like ? GROUP BY p.productID;";
+        List<Product> list = new ArrayList<Product>();
+        PreparedStatement pst = conn.prepareStatement(sql);
+        pst.setString(1, "%"+keyword+"%");
+        pst.setString(2, "%"+keyword+"%");
+        ResultSet rs = pst.executeQuery();
+        while (rs.next()) {
+            Product prod = new Product();
+            prod.setId(rs.getInt("productID"));
+            prod.setCode(rs.getString("productCode"));
+            prod.setName(rs.getString("productName"));
+            prod.setDetails(rs.getString("details"));
+            prod.setPrice(rs.getFloat("price"));
+            prod.addImagePath(rs.getString("path"));
+            list.add(prod);
+        }//while
+        return list;
+    }//queryProduct
 
+    //FIND SPESCIFIC PRODUCT BY BARCODE
     public static Product findProduct(Connection conn, String code) throws SQLException {
         String sql = "SELECT *  FROM products WHERE  productCode = ? ";
         List<Product> list = new ArrayList<Product>();
@@ -165,6 +193,7 @@ public class DBUtils {
         return null;
     }//findProduct
 
+    //NOT DONE YET
     public static void updateProduct(Connection conn, Product product) throws SQLException {
         String sql = "UPDATE products SET name=?,Price=? WHERE code = ?";
         PreparedStatement pst = conn.prepareCall(sql);
@@ -174,6 +203,8 @@ public class DBUtils {
         pst.executeUpdate();
     }//updateProduct
 
+    
+    //CREATE NEW PRODUCT AND UPLOAD ITS PHOTOS
     public static void insertProduct(Connection conn, Product product) throws SQLException {
         String sql = "INSERT INTO products (productCode,productName,details,belong,price) VALUES(?,?,?,?,?)";
         PreparedStatement pst = conn.prepareCall(sql);
@@ -195,6 +226,7 @@ public class DBUtils {
         }
     }//insertProduct
 
+    //DELETE PRODUCT BY PRODUCTID
     public static void deleteProduct(Connection conn, int id) throws SQLException {
         String sql = "DELETE FROM products WHERE productID=? ";
         PreparedStatement pst = conn.prepareStatement(sql);
@@ -202,6 +234,7 @@ public class DBUtils {
         pst.executeUpdate();
     }//deleteProduct
 
+    //FIND BUSINESS BY EMAIL & PASSWORD
     public static BusinessAccount findBusiness(Connection conn, String loginEmail, String password) throws SQLException {
         String sql = "SELECT businessID, supervisorFirstName, supervisorLastName, balance, businessName,"
                 + " IBAN,AFM, b.email as email, password FROM business b INNER JOIN login l ON b.email=l.email WHERE b.email = ? AND password = ?  AND enabled = 1";
@@ -225,6 +258,7 @@ public class DBUtils {
         return null;
     }//findBusiness
 
+    //FIND BUSINESS BY EMAIL
     public static BusinessAccount findBusiness(Connection conn, String loginEmail) throws SQLException {
         String sql = "SELECT businessID, supervisorFirstName, supervisorLastName, balance, businessName,"
                 + " IBAN,AFM, b.email as email, password FROM business b INNER JOIN login l ON b.email=l.email WHERE b.email = ?  AND enabled = 1";
@@ -247,6 +281,7 @@ public class DBUtils {
         return null;
     }//findBusiness
 
+    //CREATE NEW BUSINESS ACCOUNT
     public static void insertBusiness(Connection conn, BusinessAccount business) throws SQLException {
         //insertDetails
         String sql = "INSERT INTO business (supervisorFirstName, supervisorLastName, email, businessName, verificationCode, AFM, IBAN) VALUES(?,?,?,?,?,?,?)";
@@ -268,6 +303,7 @@ public class DBUtils {
         pst1.executeUpdate();
     }//insertBusiness
 
+    //FIND BUSINESS WITH GIVE CODE AND ENABLE IT
     public static boolean verifyBusiness(Connection conn, BusinessAccount business) throws SQLException {
         //insertDetails
         String sql = "SELECT * FROM business WHERE businessID = ? AND verificationCode=?";
@@ -286,6 +322,7 @@ public class DBUtils {
         return false;
     }//verifyBusiness
 
+    //GET LIST OF ALL CATEGORIES
     public static List<Category> queryCategories(Connection conn) throws SQLException {
         String sql = "SELECT * FROM categories";
         List<Category> list = new ArrayList<Category>();
@@ -313,6 +350,7 @@ public class DBUtils {
         return list;
     }//queryCategories
 
+    //FIND SPECIFIC CATEGORY
     public static Category findCategory(Connection conn, Category category) throws SQLException {
         String sql;
         if (category.getMidCategory() == null) {
@@ -351,6 +389,7 @@ public class DBUtils {
         return null;
     }
 
+    //GET A LIST OF FILTERS NAMES FOR EACH CATEGORY NAME
     public static Map<String, List<String>> queryCategoryFilters(Connection conn) throws SQLException {
         String sql = "SELECT subCategory,category,genCategory,filterName FROM catergoryfilters cf inner join filtersdetails f on cf.filtersID=f.filtersID \n"
                 + "inner join categories c on c.categoryID=cf.categoryID order by subCategory, category, genCategory";
@@ -388,6 +427,7 @@ public class DBUtils {
         return categoryFilterMap;
     }
     
+    //GET SPECIFIC FILTER
     public static ProductFilter findFilter(Connection conn, String name) throws SQLException {
         String sql = "SELECT * FROM filtersdetails WHERE filterName=?";
         PreparedStatement pst = conn.prepareStatement(sql);
@@ -402,6 +442,7 @@ public class DBUtils {
         return filter;
     }
 
+    //SAVE FILTERS FOR CREATED PRODUCT
     public static void storeProductFilter(Connection conn, int productID, String filtername, String filtervalue) throws SQLException {
         String sql = "INSERT INTO productfilters (filtersID, productID, filtervalue) VALUES (?,?,?)";
         PreparedStatement pst = conn.prepareStatement(sql);

@@ -35,7 +35,7 @@
                         <div class="search_bar">
                             <img src="https://cdn.pixabay.com/photo/2013/07/12/15/55/clues-150586_960_720.png" alt="glass" height="35rem" width="35rem" />
                             <input class="typewriter" id="search-box" type="text" placeholder="Type here to search..."/>
-                            <button onClick="window.location.href = '${pageContext.request.contextPath}/productlist';">Search</button>
+                            <button onClick="searchProducts()">Search</button>
                         </div>
                     </div> 
                 <div class="search-recommends">
@@ -252,6 +252,18 @@
             </div>
         </section>
         <script>
+            //LOAD NEXT PAGE WITH SEARCH
+            function searchProducts() {
+                var searchValue = document.getElementById("search-box").value;
+                if(searchValue.length)
+                    var url = "${pageContext.request.contextPath}/productlist?search=" + encodeURIComponent(searchValue);
+                else
+                    var url = "${pageContext.request.contextPath}/productlist";
+                    
+                window.location.href = url;
+            }
+    
+            //LOAD KEYWORDS TO SEARCH
             let availableKeywords = [<c:forEach var="keyword" items="${keywordsList}">"${keyword}",</c:forEach>];
 
             const recommendsBox = document.querySelector(".search-recommends");
