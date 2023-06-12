@@ -187,7 +187,8 @@
                 </div>
 
             </div>
-            <script type='text/javascript' src='js/subjectsTrack.js'></script>
+            <script type='text/javascript' src='js/listTrack.js'></script>
+            <script type='text/javascript' src='js/filterScroll.js'></script>
             <!-- Footer-->
         <jsp:include page="_footer.jsp"></jsp:include>
         <!-- Bootstrap core JS-->

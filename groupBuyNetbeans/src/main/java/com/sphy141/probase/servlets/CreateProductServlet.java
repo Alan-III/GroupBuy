@@ -104,10 +104,8 @@ public class CreateProductServlet extends HttpServlet {
         ServletContext context = getServletContext();
         String realPath = context.getRealPath("/assets/databaseImages/products/");
         //TARGET DIRECTORY (DELETED WITH EACH BUILD)
-//        String uploadDirectory = realPath+barcode+"\\";  // Specify the directory where you want to save the files
+        String srcDirectory = realPath+"\\..\\..\\..\\..\\..\\src\\main\\webapp\\assets\\databaseImages\\products\\"+barcode+"\\";  // Specify the directory where you want to save the files
         //SRC DIRECTORY (UPDATES TARGET)
-        String srcDirectory = "C:\\Users\\Alan\\Documents\\Repos\\GroupBuy\\groupBuyNetbeans\\src\\main\\webapp\\assets\\databaseImages\\products\\" + barcode + "\\";  // Specify the directory where you want to save the files
-//        Path directoryPath = Paths.get(uploadDirectory);
         Path directorysrcPath = Paths.get(srcDirectory);
         try {
             // Create the directory if it doesn't exist
