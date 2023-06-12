@@ -98,6 +98,7 @@
                 <div class="search_bar-small" style="width: inherit;">
                     <img src="https://cdn.pixabay.com/photo/2013/07/12/15/55/clues-150586_960_720.png" alt="glass" height="35rem" width="35rem" />
                     <input class="typewriter" id="search-box" type="text" placeholder="Type here to search..."/>
+                    <button class="add-product-btn btn btn-primary text-uppercase" onClick="searchProducts()">Search</button>
                 </div>
             </div>
             <div class="search-recommends layout">
@@ -183,6 +184,16 @@
                 if (confirmed) {
                     window.location.href = "deleteproduct?proid=" + productId;
                 }
+            }
+            //LOAD NEXT PAGE WITH SEARCH
+            function searchProducts() {
+                var searchValue = document.getElementById("search-box").value;
+                if(searchValue.length)
+                    var url = "${pageContext.request.contextPath}/productlist?search=" + encodeURIComponent(searchValue);
+                else
+                    var url = "${pageContext.request.contextPath}/productlist";
+                    
+                window.location.href = url;
             }
             //SEARCH RESULTS
             let availableKeywords = [<c:forEach var="keyword" items="${keywordsList}">"${keyword}",</c:forEach>];
