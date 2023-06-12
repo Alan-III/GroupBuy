@@ -177,45 +177,45 @@
             // Handle general category selection change
             var generalCategorySelect = document.getElementById("generalCategory");
             generalCategorySelect.addEventListener("change", function () {
-            var categoryName = this.value;
-            var categorySelect = document.getElementById("category");
-            var subcategorySelect = document.getElementById("subcategory");
-            // Clear existing options
-            categorySelect.innerHTML = '<option value="" disabled selected></option>';
-            subcategorySelect.innerHTML = '<option value="" disabled selected></option>';
-            // Populate options for categories based on selected general category
-            if (categoryName in categories) {
-            categories[categoryName].forEach(function (category) {
-            var option = document.createElement("option");
-            option.value = category.id;
-            option.text = category.name;
-            categorySelect.appendChild(option);
-            });
-            categorySelect.disabled = false;
-            } else {
-            categorySelect.disabled = true;
-            subcategorySelect.disabled = true;
-            }
+                var categoryName = this.value;
+                var categorySelect = document.getElementById("category");
+                var subcategorySelect = document.getElementById("subcategory");
+                // Clear existing options
+                categorySelect.innerHTML = '<option value="" disabled selected></option>';
+                subcategorySelect.innerHTML = '<option value="" disabled selected></option>';
+                // Populate options for categories based on selected general category
+                if (categoryName in categories) {
+                    categories[categoryName].forEach(function (category) {
+                        var option = document.createElement("option");
+                        option.value = category.id;
+                        option.text = category.name;
+                        categorySelect.appendChild(option);
+                    });
+                    categorySelect.disabled = false;
+                } else {
+                    categorySelect.disabled = true;
+                    subcategorySelect.disabled = true;
+                }
             });
             // Handle category selection change
             var categorySelect = document.getElementById("category");
             categorySelect.addEventListener("change", function () {
-            var subcategoryName = this.value;
-            var subcategorySelect = document.getElementById("subcategory");
-            // Clear existing options
-            subcategorySelect.innerHTML = '<option value="" disabled selected></option>';
-            // Populate options for subcategories based on selected category
-            if (subcategoryName in subcategories) {
-            subcategories[subcategoryName].forEach(function (subcategory) {
-            var option = document.createElement("option");
-            option.value = subcategory.id;
-            option.text = subcategory.name;
-            subcategorySelect.appendChild(option);
-            });
-            subcategorySelect.disabled = false;
-            } else {
-            subcategorySelect.disabled = true;
-            }
+                var subcategoryName = this.value;
+                var subcategorySelect = document.getElementById("subcategory");
+                // Clear existing options
+                subcategorySelect.innerHTML = '<option value="" disabled selected></option>';
+                // Populate options for subcategories based on selected category
+                if (subcategoryName in subcategories) {
+                    subcategories[subcategoryName].forEach(function (subcategory) {
+                        var option = document.createElement("option");
+                        option.value = subcategory.id;
+                        option.text = subcategory.name;
+                        subcategorySelect.appendChild(option);
+                    });
+                    subcategorySelect.disabled = false;
+                } else {
+                    subcategorySelect.disabled = true;
+                }
             });
         </script>
 
