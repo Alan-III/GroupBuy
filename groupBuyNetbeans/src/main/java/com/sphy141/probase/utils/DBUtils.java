@@ -455,21 +455,33 @@ public class DBUtils {
         return categoryFilterMap;
     }
     
-    //GET A LIST OF FILTERS NAMES FOR A SPECIFIC CATEGORY NAME
-    public static List<String> findCategoryFilters(Connection conn, String categoryName) throws SQLException {
-        String sql = "SELECT distinct(filterName) FROM catergoryfilters cf inner join filtersdetails f on cf.filtersID=f.filtersID \n"
-                + "inner join categories c on c.categoryID=cf.categoryID WHERE subCategory = ? OR category = ? OR genCategory = ?";
+    //GET A LIST OF FILTERS AND VALUES FOR A SPECIFIC CATEGORY NAME
+    public static List<ProductFilter> findCategoryFilters(Connection conn, String categoryName) throws SQLException {
+        String sql = "SELECT distinct(filterName), f.filtersID, filtervalue FROM catergoryfilters cf INNER JOIN filtersdetails f on cf.filtersID=f.filtersID " +
+"INNER JOIN categories c on c.categoryID=cf.categoryID " +
+"INNER JOIN productfilters pf on pf.filtersID=f.filtersID WHERE subCategory = ? OR category = ? OR genCategory = ? ORDER BY f.filtersID;";
         PreparedStatement pst = conn.prepareStatement(sql);
         pst.setString(1, categoryName);
         pst.setString(2, categoryName);
         pst.setString(3, categoryName);
         ResultSet rs = pst.executeQuery();
-        List<String> filtersList = new ArrayList<>();
+        List<ProductFilter> filtersList = new ArrayList<>();
+        ProductFilter filter = null;
+        int tmpID=0;
         while (rs.next()) {
-            String filterName = rs.getString("filterName");
+            int filterID = rs.getInt("filtersID");
+            if(tmpID!=filterID){
+                tmpID=filterID;
+                if(filter!=null)
+                    filtersList.add(filter);
+                filter = new ProductFilter();
+                filter.setFilterID(rs.getInt("filtersID"));
+                filter.setFilterName(rs.getString("filterName"));
+            }
+            filter.addExistingFilterValues(rs.getString("filtervalue"));
             // Filter unique because of distinct, add it to the list
-            filtersList.add(filterName);
         }//while
+        filtersList.add(filter);
         return filtersList;
     }
     

@@ -12,7 +12,7 @@
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css"/>
         <link href="styles/BootstrapStyles.css" rel="stylesheet" />
         <!--<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">-->
-
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     </head>
     <body>
         <!-- Navigation-->
@@ -35,16 +35,26 @@
                     </div>
                     <div class="menu">
                         <div id="side-menu">
-                            <ul>
+                            <ul class="no-liststyle">
                             <c:if test="${filtersList==null}">
                                 <li><i class="fas fa-qrcode"></i>
                                     <a href="#">No filters for this Category</a>
                                 </li>
                             </c:if>
+
                             <c:forEach items="${filtersList}" var="item">
-                            <li><i class="fas fa-qrcode"></i>
-                                <a href="#">${item}</a>
-                            </li>
+                                <li class="filter-item">
+                                    <i class="fas fa-qrcode"></i>
+                                    <span class="filter-name">${item.getFilterName()}</span>
+                                    <ul class="filter-values no-liststyle hidden">
+                                        <c:forEach items="${item.getExistingFilterValues()}" var="itemoption">
+                                            <li>
+                                                <input type="checkbox" value="${itemoption}" id="${itemoption}">
+                                                <label for="${itemoption}">${itemoption}</label>
+                                            </li>
+                                        </c:forEach>
+                                    </ul>
+                                </li>
                             </c:forEach>
                         </ul>
                     </div>
@@ -145,11 +155,11 @@
             //LOAD NEXT PAGE WITH SEARCH
             function searchProducts() {
                 var searchValue = document.getElementById("search-box").value;
-                if(searchValue.length)
+                if (searchValue.length)
                     var url = "${pageContext.request.contextPath}/productlist?search=" + encodeURIComponent(searchValue);
                 else
                     var url = "${pageContext.request.contextPath}/productlist";
-                    
+
                 window.location.href = url;
             }
             //SEARCH RESULTS
@@ -185,6 +195,12 @@
                 searchBox.value = list.innerHTML;
                 recommendsBox.innerHTML = '';
             }
+
+            $(document).ready(function () {
+                $(".filter-item").click(function () {
+                    $(this).find(".filter-values").toggleClass("hidden");
+                });
+            });
             </script>
             <script type='text/javascript' src='js/listTrack.js'></script>
             <script type='text/javascript' src='js/filterScroll.js'></script>
@@ -194,6 +210,7 @@
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
         <!-- Core theme JS-->
         <script src="js/scripts.js"></script>
+
     </body>
 
 </html>
