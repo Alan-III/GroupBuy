@@ -8,6 +8,7 @@ package com.sphy141.probase.servlets;
 import com.sphy141.probase.beans.BusinessAccount;
 import com.sphy141.probase.beans.Category;
 import com.sphy141.probase.beans.Product;
+import com.sphy141.probase.beans.ProductFilter;
 import com.sphy141.probase.beans.UserAccount;
 import com.sphy141.probase.utils.DBUtils;
 import com.sphy141.probase.utils.MyUtils;
@@ -99,7 +100,7 @@ public class ProductListServlet extends HttpServlet {
         }
         
         //Get filters if category was selected
-        List<String> filtersList = null;
+        List<ProductFilter> filtersList = null;
         if(categoryIdParam!=null){
             try {
                 Category tempCategory = DBUtils.findCategory(conn, Integer.parseInt(categoryIdParam));

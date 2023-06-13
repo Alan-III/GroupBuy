@@ -407,4 +407,59 @@ public static List<String> queryBusinnesProducts(Connection conn, int businessID
         }//while
         return null;
     }
+    
+    //GET A LIST OF FILTERS AND VALUES FOR A SPECIFIC CATEGORY NAME
+    public static List<ProductFilter> findCategoryFilters(Connection conn, String categoryName) throws SQLException {
+        String sql = "SELECT distinct(filterName), f.filtersID, filtervalue FROM catergoryfilters cf INNER JOIN filtersdetails f on cf.filtersID=f.filtersID " +
+"INNER JOIN categories c on c.categoryID=cf.categoryID " +
+"INNER JOIN productfilters pf on pf.filtersID=f.filtersID WHERE subCategory = ? OR category = ? OR genCategory = ? ORDER BY f.filtersID;";
+        PreparedStatement pst = conn.prepareStatement(sql);
+        pst.setString(1, categoryName);
+        pst.setString(2, categoryName);
+        pst.setString(3, categoryName);
+        ResultSet rs = pst.executeQuery();
+        List<ProductFilter> filtersList = new ArrayList<>();
+        ProductFilter filter = null;
+        int tmpID=0;
+        while (rs.next()) {
+            int filterID = rs.getInt("filtersID");
+            if(tmpID!=filterID){
+                tmpID=filterID;
+                if(filter!=null)
+                    filtersList.add(filter);
+                filter = new ProductFilter();
+                filter.setFilterID(rs.getInt("filtersID"));
+                filter.setFilterName(rs.getString("filterName"));
+            }
+            filter.addExistingFilterValues(rs.getString("filtervalue"));
+            // Filter unique because of distinct, add it to the list
+        }//while
+        filtersList.add(filter);
+        return filtersList;
+    }
+    
+    //GET SPECIFIC FILTER
+    public static ProductFilter findFilter(Connection conn, String name) throws SQLException {
+        String sql = "SELECT * FROM filtersdetails WHERE filterName=?";
+        PreparedStatement pst = conn.prepareStatement(sql);
+        pst.setString(1, name);
+        ResultSet rs = pst.executeQuery();
+        ProductFilter filter = null;
+        while (rs.next()) {
+            filter = new ProductFilter();
+            filter.setFilterID(rs.getInt("filtersID"));
+            filter.setFilterName(rs.getString("filterName"));
+        }//while
+        return filter;
+    }
+
+    //SAVE FILTERS FOR CREATED PRODUCT
+    public static void storeProductFilter(Connection conn, int productID, String filtername, String filtervalue) throws SQLException {
+        String sql = "INSERT INTO productfilters (filtersID, productID, filtervalue) VALUES (?,?,?)";
+        PreparedStatement pst = conn.prepareStatement(sql);
+        pst.setInt(1, findFilter(conn, filtername).getFilterID());
+        pst.setInt(2, productID);
+        pst.setString(3, filtervalue);
+        pst.executeUpdate();
+    }
 }

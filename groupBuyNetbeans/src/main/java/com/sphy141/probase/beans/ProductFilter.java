@@ -5,6 +5,9 @@
  */
 package com.sphy141.probase.beans;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  *
  * @author Alan
@@ -13,6 +16,11 @@ public class ProductFilter {
     private int filterID;
     private String filterName;
     private String filterValue;
+    private List<String> existingFilterValues;
+
+    public ProductFilter() {
+        this.existingFilterValues = new ArrayList<>();
+    }
 
     public int getFilterID() {
         return filterID;
@@ -37,6 +45,16 @@ public class ProductFilter {
     public void setFilterValue(String filterValue) {
         this.filterValue = filterValue;
     }
-    
+
+    public List<String> getExistingFilterValues() {
+        return existingFilterValues;
+    }
+
+    public void setExistingFilterValues(List<String> existingFilterValues) {
+        this.existingFilterValues = existingFilterValues;
+    }
+    public void addExistingFilterValues(String value) {
+        this.existingFilterValues.add(value);
+    }
     
 }
