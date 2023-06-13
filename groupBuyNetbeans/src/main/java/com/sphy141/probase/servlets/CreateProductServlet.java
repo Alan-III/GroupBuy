@@ -198,7 +198,6 @@ public class CreateProductServlet extends HttpServlet {
 
         Product product = new Product();
         if (errorString == null) {
-
             Connection conn = MyUtils.getStoredConnection(req);
             try {
                 product = DBUtils.findProduct(conn, barcode);
@@ -214,7 +213,6 @@ public class CreateProductServlet extends HttpServlet {
                     if (category == null) {
                         errorString = "Category doesn't exist";
                     } else {
-
                         product = new Product();
                         product.setCode(barcode);
                         product.setName(name);
