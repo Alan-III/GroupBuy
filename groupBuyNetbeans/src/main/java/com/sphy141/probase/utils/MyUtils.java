@@ -102,4 +102,8 @@ public class MyUtils {
         cookie.setMaxAge(0);
         response.addCookie(cookie);
     }//deleteBusinessCookie
+
+    public static Connection getStoredConnection(HttpServletRequest req, String email) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
 }

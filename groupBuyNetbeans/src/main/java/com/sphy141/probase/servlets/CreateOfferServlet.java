@@ -6,6 +6,7 @@
 package com.sphy141.probase.servlets;
 
 import com.sphy141.probase.beans.BusinessAccount;
+import com.sphy141.probase.beans.Offer;
 import com.sphy141.probase.beans.Product;
 import com.sphy141.probase.utils.DBUtils;
 import com.sphy141.probase.utils.MyUtils;
@@ -16,6 +17,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -52,9 +54,22 @@ public class CreateOfferServlet extends HttpServlet {
         else
             req.setAttribute("loginedbusiness", business);
         
+        
+        
+        Connection conn = MyUtils.getStoredConnection(req);
+        List<String> codelist = null;
+        try { 
+            codelist = DBUtils.queryBusinnesProducts(conn, business.getBusinessID());//loging get businessID
+            } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+
+        req.setAttribute("codelist", codelist);
+        
         RequestDispatcher dispatcher = this.getServletContext()
                 .getRequestDispatcher("/WEB-INF/views/createOfferView.jsp");
         dispatcher.forward(req, resp);
+        
     }
     
     @Override
@@ -77,15 +92,20 @@ public class CreateOfferServlet extends HttpServlet {
             return;
         }
             
-            
-        String name = req.getParameter("pname");
-        String barcode = req.getParameter("pbarcode");
-        String strPrice = req.getParameter("pprice");
-        String details = req.getParameter("pdetails");
-        String strCategory = req.getParameter("pcat");
+        String name = req.getParameter("oname");
+        String ofinalprice = req.getParameter("ofinalprice");//
+        String odiscount = req.getParameter("odiscount");
+        String oexdate = req.getParameter("oexpdate");
+        String oexcoupon = req.getParameter("oecoupon");
+        String couponprice = req.getParameter("couponprice");
+        String osize = req.getParameter("osize");
+        String image = req.getParameter("oimage");
+        String details = req.getParameter("odetails");
+        String codes = req.getParameter("codes");
+        
         ServletContext context = getServletContext();
-        String realPath = context.getRealPath("/assets/databaseImages/products/");
-        String uploadDirectory = realPath+barcode+"\\";  // Specify the directory where you want to save the files
+        String realPath = context.getRealPath("/assets/databaseImages/offers/");
+        String uploadDirectory = realPath+"\\";  // Specify the directory where you want to save the files
         Path directoryPath = Paths.get(uploadDirectory);
         try {
             // Create the directory if it doesn't exist
@@ -96,6 +116,8 @@ public class CreateOfferServlet extends HttpServlet {
             System.out.println("Error creating directory: " + directoryPath);
             e.printStackTrace();
         }
+        
+    
         Collection<Part> imageParts = req.getParts();
         List<Part> imageFiles = new ArrayList<>(imageParts);
         List<String> imagePaths = new ArrayList<String>();
@@ -111,63 +133,136 @@ public class CreateOfferServlet extends HttpServlet {
                 // Save the file to the specified directory
                 Files.copy(imageFile.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
 //                imageFile.write(filePath.toString());
-                imagePaths.add("assets/databaseImages/products/"+barcode+"/"+fileName);
+                imagePaths.add("assets/databaseImages/offers/"+"/"+fileName);
                 System.out.println("File saved: " + filePath);
             } catch (IOException e) {
                 // Handle the exception if file saving fails
                 System.out.println("Error saving file: " + filePath);
                 e.printStackTrace();
             }
-        }
-
-        float price = 0;
-        int category = 0;
+            
+            
+        }//for
+            
+       /* Collection<Part> businesPro = req.getBussinessProducts();       
+        List<Part> productCodes = new ArrayList<>(businesPro);
+        //proses to upload productcodes
+        for (Part productCodes : productCodes ) {
+            // Perform your desired operations with the image file
+            
+            String  = imageFile.getSubmittedFileName();
+            if(fileName==null)
+                continue;
+            Path filePath = Paths.get(uploadDirectory, fileName);
+            try {
+                // Save the file to the specified directory
+                Files.copy(imageFile.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+//                imageFile.write(filePath.toString());
+                imagePaths.add("assets/databaseImages/offers/"+"/"+fileName);
+                System.out.println("File saved: " + filePath);
+            } catch (IOException e) {
+                // Handle the exception if file saving fails
+                System.out.println("Error saving file: " + filePath);
+                e.printStackTrace();
+            }
+            
+        }//for
+        
+        */
         String errorString = null;
+        float finalprice =0;
+        float offerdiscount =0;
+        int size = 1;
+        float coupprise=0;
+        LocalDate exdate =LocalDate.now();
+        LocalDate excoupon=LocalDate.now();
+        LocalDate currentDate = LocalDate.now();
         try {
-            price = Float.parseFloat(strPrice);
-            category = Integer.parseInt(strCategory);
+            size = Integer.parseInt(osize);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            errorString = "Group size is not a regular number";
+        }//try-catch
+        
+        try {
+            finalprice = Float.parseFloat(ofinalprice);
+            if (finalprice <0.0) {
+            errorString = "Product price cannot be negative";
+        }//
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            errorString = "The final price is not a number";
+        }//try-catch
+        
+        try {
+            offerdiscount = Float.parseFloat(odiscount);
         } catch (Exception ex) {
             ex.printStackTrace();
             errorString = "The price is not a number";
         }//try-catch
+        
+        try {
+            coupprise = Float.parseFloat(couponprice);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            errorString = "The price is not a number";
+        }//try-catch
+        
         String regex = "\\w+";
-        if (barcode == null || !barcode.matches(regex)) {
-            errorString = "Product code is invalid";
-        }//if
-        if (name == null || name.length() == 0) {
+        
+        if (name==null || name.length() == 0) {
             errorString = "Product name cannot be empty";
-        }//
-        if (price < 0) {
-            errorString = "Product price cannot be negative";
-        }//
+        }//iff
+        
         if (details == null || details.length() == 0) {
             errorString = "Product details cannot be empty";
-        }//
+        }//iff
         if (imagePaths == null) {
             errorString = "Product must have at least 1 image";
-        }//
+        }//iff
         
-        Product product = new Product();
+       try {
+            exdate = LocalDate.parse(oexdate);
+            if (exdate == null || exdate.isBefore(currentDate)) {
+            errorString = "Offer Expire day must not be today or before today";
+            }//iff
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            errorString = "Offer expire day is not valid";
+        }//try-catch
+       
+       
+        try {
+            excoupon = LocalDate.parse(oexcoupon);
+         
+            if (excoupon == null || excoupon.isBefore(currentDate)) {
+            errorString = "Coupon Expire day must not be today or before today";
+        }//iff
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            errorString = "Coupon expire day is not valid";
+        }//try-catch
+        
+        Offer offer = new Offer();
+        
         if (errorString == null) {
-            
-            
+           
             Connection conn = MyUtils.getStoredConnection(req);
-            try {
-                product = DBUtils.findProduct(conn, barcode);
-                if(product!=null){
-                    errorString = "Product BarCode exists";
-                }else{
-                    product = new Product();
-                    product.setCode(barcode);
-                    product.setName(name);
-                    product.setPrice(price);
-                    product.setDetails(details);
-                    product.setImagePaths(imagePaths);
-                    product.setCategoryID(category);
+            
+            try {   
+                    offer.setDiscount(offerdiscount);
+                    offer.setGroupSize(size);
+                    offer.setOfferExpire(exdate);
+                    offer.setCouponExpire(excoupon);
+                    offer.setTitle(name);
+                    offer.setFinalprice(finalprice);
+                    offer.setCouponPrice(coupprise);
+                    offer.setDetails(details);
+                    offer.setImagePaths(imagePaths);
+                    DBUtils.insertOffer(conn, offer); 
+                    resp.sendRedirect(req.getContextPath() + "/offerlist");
                     
-                    DBUtils.insertProduct(conn, product);
-                    resp.sendRedirect(req.getContextPath() + "/productlist");
-                }
+                
             } catch (SQLException ex) {
                 ex.printStackTrace();
                 errorString = "There is a problem with the database";

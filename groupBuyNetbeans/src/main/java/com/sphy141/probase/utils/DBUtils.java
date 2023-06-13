@@ -7,12 +7,15 @@ package com.sphy141.probase.utils;
 
 import com.sphy141.probase.beans.BusinessAccount;
 import com.sphy141.probase.beans.Category;
+import com.sphy141.probase.beans.Offer;
 import com.sphy141.probase.beans.Product;
 import com.sphy141.probase.beans.UserAccount;
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -160,7 +163,40 @@ public class DBUtils {
         }//while
         return null;
     }//findProduct
+    
+   
+public static List<String> queryBusinnesProducts(Connection conn, int businessID) throws SQLException {
+    List<String> codelist = new ArrayList<>();
+    String sql = "SELECT productCode FROM businessproducts WHERE businessID = ?";
+    PreparedStatement pst = conn.prepareStatement(sql);
+    pst.setInt(1, businessID);
+    ResultSet rs = pst.executeQuery();
+    while (rs.next()) {
+        String productCode = rs.getString("productCode");
+        codelist.add(productCode);
+    }
+    return codelist;
+}
 
+
+/*public static Product queryBusinnesOffers(Connection conn) throws SQLException {/////// ΝΑ ΡΩΤΗΣΩ ΑΛΛΕΞΑ
+        String sql = "SELECT offerID,title,  FROM offers  WHERE email=? ";
+        List<Product> list = new ArrayList<Product>();
+        PreparedStatement pst = conn.prepareStatement(sql);
+        pst.setString(1, get;)
+        ResultSet rs = pst.executeQuery();
+        while (rs.next()) {
+            Product prod = new Product();
+            prod.setCode(rs.getString("productCode"));
+            prod.setName(rs.getString("productName"));
+            prod.setId(rs.getInt("productID"));
+            return prod;
+        }//while
+        return null;
+    }//findProduct
+    
+  */ 
+    
     public static void updateProduct(Connection conn, Product product) throws SQLException {
         String sql = "UPDATE products SET name=?,Price=? WHERE code = ?";
         PreparedStatement pst = conn.prepareCall(sql);
@@ -191,13 +227,40 @@ public class DBUtils {
         }
     }//insertProduct
     
-    public static void deleteProduct(Connection conn, String code) throws SQLException {
-        String sql = "DELETE FROM products WHERE code=? ";
+    public static void insertOffer(Connection conn, Offer offer) throws SQLException {
+        String sql = "INSERT INTO offers (title,finalPrice,discount,couponPrice,offerExpire,couponExpire,details,groupsize,email) values (?,?,?,?,?,?,?,?,?)";
+        PreparedStatement pst = conn.prepareCall(sql);
+        pst.setString(1, offer.getTitle());
+        pst.setDouble(2, offer.getFinalprice());
+        pst.setDouble(3, offer.getDiscount());
+        pst.setDouble(4, offer.getCouponPrice());
+        pst.setDate(5, Date.valueOf(offer.getOfferExpire()));
+        pst.setDate(6, Date.valueOf(offer.getCouponExpire()));
+        pst.setString(7, offer.getDetails());
+        pst.setDouble(8, offer.getGroupSize());
+        /*email*/
+        pst.executeUpdate();
+        
+        
+        /*List<String> paths = offer.getImagePaths();
+        Product offerNew = findOffer(conn, offer.getOfferID());
+        for (String path : paths) {
+            String sql2 = "INSERT INTO offerphoto (offerID,path) VALUES(?,?)";
+            PreparedStatement pst2 = conn.prepareCall(sql2);
+            pst2.setInt(1, offerNew.getId());
+            pst2.setString(2, path);
+            pst2.executeUpdate();
+        }*/
+    }//insertProduct
+    
+    
+    /*public static void deleteOffer(Connection conn, String code) throws SQLException {
+        String sql = "DELETE FROM products WHERE offerID=? ";
         PreparedStatement pst = conn.prepareStatement(sql);
-        pst.setString(1, code);
+        pst.setInt(1,offerID);
         pst.executeUpdate();
     }//deleteProduct
-    
+    */
     public static BusinessAccount findBusiness(Connection conn, String loginEmail, String password) throws SQLException {
         String sql = "SELECT businessID, supervisorFirstName, supervisorLastName, balance, businessName,"
                 + " IBAN,AFM, b.email as email, password FROM business b INNER JOIN login l ON b.email=l.email WHERE b.email = ? AND password = ?  AND enabled = 1";

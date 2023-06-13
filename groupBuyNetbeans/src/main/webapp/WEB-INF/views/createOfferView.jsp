@@ -129,9 +129,20 @@
                             <label class="form-label" for="oexpcoupon">Coupon Expire in days after purchase</label> 
                         </div>
                         <div class="input-field">
-                            <input type="file" class="form-control" required="required" id="oimage" name="oimage[]" multiple/>
+                            <input type="file" class="form-control" required="required" id="oimage" name="oimage[]" min= "1" multiple/>
                             <label class="input-label-focused" for="oimage">Images</label> 
                         </div>
+                        
+                        <div class="input-field">
+                            <select class="form-control" required="required" id="codes" name="codes[]">
+                            <c:forEach var="code" items="${codelist}">
+                                <option value="${code}">${code}</option>
+                            </c:forEach>
+                            </select>
+                            <label class="input-label-focused" for="codes">Product Code</label>
+                        </div>
+                        
+                        
                         <button type="submit" name="submit" class="btn btn-primary btn-block mb-4">Submit</button>
                     </form>
                 </div>
@@ -148,6 +159,20 @@
             document.getElementById('oexpdate').min = formattedDate;
             document.getElementById('oexpdate').type = 'text';
         </script>
+        <script>
+    function updateLabel() {
+        var selectElement = document.getElementById("codes");
+        var selectedCodes = [];
+        for (var i = 0; i < selectElement.options.length; i++) {
+            if (selectElement.options[i].selected) {
+                selectedCodes.push(selectElement.options[i].text);
+            }
+        }
+        var labelElement = document.getElementById("selectedCodeLabel");
+        labelElement.textContent = "Selected Codes: " + selectedCodes.join(", ");
+    }
+</script>
+        
         <!-- Footer-->
         <jsp:include page="_footer.jsp"></jsp:include>
         <!-- Bootstrap core JS-->
