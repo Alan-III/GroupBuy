@@ -3,22 +3,8 @@
     position: ;
     left: 50px;
 }*/
-*{
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: 'Poppins', sans-serif;
-}
 .main_box{
-  position: relative;
-  top: 0;
-  margin-top: 72px;
-  padding-top:  40px;
-  background: url("../assets/img/sidebar-bg.jpg") no-repeat;
-  background-size: 100% 100%;
-  min-height: 100vh;
-  height: fit-content;
-  width: 100%;
+    padding-top: 4rem ;
 }
 .main_box .sidebar_menu{
   position: absolute;
@@ -88,9 +74,6 @@
   transition: all 0.2s linear;
   transform: scale(1.01);
 }
-#check{
-  display: none;
-}
 .main_box .btn_one i{
   color: #fff;
   font-size: 30px;
@@ -131,98 +114,8 @@
 #check:checked ~ .layout{
   left: 310px;
 }
-.layout{
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  position: relative;
-  top: 10px;
-  left: 50px;
-  margin-left: 100px;
-  color: white;
-  width: calc(100vw - 480px);
-  transition: all 0.3s linear;
-}
-
-.track-container{
-    height: 30vh;
-    /*width: calc(100vw - 480px);*/
-  overflow-x: hidden;
-}
-.border-yellow{
-  border: solid 2px yellow;
-  border-radius: 10px;
-  background-color: rgba(0,0,0,0.6);
-}
-.border-red{
-  border: solid 2px red;
-  border-radius: 10px;
-  background-color: rgba(0,0,0,0.6);
-}
-.image-track {
-  padding: 1rem;
-  display: flex;
-  gap: 4vmin;
-  user-select: none;
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 1;
-}
-
-.product {
-  padding: 0.2rem;
-  position: relative;
-  height: 100%;
-  width: fit-content;
-  display: inline-flex;
-  border: solid 1px white;
-  border-radius: 10px;
-}
-.product-image {
-  padding: 1.5rem;
-}
-.product a img {
-  height: 100%;
-}
-
-.product p{
-  position: absolute;
-  /*width: 100%;*/
-  color: #fff;
-  padding: 3px;
-  margin: 0;
-  font-size: 14px;
-  overflow: hidden;
-  max-height: 30px;
-  border-radius: 10px;
-}
-.product p.image-left {
-  max-width: 70%;
-  left: 0;
-}
-.product p.image-right {
-  right: 0;
-  max-width: 30%;
-  text-align: right;
-}
-.product p.image-bottom {
-  bottom: 0;
-  background-color: rgba(50,0,0,0.7);
-}
-.small-icon, .product a img.small-icon {
-    width: 20px;
-    height: 20px;
-}
 .menu{
     overflow-y: hidden;
-}
-.add-product-btn{
-    padding: 0;
-    width: fit-content;
-    font-family: "Montserrat", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-    font-size: 1.125rem;
-    font-weight: 700;
-}
+}  
+
+
