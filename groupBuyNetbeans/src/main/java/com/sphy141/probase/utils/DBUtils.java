@@ -9,6 +9,7 @@ import com.sphy141.probase.beans.BusinessAccount;
 import com.sphy141.probase.beans.Category;
 import com.sphy141.probase.beans.Offer;
 import com.sphy141.probase.beans.Product;
+import com.sphy141.probase.beans.ProductFilter;
 import com.sphy141.probase.beans.UserAccount;
 import java.sql.Connection;
 import java.sql.Date;
@@ -17,7 +18,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -408,6 +411,127 @@ public static List<String> queryBusinnesProducts(Connection conn, int businessID
         return null;
     }
     
+    //GET SPECIFIC FILTER
+    public static ProductFilter findFilter(Connection conn, String name) throws SQLException {
+        String sql = "SELECT * FROM filtersdetails WHERE filterName=?";
+        PreparedStatement pst = conn.prepareStatement(sql);
+        pst.setString(1, name);
+        ResultSet rs = pst.executeQuery();
+        ProductFilter filter = null;
+        while (rs.next()) {
+            filter = new ProductFilter();
+            filter.setFilterID(rs.getInt("filtersID"));
+            filter.setFilterName(rs.getString("filterName"));
+        }//while
+        return filter;
+    }
+
+    //SAVE FILTERS FOR CREATED PRODUCT
+    public static void storeProductFilter(Connection conn, int productID, String filtername, String filtervalue) throws SQLException {
+        String sql = "INSERT INTO productfilters (filtersID, productID, filtervalue) VALUES (?,?,?)";
+        PreparedStatement pst = conn.prepareStatement(sql);
+        pst.setInt(1, findFilter(conn, filtername).getFilterID());
+        pst.setInt(2, productID);
+        pst.setString(3, filtervalue);
+        pst.executeUpdate();
+    }
+    
+    
+    //SEARCH KEYWORD AND BRING LIST OF PRODUCTS
+    public static List<Product> searchProduct(Connection conn, String keyword) throws SQLException {
+        String sql = "SELECT * FROM group_buy.products p INNER JOIN productphoto pp ON p.productID=pp.productID where productName like ? or details like ? GROUP BY p.productID;";
+        List<Product> list = new ArrayList<Product>();
+        PreparedStatement pst = conn.prepareStatement(sql);
+        pst.setString(1, "%"+keyword+"%");
+        pst.setString(2, "%"+keyword+"%");
+        ResultSet rs = pst.executeQuery();
+        while (rs.next()) {
+            Product prod = new Product();
+            prod.setId(rs.getInt("productID"));
+            prod.setCode(rs.getString("productCode"));
+            prod.setName(rs.getString("productName"));
+            prod.setDetails(rs.getString("details"));
+            prod.setPrice(rs.getFloat("price"));
+            prod.addImagePath(rs.getString("path"));
+            list.add(prod);
+        }//while
+        return list;
+    }//queryProduct
+    
+    //DELETE PRODUCT BY PRODUCTID
+    public static void deleteProduct(Connection conn, int id) throws SQLException {
+        String sql = "DELETE FROM products WHERE productID=? ";
+        PreparedStatement pst = conn.prepareStatement(sql);
+        pst.setInt(1, id);
+        pst.executeUpdate();
+    }//deleteProduct
+    
+    //FIND SPECIFIC CATEGORY
+    public static Category findCategory(Connection conn, int categoryID) throws SQLException {
+        String sql = "SELECT * FROM categories WHERE categoryID = ?";
+        PreparedStatement pst = conn.prepareStatement(sql);
+        pst.setInt(1, categoryID);
+        ResultSet rs = pst.executeQuery();
+        while (rs.next()) {
+            Category category = new Category();
+            category.setCategoryID(rs.getInt("categoryID"));
+            if (rs.getString("subCategory") != null) {
+                category.setCategoryName(rs.getString("subCategory"));
+                category.setSubCategory(rs.getString("subCategory"));
+                category.setMidCategory(rs.getString("category"));
+                category.setGenCategory(rs.getString("genCategory"));
+            } else if (rs.getString("category") != null) {
+                category.setCategoryName(rs.getString("category"));
+                category.setMidCategory(rs.getString("category"));
+                category.setGenCategory(rs.getString("genCategory"));
+            } else {
+                category.setCategoryName(rs.getString("genCategory"));
+                category.setGenCategory(rs.getString("genCategory"));
+            }
+            category.setCategoryImagePath(rs.getString("path"));
+            return category;
+        }//while
+        return null;
+    }
+
+    //GET A LIST OF FILTERS NAMES FOR EACH CATEGORY NAME
+    public static Map<String, List<String>> queryCategoryFilters(Connection conn) throws SQLException {
+        String sql = "SELECT subCategory,category,genCategory,filterName FROM catergoryfilters cf inner join filtersdetails f on cf.filtersID=f.filtersID \n"
+                + "inner join categories c on c.categoryID=cf.categoryID order by subCategory, category, genCategory";
+        PreparedStatement pst = conn.prepareStatement(sql);
+        ResultSet rs = pst.executeQuery();
+        Map<String, List<String>> categoryFilterMap = new HashMap<>();
+        while (rs.next()) {
+            String subCategory = rs.getString("subCategory");
+            String midCategory = rs.getString("category");
+            String genCategory = rs.getString("genCategory");
+            String filterName = rs.getString("filterName");
+            String categoryName;
+            if (subCategory != null)
+                categoryName=subCategory;
+            else if(midCategory != null)
+                categoryName=midCategory;
+            else
+                categoryName=genCategory;
+                
+            // Check if the key exists in the map
+            if (categoryFilterMap.containsKey(categoryName)) {
+                // Key exists, get the list and check if the filter exists
+                List<String> filters = categoryFilterMap.get(categoryName);
+                if (!filters.contains(filterName)) {
+                    // Filter doesn't exist, add it to the list
+                    filters.add(filterName);
+                }
+            } else {
+                // Key doesn't exist, create a new list and add the filter
+                List<String> filters = new ArrayList<>();
+                filters.add(filterName);
+                categoryFilterMap.put(categoryName, filters);
+            }
+        }//while
+        return categoryFilterMap;
+    }
+    
     //GET A LIST OF FILTERS AND VALUES FOR A SPECIFIC CATEGORY NAME
     public static List<ProductFilter> findCategoryFilters(Connection conn, String categoryName) throws SQLException {
         String sql = "SELECT distinct(filterName), f.filtersID, filtervalue FROM catergoryfilters cf INNER JOIN filtersdetails f on cf.filtersID=f.filtersID " +
@@ -436,30 +560,5 @@ public static List<String> queryBusinnesProducts(Connection conn, int businessID
         }//while
         filtersList.add(filter);
         return filtersList;
-    }
-    
-    //GET SPECIFIC FILTER
-    public static ProductFilter findFilter(Connection conn, String name) throws SQLException {
-        String sql = "SELECT * FROM filtersdetails WHERE filterName=?";
-        PreparedStatement pst = conn.prepareStatement(sql);
-        pst.setString(1, name);
-        ResultSet rs = pst.executeQuery();
-        ProductFilter filter = null;
-        while (rs.next()) {
-            filter = new ProductFilter();
-            filter.setFilterID(rs.getInt("filtersID"));
-            filter.setFilterName(rs.getString("filterName"));
-        }//while
-        return filter;
-    }
-
-    //SAVE FILTERS FOR CREATED PRODUCT
-    public static void storeProductFilter(Connection conn, int productID, String filtername, String filtervalue) throws SQLException {
-        String sql = "INSERT INTO productfilters (filtersID, productID, filtervalue) VALUES (?,?,?)";
-        PreparedStatement pst = conn.prepareStatement(sql);
-        pst.setInt(1, findFilter(conn, filtername).getFilterID());
-        pst.setInt(2, productID);
-        pst.setString(3, filtervalue);
-        pst.executeUpdate();
     }
 }
