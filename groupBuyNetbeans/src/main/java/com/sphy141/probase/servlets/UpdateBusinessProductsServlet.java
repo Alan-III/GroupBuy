@@ -22,6 +22,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -40,18 +42,18 @@ import org.json.JSONObject;
  */
 @WebServlet(urlPatterns = {"/updatebusinessproducts"})
 public class UpdateBusinessProductsServlet extends HttpServlet {
-    
+
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         HttpSession session = req.getSession();
         BusinessAccount business = MyUtils.getLoginedBusiness(session);
         String errorString = null;
-        if (business == null) {
-            resp.sendRedirect(req.getContextPath() + "/home");  // REDIRECT TO ACCESS DENIED PAGE
-            return;
-        } else {
-            req.setAttribute("loginedbusiness", business);
-        }
+//        if (business == null) {
+//            resp.sendRedirect(req.getContextPath() + "/home");  // REDIRECT TO ACCESS DENIED PAGE
+//            return;
+//        } else {
+        req.setAttribute("loginedbusiness", business);
+//        }
 
         Connection conn = MyUtils.getStoredConnection(req);
         // get lists of categories
@@ -75,9 +77,33 @@ public class UpdateBusinessProductsServlet extends HttpServlet {
             }
         }
 
+        List<Product> productList = null;
+        try {
+            productList = DBUtils.queryProductNotInBusiness(conn, business.getBusinessID());
+
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        if (productList == null) {
+            errorString = "There was a problem with products";
+        }
+        List<Product> businessProductList = null;
+        try {
+            businessProductList = DBUtils.queryBusinessProducts(conn, business.getBusinessID());
+
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        if (productList == null) {
+            errorString = "There was a problem with products";
+        }
+
         req.setAttribute("genCategory", genlist);
         req.setAttribute("category", midlist);
         req.setAttribute("subCategory", sublist);
+        req.setAttribute("productList", productList);
+        req.setAttribute("businessProductList", businessProductList);
+
         RequestDispatcher dispatcher = this.getServletContext()
                 .getRequestDispatcher("/WEB-INF/views/updateBusinessProductsView.jsp");
         dispatcher.forward(req, resp);
@@ -87,14 +113,25 @@ public class UpdateBusinessProductsServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         HttpSession session = req.getSession();
         BusinessAccount business = MyUtils.getLoginedBusiness(session);
-
         if (business == null) {
-            resp.sendRedirect(req.getContextPath() + "/home");  // REDIRECT TO ACCESS DENIED PAGE
+            resp.getWriter().write("false");
             return;
         } else {
             req.setAttribute("loginedbusiness", business);
         }
-        
-        //.......
+        Connection conn = MyUtils.getStoredConnection(req);
+
+        //Get the filters cheched
+        String productCode = req.getParameter("productCode");
+
+        try {
+            //Toggle Handler. if it exists delete it, if it doesn't Insert it
+            DBUtils.toggleBusinessProduct(conn, productCode, business.getBusinessID());
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            resp.getWriter().write("false");
+            return;
+        }
+        resp.getWriter().write("true");
     }
 }

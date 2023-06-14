@@ -15,7 +15,6 @@
         <meta name="author" content="" />
         <title>GroupBuy - Update Business Products</title>
         <link rel="stylesheet" href="styles/userInfoStyles.css">
-        <link rel="stylesheet" href="styles/filterSidebarStyles.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css"/>
         <link href="styles/BootstrapStyles.css" rel="stylesheet" />
         <!--<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">-->
@@ -25,91 +24,162 @@
         <!-- Navigation-->
         <jsp:include page="_menu.jsp"></jsp:include>
             <div class="main_box">
+                <div class="sidebar">
+                    <nav class="main-menu">
+                        <ul>
+                            <li>
+                                <a href="https://jbfarrow.com">
+                                    <i class="fa fa-home fa-2x"></i>
+                                    <span class="nav-text">
+                                        Business Details
+                                    </span>
+                                </a>
 
-                <input type="checkbox" id="check" title="cb" placeholder="..">
-                <div class="btn_one">
-                    <label for="check">
-                        <i class="fas fa-bars"></i>
-                    </label>
-                </div>
-                <div class="sidebar_menu">
-                    <div class="logo">
-                        <a href="#">Filters</a>
+                            </li>
+                            <li class="has-subnav">
+                                <a href="${pageContext.request.contextPath}/productlist?businessId=${loginedbusiness.getBusinessID()}">
+                                <i class="fa fa-shopping-cart fa-2x"></i>
+                                <span class="nav-text">
+                                    My Offers / Products
+                                </span>
+                            </a>
+
+                        </li>
+                        <li class="has-subnav">
+                            <a href="#">
+                                <i class="fa fa-book fa-2x"></i>
+                                <span class="nav-text">
+                                    My Payments
+                                </span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#">
+                                <i class="fa fa-info fa-2x"></i>
+                                <span class="nav-text">
+                                    Notifications
+                                </span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#">
+                                <i class="fa fa-cogs fa-2x"></i>
+                                <span class="nav-text">
+                                    Account Settings
+                                </span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#">
+                                <i class="fa fa-map-marker fa-2x"></i>
+                                <span class="nav-text">
+                                    Member Map
+                                </span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/groupbuy/logout">
+                                <i class="fa fa-power-off fa-2x"></i>
+                                <span class="nav-text">
+                                    Logout
+                                </span>
+                            </a>
+                        </li>
+                    </ul>
+
+                </nav>
+            </div>
+            <div id="userinfo" class="business-products layout">
+                <h3 class="text-center text-white pt-5">Update Business Products</h3>
+                <br>
+                <h6 class="text-center">Filter Products</h6>
+                <div class="categories-flex mb-4">
+                    <div class="input-field">
+                        <select id="generalCategory" name="generalCategory" class="form-control" required="required">
+                            <option value="" disabled selected></option>
+                            <!-- Populate options for general categories -->
+                            <c:forEach var="genCat" items="${genCategory}">
+                                <option value="${genCat.getCategoryName()}">${genCat.getCategoryName()}</option>
+                            </c:forEach>
+                        </select>
+                        <label class="form-label" for="generalCategory">General Category</label>
                     </div>
-                    <div class="btn_two">
-                        <label for="check">
-                            <i class="fas fa-times"></i>
-                        </label>
+                    <div class="input-field">
+                        <select id="category" name="category" class="form-control" disabled>
+                            <option value="" disabled selected></option>
+                            <!-- Options for categories will be loaded dynamically -->
+                        </select>
+                        <label class="form-label" for="category">Category</label>
                     </div>
-                    <div class="menu">
-                        <div id="side-menu">
-                            <ul id="filtersContainer">
-                                <li><i class="fas fa-qrcode"></i>
-                                    <a href="#">Please Select Category</a>
-                                </li>
-                            </ul>
-                        </div>
+                    <div class="input-field">
+                        <select id="subcategory" name="subcategory" class="form-control" disabled>
+                            <option value="" disabled selected></option>
+                            <!-- Options for subcategories will be loaded dynamically -->
+                        </select>
+                        <label class="form-label" for="subcategory">Sub Category</label>
                     </div>
-                </div>
-
-
-                <div id="userinfo" class="layout">
-                    <h3 class="text-center text-white pt-5">Create Product</h3>
-                    <br>
-                    <div class="loginclamp">
-                        <form id="createproductform" class="form-container" method="post" action="${pageContext.request.contextPath}/createproduct" enctype="multipart/form-data">
-                        <div class="input-field">
-                            <input type="text" class="form-control" required="required" id="pname" name="pname" />
-                            <label class="form-label" for="pname" >Product Name</label> 
-                        </div>
-                        <div class="input-field">
-                            <input type="text" class="form-control" required="required" id="pbarcode" name="pbarcode" />
-                            <label class="form-label" for="pbarcode">Product Barcode</label> 
-                        </div>
-                        <div class="input-field">
-                            <input type="text" class="form-control" required="required" id="pprice" name="pprice" />
-                            <label class="form-label" for="pprice">Price</label> 
-                        </div>
-                        <div class="input-field">
-                            <input type="text" class="form-control" required="required" id="pdetails" name="pdetails" rows="4" cols="50" />
-                            <label class="form-label" for="pdetails">Details</label> 
-                        </div>
-
-                        <div class="input-field">
-                            <select id="generalCategory" name="generalCategory" class="form-control" required="required">
-                                <option value="" disabled selected></option>
-                                <!-- Populate options for general categories -->
-                                <c:forEach var="genCat" items="${genCategory}">
-                                    <option value="${genCat.getCategoryName()}">${genCat.getCategoryName()}</option>
-                                </c:forEach>
-                            </select>
-                            <label class="form-label" for="generalCategory">General Category</label>
-                        </div>
-
-                        <div class="input-field">
-                            <select id="category" name="category" class="form-control" disabled>
-                                <option value="" disabled selected></option>
-                                <!-- Options for categories will be loaded dynamically -->
-                            </select>
-                            <label class="form-label" for="category">Category</label>
-                        </div>
-
-                        <div class="input-field">
-                            <select id="subcategory" name="subcategory" class="form-control" disabled>
-                                <option value="" disabled selected></option>
-                                <!-- Options for subcategories will be loaded dynamically -->
-                            </select>
-                            <label class="form-label" for="subcategory">Sub Category</label>
-                        </div>
-                        <div class="input-field">
-                            <input type="file" class="form-control" required="required" id="pimage" name="pimage[]" multiple/>
-                            <label class="input-label-focused" for="pimage">Images</label> 
-                        </div>
-<!--                        <button type="submit" name="submit" class="btn btn-primary btn-block mb-4">Submit</button>-->
-                         <!-- Button to trigger the submission -->
-                        <button type="button" class="btn btn-primary btn-block mb-4" onclick="submitForm()">Submit</button>
                     </form>
                 </div>
+
+                <div class="layout mb-2">
+                    <h4 class="text-center">Your Business Products</h4>
+                </div>
+                <div class="layout track-container border-yellow" id="trackcontainer">
+                    <!-- Item slider-->
+                    <div id='image-track' class="image-track" data-mouse-down-at='0' data-prev-percentage='0'>
+                        <c:forEach items="${businessProductList}" var="item">
+                            <div class='product' data-product-code="${item.getCode()}">
+                                <a class="product-image" href='${pageContext.request.contextPath}/productdetails?productCode=${item.getCode()}'>
+                                    <img src='${item.getFirstImagePath()}' draggable='false' />
+                                </a>
+                                <c:if test="${loginedbusiness.getBusinessName()=='c'}">
+                                    <p class="image-left">
+                                        <button class="fas fa-bars" onclick="moveProduct(${item.getCode()})"></button>
+                                    </p>
+                                    <p class="image-right">
+                                        <a href="#" onclick="confirmRedirect(${item.getId()})">
+                                            <img class="small-icon" src='assets/img/delete.png' draggable='false' />
+                                        </a>
+                                    </p>
+                                </c:if>
+                                <p class="image-left image-bottom">${item.getName()}</p>
+                                <p class="image-right image-bottom">${item.getPrice()}$</p>
+                            </div>                            
+                        </c:forEach>
+
+                    </div>
+
+                    <!-- Item slider end-->
+                </div>
+
+                <div class="layout mb-2">
+                    <h4 class="text-center">Products not offered by your business</h4>
+                </div>
+                <div class="layout track-container border-yellow mb-2" id="trackcontainer2">
+                    <!-- Item slider-->
+                    <div id='image-track2' class="image-track" data-mouse-down-at='0' data-prev-percentage='0'>
+                        <c:forEach items="${productList}" var="item">
+                            <div class='product' data-product-code="${item.getCode()}">
+                                <a class="product-image" href='${pageContext.request.contextPath}/productdetails?productCode=${item.getCode()}'>
+                                    <img src='${item.getFirstImagePath()}' draggable='false' />
+                                </a>
+                                <c:if test="${loginedbusiness.getBusinessName()=='c'}">
+                                    <p class="image-left">
+                                        <button class="fas fa-bars" onclick="moveProduct(${item.getCode()})"></button>
+                                    </p>
+                                    <p class="image-right">
+                                        <a href="#" onclick="confirmRedirect(${item.getId()})">
+                                            <img class="small-icon" src='assets/img/delete.png' draggable='false' />
+                                        </a>
+                                    </p>
+                                </c:if>
+                                <p class="image-left image-bottom">${item.getName()}</p>
+                                <p class="image-right image-bottom">${item.getPrice()}$</p>
+                            </div>                            
+                        </c:forEach>
+                    </div>
+                    <!-- Item slider end-->
+                </div> 
             </div>
         </div>
 
@@ -161,11 +231,6 @@
             categorySelect.disabled = true;
             subcategorySelect.disabled = true;
             }
-            //show filters
-            var filtercheck = document.getElementById("check");
-            filtercheck.checked = true;
-            populateFilters();
-            });
             //--------------------//
             // Handle category selection change
             var categorySelect = document.getElementById("category");
@@ -186,97 +251,61 @@
             } else {
             subcategorySelect.disabled = true;
             }
-            populateFilters();
+            });
             });
             //--------------------//
-            // POPULATE FILTERS
-            var categoryFilterMap = JSON.parse('${categoryFilterMapJson}');
-            // Function to populate filters based on selected category
-            function populateFilters() {
-            var selectedCategory = document.getElementById("subcategory").value ||
-                    document.getElementById("category").value ||
-                    document.getElementById("generalCategory").value;
-            var filtersContainer = document.getElementById("filtersContainer");
-            filtersContainer.innerHTML = ""; // Clear existing filters
-
-            if (selectedCategory) {
-            var filters = categoryFilterMap[selectedCategory];
-            if (filters && filters.length > 0) {
-            filters.forEach(function(filter) {
-            var filterElement = document.createElement("div");
-            filterElement.className = "input-field mt-2";
-            var filterInput = document.createElement("input");
-            filterInput.type = "text";
-            filterInput.className = "form-control filterinput";
-            filterInput.required = "required";
-            filterInput.id = filter;
-            filterInput.name = filter;
-            var filterLabel = document.createElement("label");
-            filterLabel.className = "form-label";
-            filterLabel.htmlFor = filter;
-            filterLabel.textContent = filter;
-            filterElement.appendChild(filterInput);
-            filterElement.appendChild(filterLabel);
-            filtersContainer.appendChild(filterElement);
-            });
-            } else {
-            var noFiltersElement = document.createElement("li");
-            var filterLink = document.createElement("a");
-            filterLink.href = "#";
-            filterLink.textContent = "No filters available for the selected category.";
-            noFiltersElement.appendChild(filterLink);
-            filtersContainer.appendChild(noFiltersElement);
-            }
-            } else {
-            var selectCategoryElement = document.createElement("li");
-            var filterLink = document.createElement("a");
-            filterLink.href = "#";
-            filterLink.textContent = "Please select a category.";
-            selectCategoryElement.appendChild(filterLink);
-            filtersContainer.appendChild(selectCategoryElement);
-            }
-            }
-
-
             // Handle subcategory selection change
             var subcategorySelect = document.getElementById("subcategory");
-            subcategorySelect.addEventListener("change", populateFilters);
             //--------------------//
-            //Get filters with submit
-            function submitForm() {
-            // Create an array to store the filter inputs
-            var filterInputs = [];
-            // Iterate over each filter input element
-            $(".filterinput").each(function() {
-                var name = $(this).attr("name");
-                var value = $(this).val();
-            // Create an object with name and value properties
-                var filterInput = {
-                    name: name,
-                    value: value
-            };
-            // Add the filter input object to the array
-            filterInputs.push(filterInput);
+
+            function moveProduct(productCode) {
+
+
+            // AJAX post to servlet with productId
+            $.ajax({
+            type: 'POST',
+                    url: '${pageContext.request.contextPath}/updatebusinessproducts',
+                    data: { productCode: productCode },
+                    success: function(response) {
+                    // Handle success
+                    if (response === 'true') {
+                    // Handle success case
+                    console.log('Operation successful');
+                    // Check if the productDiv exists in #image-track2
+                    var productDiv = $("#image-track2").find(`.product[data-product-code='` + productCode + `']`);
+                    if (productDiv.length === 0) {
+                    // Search for the productDiv in #image-track
+                    productDiv = $("#image-track").find(`.product[data-product-code='` + productCode + `']`);
+                    if (productDiv.length > 0) {
+                    // Move the productDiv to #image-track2
+                    productDiv.appendTo("#image-track2");
+                    }
+                    } else {
+                    // Move the productDiv to #image-track
+                    productDiv.appendTo("#image-track");
+                    }
+                    } else {
+                    // Handle error case
+                    alert('Operation failed. Please make sure you are logged in your Business Account. ');
+                    }
+                    },
+                    error: function() {
+                    // Handle error
+                    alert('Error occurred during the operation. Please try again later.');
+                    }
             });
-            // Create a hidden input field for the filter inputs
-            var filterInputsInput = $("<input>")
-                    .attr("type", "hidden")
-                    .attr("name", "filterInputs")
-                    .val(JSON.stringify(filterInputs));
-            $("form").append(filterInputsInput);
-            // Submit the form
-            $("form").submit();
             }
+
         </script>
 
 
-        <script type='text/javascript' src='js/filterScroll.js'></script>
         <!-- Footer-->
         <jsp:include page="_footer.jsp"></jsp:include>
         <!-- Bootstrap core JS-->
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
         <!-- Core theme JS-->
         <script src="js/scripts.js"></script>
+        <script src="js/listTrack.js"></script>
     </body>
 
 </html>

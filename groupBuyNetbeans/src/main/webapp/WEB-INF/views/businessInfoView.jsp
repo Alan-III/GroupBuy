@@ -77,9 +77,6 @@
                                 </span>
                             </a>
                         </li>
-                    </ul>
-
-                    <ul class="logout">
                         <li>
                             <a href="/groupbuy/logout">
                                 <i class="fa fa-power-off fa-2x"></i>
@@ -87,8 +84,7 @@
                                     Logout
                                 </span>
                             </a>
-                        </li>  
-                    </ul>
+                        </li>
                 </nav>
                 <div id="userinfo" class="layout">
                 <h3 class="text-center text-white pt-5">Business Details</h3>
