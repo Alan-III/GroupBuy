@@ -115,6 +115,8 @@
                 <c:if test="${loginedbusiness!=null}">
                     <button class="add-product-btn btn btn-primary  text-uppercase" 
                             onClick="window.location.href = '${pageContext.request.contextPath}/createproduct';">Create Product</button>
+                    <button class="add-product-btn btn btn-primary  text-uppercase" 
+                            onClick="window.location.href = '${pageContext.request.contextPath}/updatebusinessproducts';">Change Business Products</button>
                 </c:if>
             </div>
             <div class="layout track-container border-yellow" id="trackcontainer2">
@@ -125,7 +127,7 @@
                             <a class="product-image" href='${pageContext.request.contextPath}/productdetails?productCode=${item.getCode()}'>
                                 <img src='${item.getFirstImagePath()}' draggable='false' />
                             </a>
-                            <c:if test="${logineduser.getUserName()!='tomcruz'}">
+                            <c:if test="${loginedbusiness.getBusinessName()=='c'}">
                                 <p class="image-left">
                                     <a class="fas fa-bars" href='editproduct?proid=${item.getId()}'></a>
                                 </p>

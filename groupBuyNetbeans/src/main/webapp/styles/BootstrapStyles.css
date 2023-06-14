@@ -19,7 +19,12 @@
 .hidden{
     display: none !important;
 }
+.search-recommends{
+    position: absolute;
+    margin-top: 111px;
+}
 .search-recommends ul{
+    z-index: 10;
     margin: 0;
     padding: 0.2rem;
     border: 1px white solid;
@@ -46,6 +51,7 @@
     margin: auto;
 }
 .search_bar-small{
+    z-index: 11;
     align-self:center;
     display: flex;
     gap: 2vmin;
