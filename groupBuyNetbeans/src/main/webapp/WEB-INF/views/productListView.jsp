@@ -47,10 +47,12 @@
                                     <i class="fas fa-qrcode"></i>
                                     <span class="filter-name" value="${item.getFilterID()}">${item.getFilterName()}</span>
                                     <ul class="filter-values no-liststyle hidden">
-                                        <c:forEach items="${item.getExistingFilterValues()}" var="itemoption">
+                                        <c:forEach items="${item.getExistingFilterValues()}" var="entry">
+                                            <c:set var="itemOption" value="${entry.key}" />
+                                            <c:set var="itemRepetition" value="${entry.value}" />
                                             <li>
-                                                <input type="checkbox" value="${itemoption}" id="${itemoption}">
-                                                <label for="${itemoption}">${itemoption}</label>
+                                                <input type="checkbox" value="${itemOption}" id="${itemOption}">
+                                                <label for="${itemOption}">${itemOption} (${itemRepetition})</label>
                                             </li>
                                         </c:forEach>
                                     </ul>
@@ -233,21 +235,21 @@
                             // Iterate over the productList and populate the HTML
                             productList.forEach(function (item) {
                                 var productHtml = `<div class='product'>
-    <a class="product-image" href='${pageContext.request.contextPath}/productdetails?productCode=`+item.code+`'>
-      <img src='`+item.firstImagePath+`' draggable='false' />
+    <a class="product-image" href='${pageContext.request.contextPath}/productdetails?productCode=` + item.code + `'>
+      <img src='` + item.firstImagePath + `' draggable='false' />
     </a>
             <c:if test="${logineduser.getUserName()!='tomcruz'}">
       <p class="image-left">
-        <a class="fas fa-bars" href='editproduct?proid=`+item.id+`'></a>
+        <a class="fas fa-bars" href='editproduct?proid=` + item.id + `'></a>
       </p>
       <p class="image-right">
-        <a href="#" onclick="confirmRedirect(`+item.id+`">
+        <a href="#" onclick="confirmRedirect(` + item.id + `">
           <img class="small-icon" src='assets/img/delete.png' draggable='false' />
         </a>
       </p>
             </c:if>
-    <p class="image-left image-bottom">`+item.name+`</p>
-    <p class="image-right image-bottom">`+item.price+`</p>
+    <p class="image-left image-bottom">` + item.name + `</p>
+    <p class="image-right image-bottom">` + item.price + `</p>
   </div>`;
 
                                 // Append the productHtml to the productList container

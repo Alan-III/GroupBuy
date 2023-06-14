@@ -6,7 +6,9 @@
 package com.sphy141.probase.beans;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -16,10 +18,11 @@ public class ProductFilter {
     private int filterID;
     private String filterName;
     private String filterValue;
-    private List<String> existingFilterValues;
+    private Map<String, Integer> existingFilterValues;
+    private int repetitionOfSameValueCount;
 
     public ProductFilter() {
-        this.existingFilterValues = new ArrayList<>();
+        this.existingFilterValues = new HashMap<>();
     }
 
     public int getFilterID() {
@@ -46,15 +49,23 @@ public class ProductFilter {
         this.filterValue = filterValue;
     }
 
-    public List<String> getExistingFilterValues() {
+    public Map<String, Integer> getExistingFilterValues() {
         return existingFilterValues;
     }
 
-    public void setExistingFilterValues(List<String> existingFilterValues) {
+    public void setExistingFilterValues(Map<String, Integer> existingFilterValues) {
         this.existingFilterValues = existingFilterValues;
     }
-    public void addExistingFilterValues(String value) {
-        this.existingFilterValues.add(value);
+    public void addExistingFilterValues(String valueName, int valueRepetitionCount) {
+        this.existingFilterValues.put(valueName, valueRepetitionCount);
+    }
+
+    public int getRepetitionOfSameValueCount() {
+        return repetitionOfSameValueCount;
+    }
+
+    public void setRepetitionOfSameValueCount(int repetitionOfSameValueCount) {
+        this.repetitionOfSameValueCount = repetitionOfSameValueCount;
     }
     
 }

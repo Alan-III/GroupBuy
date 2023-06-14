@@ -534,9 +534,18 @@ public static List<String> queryBusinnesProducts(Connection conn, int businessID
     
     //GET A LIST OF FILTERS AND VALUES FOR A SPECIFIC CATEGORY NAME
     public static List<ProductFilter> findCategoryFilters(Connection conn, String categoryName) throws SQLException {
-        String sql = "SELECT distinct(filterName), f.filtersID, filtervalue FROM catergoryfilters cf INNER JOIN filtersdetails f on cf.filtersID=f.filtersID " +
-"INNER JOIN categories c on c.categoryID=cf.categoryID " +
-"INNER JOIN productfilters pf on pf.filtersID=f.filtersID WHERE subCategory = ? OR category = ? OR genCategory = ? ORDER BY f.filtersID;";
+        String sql = "SELECT f.filterName, f.filtersID, pf.filtervalue, countp AS repetitionCount\n" +
+"FROM catergoryfilters cf\n" +
+"INNER JOIN filtersdetails f ON cf.filtersID = f.filtersID\n" +
+"INNER JOIN categories c ON c.categoryID = cf.categoryID\n" +
+"LEFT JOIN (\n" +
+"    SELECT filtersID, filtervalue, COUNT(productID) AS countp\n" +
+"    FROM productfilters\n" +
+"    GROUP BY filtersID, filtervalue\n" +
+") pf ON pf.filtersID = f.filtersID\n" +
+"WHERE c.subCategory = ? OR c.category = ? OR c.genCategory = ?\n" +
+"GROUP BY f.filterName, f.filtersID, pf.filtervalue\n" +
+"ORDER BY f.filtersID;";
         PreparedStatement pst = conn.prepareStatement(sql);
         pst.setString(1, categoryName);
         pst.setString(2, categoryName);
@@ -554,8 +563,9 @@ public static List<String> queryBusinnesProducts(Connection conn, int businessID
                 filter = new ProductFilter();
                 filter.setFilterID(rs.getInt("filtersID"));
                 filter.setFilterName(rs.getString("filterName"));
+                
             }
-            filter.addExistingFilterValues(rs.getString("filtervalue"));
+            filter.addExistingFilterValues(rs.getString("filtervalue"),rs.getInt("repetitionCount"));
             // Filter unique because of distinct, add it to the list
         }//while
         filtersList.add(filter);

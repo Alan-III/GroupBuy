@@ -44,33 +44,42 @@ public class FilterProductListServlet extends HttpServlet {
 
         Connection conn = MyUtils.getStoredConnection(req);
         
-        //Get the filters cheched in a map from JSON
-        String checkedValuesJson = req.getParameter("checkedValues");
-        ObjectMapper objectMapper = new ObjectMapper();
-        Map<Integer, List<String>> checkedValues = objectMapper.readValue(checkedValuesJson, new TypeReference<Map<Integer, List<String>>>() {
-        });
-
-        // Build the WHERE querry from the checkedValues map
         String searchQuerry = "";
-        for (Map.Entry<Integer, List<String>> entry : checkedValues.entrySet()) {
-            Integer filterID = entry.getKey();
-            List<String> checkedOptions = entry.getValue();
+        
+        //Get the filters cheched
+        String checkedValuesJson = req.getParameter("checkedValues");
+        
+        System.out.println(checkedValuesJson);
+        // The checkedValues parameter is not empty
+        if (!checkedValuesJson.equals("{}")) {
+            //Get the filters checked in a map from JSON
+            ObjectMapper objectMapper = new ObjectMapper();
+            Map<Integer, List<String>> checkedValues = objectMapper.readValue(checkedValuesJson, new TypeReference<Map<Integer, List<String>>>() {
+            });
 
-            searchQuerry +="(filtersId = "+filterID+" AND filtervalue IN ("+checkedOptions+")) OR ";
+            // Build the WHERE querry from the checkedValues map
+            for (Map.Entry<Integer, List<String>> entry : checkedValues.entrySet()) {
+                Integer filterID = entry.getKey();
+                List<String> checkedOptions = entry.getValue();
+
+                searchQuerry +="(filtersId = "+filterID+" AND filtervalue IN ("+checkedOptions+")) OR ";
+            }
+            // checkedOptions is in [Apple, Samsung] format
+            // we need it to be in  'Apple','Samsung'
+            searchQuerry = searchQuerry.replace("[", "'").replace("]", "'").replace(", ", "','");   
+            searchQuerry = searchQuerry.substring(0, searchQuerry.length() - 3);
         }
-        searchQuerry = searchQuerry.replace("[", "'").replace("]", "'").replace(", ", "','");
-        searchQuerry = searchQuerry.substring(0, searchQuerry.length() - 3);
-        System.out.println(searchQuerry);
         
         //Filter Products
         //Get products ALL or Searched
         List<Product> productList = null;
         String errorString = null;
         try {
-            //            if(searchParam==null || searchParam.length()==0)
-//                productList = DBUtils.queryProduct(conn);
-//            else
-            productList = DBUtils.filterSearchProduct(conn, searchQuerry);
+            if (!checkedValuesJson.equals("{}"))   //Filters applied
+                productList = DBUtils.filterSearchProduct(conn, searchQuerry);
+            else   //No Filters applied get all products
+                productList = DBUtils.queryProduct(conn);
+            
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
@@ -78,14 +87,10 @@ public class FilterProductListServlet extends HttpServlet {
         if(productList==null){
             errorString = "There was a problem with products";
         }
-        for (Product product : productList) {
-            System.out.println(product.getName());
-        }
         
        // Convert productList to JSON
         ObjectMapper om = new ObjectMapper();
         String productListJson = om.writeValueAsString(productList);
-System.out.println(productListJson);
 
         // Set the response content type
         resp.setContentType("application/json");
