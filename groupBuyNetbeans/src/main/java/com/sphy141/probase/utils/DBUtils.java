@@ -534,9 +534,18 @@ public static List<String> queryBusinnesProducts(Connection conn, int businessID
     
     //GET A LIST OF FILTERS AND VALUES FOR A SPECIFIC CATEGORY NAME
     public static List<ProductFilter> findCategoryFilters(Connection conn, String categoryName) throws SQLException {
-        String sql = "SELECT distinct(filterName), f.filtersID, filtervalue FROM catergoryfilters cf INNER JOIN filtersdetails f on cf.filtersID=f.filtersID " +
-"INNER JOIN categories c on c.categoryID=cf.categoryID " +
-"INNER JOIN productfilters pf on pf.filtersID=f.filtersID WHERE subCategory = ? OR category = ? OR genCategory = ? ORDER BY f.filtersID;";
+        String sql = "SELECT f.filterName, f.filtersID, pf.filtervalue, countp AS repetitionCount\n" +
+"FROM catergoryfilters cf\n" +
+"INNER JOIN filtersdetails f ON cf.filtersID = f.filtersID\n" +
+"INNER JOIN categories c ON c.categoryID = cf.categoryID\n" +
+"LEFT JOIN (\n" +
+"    SELECT filtersID, filtervalue, COUNT(productID) AS countp\n" +
+"    FROM productfilters\n" +
+"    GROUP BY filtersID, filtervalue\n" +
+") pf ON pf.filtersID = f.filtersID\n" +
+"WHERE c.subCategory = ? OR c.category = ? OR c.genCategory = ?\n" +
+"GROUP BY f.filterName, f.filtersID, pf.filtervalue\n" +
+"ORDER BY f.filtersID;";
         PreparedStatement pst = conn.prepareStatement(sql);
         pst.setString(1, categoryName);
         pst.setString(2, categoryName);
@@ -554,11 +563,30 @@ public static List<String> queryBusinnesProducts(Connection conn, int businessID
                 filter = new ProductFilter();
                 filter.setFilterID(rs.getInt("filtersID"));
                 filter.setFilterName(rs.getString("filterName"));
+                
             }
-            filter.addExistingFilterValues(rs.getString("filtervalue"));
+            filter.addExistingFilterValues(rs.getString("filtervalue"),rs.getInt("repetitionCount"));
             // Filter unique because of distinct, add it to the list
         }//while
         filtersList.add(filter);
         return filtersList;
+    }
+
+    //GET LIST OF PRODUCTS THAT HAVE FILTERS CHECKED
+    public static List<Product> filterSearchProduct(Connection conn, String searchQuerry) throws SQLException{
+        String sql = "SELECT * FROM products p INNER JOIN productfilters pf ON p.productID=pf.productID INNER JOIN productphoto pp ON p.productID=pp.productID WHERE "+searchQuerry+"GROUP BY pp.productID";
+        PreparedStatement pst = conn.prepareStatement(sql);
+        ResultSet rs = pst.executeQuery();
+        List<Product> list = new ArrayList<Product>();
+        while (rs.next()) {
+            Product prod = new Product();
+            prod.setCode(rs.getString("productCode"));
+            prod.setName(rs.getString("productName"));
+            prod.setPrice(rs.getFloat("price"));
+            prod.setId(rs.getInt("productID"));
+            prod.addImagePath(rs.getString("path"));
+            list.add(prod);
+        }//while
+        return list;
     }
 }
