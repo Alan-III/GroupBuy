@@ -561,4 +561,22 @@ public static List<String> queryBusinnesProducts(Connection conn, int businessID
         filtersList.add(filter);
         return filtersList;
     }
+
+    //GET LIST OF PRODUCTS THAT HAVE FILTERS CHECKED
+    public static List<Product> filterSearchProduct(Connection conn, String searchQuerry) throws SQLException{
+        String sql = "SELECT * FROM products p INNER JOIN productfilters pf ON p.productID=pf.productID INNER JOIN productphoto pp ON p.productID=pp.productID WHERE "+searchQuerry+"GROUP BY pp.productID";
+        PreparedStatement pst = conn.prepareStatement(sql);
+        ResultSet rs = pst.executeQuery();
+        List<Product> list = new ArrayList<Product>();
+        while (rs.next()) {
+            Product prod = new Product();
+            prod.setCode(rs.getString("productCode"));
+            prod.setName(rs.getString("productName"));
+            prod.setPrice(rs.getFloat("price"));
+            prod.setId(rs.getInt("productID"));
+            prod.addImagePath(rs.getString("path"));
+            list.add(prod);
+        }//while
+        return list;
+    }
 }

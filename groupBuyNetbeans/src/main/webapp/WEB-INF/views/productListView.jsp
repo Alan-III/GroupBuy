@@ -45,7 +45,7 @@
                             <c:forEach items="${filtersList}" var="item">
                                 <li class="filter-item">
                                     <i class="fas fa-qrcode"></i>
-                                    <span class="filter-name">${item.getFilterName()}</span>
+                                    <span class="filter-name" value="${item.getFilterID()}">${item.getFilterName()}</span>
                                     <ul class="filter-values no-liststyle hidden">
                                         <c:forEach items="${item.getExistingFilterValues()}" var="itemoption">
                                             <li>
@@ -197,14 +197,82 @@
             }
 
             $(document).ready(function () {
+                $(".filter-values li, .filter-values :checkbox").click(function (event) {
+                    event.stopPropagation(); // Prevent event from bubbling to parent elements
+
+                    var checkbox = $(this).find(":checkbox");
+                    checkbox.prop("checked", !checkbox.prop("checked")); // Toggle the checkbox state
+
+                    var checkedValues = {};
+
+                    $(".filter-values").each(function () {
+                        var filterID = $(this).siblings(".filter-name").attr("value");
+                        var checkedCheckboxes = $(this).find(":checkbox:checked").map(function () {
+                            return $(this).val();
+                        }).get();
+
+                        if (checkedCheckboxes.length > 0) {
+                            checkedValues[filterID] = checkedCheckboxes;
+                        }
+                    });
+
+                    console.log(checkedValues); // Print checkedValues in the console
+                    //
+                    // Perform AJAX POST request with the checked values
+                    $.ajax({
+                        url: "${pageContext.request.contextPath}/filterproductlist",
+                        type: "POST",
+                        data: {checkedValues: JSON.stringify(checkedValues)},
+                        dataType: "json", // Specify the expected data type as JSON
+                        success: function (response) {
+                            var productList = response; // The response is already parsed as JSON
+                            // Clear the existing productList HTML
+                            console.log(productList);
+                            $("#image-track2").empty();
+
+                            // Iterate over the productList and populate the HTML
+                            productList.forEach(function (item) {
+                                var productHtml = `<div class='product'>
+    <a class="product-image" href='${pageContext.request.contextPath}/productdetails?productCode=`+item.code+`'>
+      <img src='`+item.firstImagePath+`' draggable='false' />
+    </a>
+            <c:if test="${logineduser.getUserName()!='tomcruz'}">
+      <p class="image-left">
+        <a class="fas fa-bars" href='editproduct?proid=`+item.id+`'></a>
+      </p>
+      <p class="image-right">
+        <a href="#" onclick="confirmRedirect(`+item.id+`">
+          <img class="small-icon" src='assets/img/delete.png' draggable='false' />
+        </a>
+      </p>
+            </c:if>
+    <p class="image-left image-bottom">`+item.name+`</p>
+    <p class="image-right image-bottom">`+item.price+`</p>
+  </div>`;
+
+                                // Append the productHtml to the productList container
+                                $("#image-track2").append(productHtml);
+                            });
+
+                        },
+                        error: function (xhr, status, error) {
+                            // Handle the error
+                            console.log(error);
+                        }
+                    });
+
+                });
+                $(".filter-values label").click(function (event) {
+                    event.stopPropagation(); // Prevent event from bubbling to parent elements
+                });
                 $(".filter-item").click(function () {
                     $(this).find(".filter-values").toggleClass("hidden");
                 });
             });
-            </script>
-            <script type='text/javascript' src='js/listTrack.js'></script>
-            <script type='text/javascript' src='js/filterScroll.js'></script>
-            <!-- Footer-->
+        </script>
+        <script type='text/javascript' src='js/listTrack.js'></script>
+        <script type='text/javascript' src='js/filterScroll.js'></script>
+        <!-- Footer-->
         <jsp:include page="_footer.jsp"></jsp:include>
         <!-- Bootstrap core JS-->
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
