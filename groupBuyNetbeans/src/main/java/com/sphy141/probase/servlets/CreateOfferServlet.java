@@ -6,8 +6,10 @@
 package com.sphy141.probase.servlets;
 
 import com.sphy141.probase.beans.BusinessAccount;
+import com.sphy141.probase.beans.Category;
 import com.sphy141.probase.beans.Offer;
 import com.sphy141.probase.beans.Product;
+import com.sphy141.probase.beans.ProductFilter;
 import com.sphy141.probase.utils.DBUtils;
 import com.sphy141.probase.utils.MyUtils;
 import java.io.IOException;
@@ -56,15 +58,68 @@ public class CreateOfferServlet extends HttpServlet {
         
         
         
+        String categoryIdParam = req.getParameter("catid");
+        String searchParam = req.getParameter("search");
+        
         Connection conn = MyUtils.getStoredConnection(req);
-        List<String> codelist = null;
-        try { 
-            codelist = DBUtils.queryBusinnesProducts(conn, business.getBusinessID());//loging get businessID
-            } catch (SQLException ex) {
+        
+        //Get products ALL or Searched
+        List<Product> productList = null;
+        try {
+            if(searchParam==null || searchParam.length()==0)
+                productList = DBUtils.queryProductInBusinness(conn, business.getBusinessID());
+            else
+                productList = DBUtils.searchProduct(conn, searchParam);
+                
+        } catch (SQLException ex) {
             ex.printStackTrace();
         }
-
-        req.setAttribute("codelist", codelist);
+        if(productList==null){
+            errorString = "There was a problem with products";
+        }
+        
+        //Check if the keywords exist
+        ServletContext context = req.getServletContext();
+        List<String> keywordsList = (List<String>) context.getAttribute("keywordsList");
+        if (keywordsList == null) {
+            // The keywordsList attribute is not set
+            // Process categories and products for keywords
+            keywordsList = new ArrayList<>();
+            for (Product product : productList) {
+                keywordsList.add(product.getName());
+            }
+            List<Category> categoriesList = null;
+            try {
+                categoriesList = DBUtils.queryCategories(conn);
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+            if(categoriesList==null){
+                errorString = "There was a problem with products";
+            }
+            for (Category category : categoriesList) {
+                keywordsList.add(category.getCategoryName());
+            }
+            // Set keywordsList attribute
+            context.setAttribute("keywordsList", keywordsList);
+        }
+        
+        //Get filters if category was selected
+        List<ProductFilter> filtersList = null;
+        if(categoryIdParam!=null){
+            try {
+                Category tempCategory = DBUtils.findCategory(conn, Integer.parseInt(categoryIdParam));
+                filtersList = DBUtils.findCategoryFilters(conn, tempCategory.getCategoryName());
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+                errorString = "There was a problem with database";
+            }
+        }
+        
+            req.setAttribute("errorString", errorString);
+            req.setAttribute("productList", productList);
+            req.setAttribute("keywordsList", keywordsList);
+            req.setAttribute("filtersList", filtersList);
         
         RequestDispatcher dispatcher = this.getServletContext()
                 .getRequestDispatcher("/WEB-INF/views/createOfferView.jsp");

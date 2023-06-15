@@ -137,6 +137,7 @@ public class DBUtils {
         String sql = "SELECT * FROM products p INNER JOIN productphoto pp ON p.productID=pp.productID GROUP BY p.productID";
         List<Product> list = new ArrayList<Product>();
         PreparedStatement pst = conn.prepareStatement(sql);
+        
         ResultSet rs = pst.executeQuery();
         while (rs.next()) {
             Product prod = new Product();
@@ -150,6 +151,29 @@ public class DBUtils {
         return list;
     }//queryProduct
 
+     public static List<Product> queryProductInBusinness(Connection conn, int businessID) throws SQLException {
+        String sql = "SELECT * FROM businessproducts bp inner join products p on p.productCode=bp.productCode  inner join productphoto pp ON p.productID=pp.productID where businessID=? GROUP BY pp.productID";
+        List<Product> list = new ArrayList<Product>();
+        PreparedStatement pst = conn.prepareStatement(sql);
+                pst.setInt(1, businessID);
+
+        ResultSet rs = pst.executeQuery();
+        while (rs.next()) {
+          Product prod = new Product();
+                      prod.setCode(rs.getString("productCode"));
+            prod.setId(rs.getInt("productID"));
+            prod.setName(rs.getString("productName"));
+            prod.setDetails(rs.getString("details"));
+            prod.setPrice(rs.getFloat("price"));
+            prod.addImagePath(rs.getString("path"));
+            list.add(prod);
+        }//while
+        return list;
+    }//queryProduct
+
+    
+     
+     
     public static Product findProduct(Connection conn, String code) throws SQLException {
         String sql = "SELECT *  FROM products WHERE  productCode = ? ";
         List<Product> list = new ArrayList<Product>();
@@ -180,6 +204,99 @@ public static List<String> queryBusinnesProducts(Connection conn, int businessID
     }
     return codelist;
 }
+
+public static Offer findOffer(Connection conn,int offerID) throws SQLException {
+        String sql = "SELECT *  FROM offers WHERE  offerID = ? ";
+        PreparedStatement pst = conn.prepareStatement(sql);
+        pst.setInt(1, offerID);
+        ResultSet rs = pst.executeQuery();
+        Offer offer = new Offer();
+        while (rs.next()) {
+            offer.setTitle(rs.getString("title"));
+            offer.setFinalprice(rs.getFloat("finalPrice"));
+            offer.setDiscount(rs.getFloat("discount"));
+            offer.setDetails(rs.getString("details"));
+            offer.setCouponPrice(rs.getFloat("couponPrice"));
+            offer.setGroupSize(rs.getInt("groupSize"));
+            java.sql.Date offerExpireDate = rs.getDate("offerExpire");
+            java.time.LocalDate offerExpire = offerExpireDate.toLocalDate();
+            offer.setOfferExpire(offerExpire);
+            java.sql.Date couponExpireDate = rs.getDate("couponExpire");
+            java.time.LocalDate couponExpire = couponExpireDate.toLocalDate();
+            
+            sql ="SELECT *  FROM offersdetails WHERE  offerID = ? ";
+            pst = conn.prepareStatement(sql);
+            pst.setInt(1, offerID);
+            List<String> productlist = new ArrayList<>();
+            rs = pst.executeQuery();
+            while (rs.next()){
+                String productCode = rs.getString("productCode");
+                productlist.add("productCode");
+            }            
+            sql ="SELECT *  FROM offerphoto WHERE  offerID = ? ";
+            pst = conn.prepareStatement(sql);
+            pst.setInt(1, offerID);
+            List<String> pathlist = new ArrayList<>();
+            rs = pst.executeQuery();
+            while (rs.next()){
+                String productCode = rs.getString("productCode");
+                pathlist.add("path");
+            }
+            offer.setImagePaths(pathlist);
+            offer.setProductCode(productlist);
+            return offer;            
+        }//while
+        return null;
+    }//findOffer
+
+
+/*
+public static void UpdateOffer(Connection conn,Offer offer) throws SQLException {
+        String sql = "INSERT INTO   FROM offers WHERE  offerID = ? ";
+        PreparedStatement pst = conn.prepareStatement(sql);
+        pst.setInt(1, offerID);
+        ResultSet rs = pst.executeQuery();
+        Offer offer = new Offer();
+        while (rs.next()) {
+            offer.setTitle(rs.getString("title"));
+            offer.setFinalprice(rs.getFloat("finalPrice"));
+            offer.setDiscount(rs.getFloat("discount"));
+            offer.setDetails(rs.getString("details"));
+            offer.setCouponPrice(rs.getFloat("couponPrice"));
+            offer.setGroupSize(rs.getInt("groupSize"));
+            java.sql.Date offerExpireDate = rs.getDate("offerExpire");
+            java.time.LocalDate offerExpire = offerExpireDate.toLocalDate();
+            offer.setOfferExpire(offerExpire);
+            java.sql.Date couponExpireDate = rs.getDate("couponExpire");
+            java.time.LocalDate couponExpire = couponExpireDate.toLocalDate();
+            
+            sql ="SELECT *  FROM offersdetails WHERE  offerID = ? ";
+            pst = conn.prepareStatement(sql);
+            pst.setInt(1, offerID);
+            List<String> productlist = new ArrayList<>();
+            rs = pst.executeQuery();
+            while (rs.next()){
+                String productCode = rs.getString("productCode");
+                productlist.add("productCode");
+            }            
+            sql ="SELECT *  FROM offerphoto WHERE  offerID = ? ";
+            pst = conn.prepareStatement(sql);
+            pst.setInt(1, offerID);
+            List<String> pathlist = new ArrayList<>();
+            rs = pst.executeQuery();
+            while (rs.next()){
+                String productCode = rs.getString("productCode");
+                pathlist.add("path");
+            }
+            offer.setImagePaths(pathlist);
+            offer.setProductCode(productlist);
+            return offer;            
+        }//while
+        return null;
+    }//findOffer
+
+*/
+
 
 
 /*public static Product queryBusinnesOffers(Connection conn) throws SQLException {/////// ΝΑ ΡΩΤΗΣΩ ΑΛΛΕΞΑ

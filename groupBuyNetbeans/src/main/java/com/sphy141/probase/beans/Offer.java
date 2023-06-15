@@ -24,6 +24,7 @@ public class Offer {
         private LocalDate offerExpire;
         private LocalDate couponExpire;
     private List<String> imagePaths;
+    private List<String> productCode;
 
     public Offer() {
     }
@@ -110,6 +111,11 @@ public class Offer {
         this.imagePaths.add(imagePath);
     }
 
-   
-    
+    public List<String> getProductCode() {
+        return productCode;
+    }
+
+    public void setProductCode(List<String> productCode) {
+        this.productCode = productCode;
+    }
 }
