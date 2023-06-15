@@ -10,6 +10,31 @@
  * Copyright 2011-2022 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
  */
+.icon-plus{
+    background-image: url("../assets/img/plus.png");
+    background-size: cover;
+    background-repeat: no-repeat;
+    display: inline-block;
+    border: none;
+    padding: 0;
+    margin: 0;
+}
+.icon-minus{
+    background-image: url("../assets/img/minus.png");
+    background-size: cover;
+    background-repeat: no-repeat;
+    display: inline-block;
+    border: none;
+    padding: 0;
+    margin: 0;
+}
+.categories-flex{
+    width: 50%;
+    margin: auto;
+    display: flex;
+    justify-content: space-between;
+    gap:10px;
+}
 .no-liststyle{
     list-style: none;
 }
@@ -19,7 +44,12 @@
 .hidden{
     display: none !important;
 }
+.search-recommends{
+    position: absolute;
+    margin-top: 111px;
+}
 .search-recommends ul{
+    z-index: 10;
     margin: 0;
     padding: 0.2rem;
     border: 1px white solid;
@@ -46,6 +76,7 @@
     margin: auto;
 }
 .search_bar-small{
+    z-index: 11;
     align-self:center;
     display: flex;
     gap: 2vmin;
@@ -11400,6 +11431,8 @@ section#contact form#contactForm :-ms-input-placeholder {
 }
 
 .footer {
+    z-index: 9999;
+    position: relative;
   text-align: center;
   font-size: 0.9rem;
   font-family: "Montserrat", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";

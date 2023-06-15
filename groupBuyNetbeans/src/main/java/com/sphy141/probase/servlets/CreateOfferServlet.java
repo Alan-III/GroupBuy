@@ -57,9 +57,9 @@ public class CreateOfferServlet extends HttpServlet {
         
         
         Connection conn = MyUtils.getStoredConnection(req);
-        List<String> codelist = null;
+        List<Product> codelist = null;
         try { 
-            codelist = DBUtils.queryBusinnesProducts(conn, business.getBusinessID());//loging get businessID
+            codelist = DBUtils.queryProductsInBusiness(conn, business.getBusinessID());//loging get businessID
             } catch (SQLException ex) {
             ex.printStackTrace();
         }
