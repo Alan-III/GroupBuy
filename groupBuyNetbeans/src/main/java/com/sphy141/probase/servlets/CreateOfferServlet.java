@@ -307,8 +307,8 @@ public class CreateOfferServlet extends HttpServlet {
             try {   
                     offer.setDiscount(offerdiscount);
                     offer.setGroupSize(size);
-                    offer.setOfferExpire(exdate);
-                    offer.setCouponExpire(excoupon);
+                    offer.setOfferExpire(oexdate);
+                    offer.setCouponExpire(oexcoupon);
                     offer.setTitle(name);
                     offer.setFinalprice(finalprice);
                     offer.setCouponPrice(coupprise);

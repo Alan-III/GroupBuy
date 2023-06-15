@@ -21,7 +21,7 @@
                 <input type="checkbox" id="check" title="cb" placeholder="..">
                 <div class="btn_one">
                     <label for="check">
-                        <i class="fas fa-bars"></i>
+                        <i class="fas fa-filter"></i>
                     </label>
                 </div>
                 <div class="sidebar_menu">
@@ -37,14 +37,14 @@
                         <div id="side-menu">
                             <ul class="no-liststyle">
                             <c:if test="${filtersList==null}">
-                                <li><i class="fas fa-qrcode"></i>
+                                <li><i class="fas fa-filter"></i>
                                     <a href="#">No filters for this Category</a>
                                 </li>
                             </c:if>
 
                             <c:forEach items="${filtersList}" var="item">
                                 <li class="filter-item">
-                                    <i class="fas fa-qrcode"></i>
+                                    <i class="fas fa-filter"></i>
                                     <span class="filter-name" value="${item.getFilterID()}">${item.getFilterName()}</span>
                                     <ul class="filter-values no-liststyle hidden">
                                         <c:forEach items="${item.getExistingFilterValues()}" var="entry">
@@ -92,12 +92,10 @@
                         </a>
                         <c:if test="${logineduser.getUserName()!='tomcruz'}">
                             <p class="image-left">
-                                <a class="fas fa-bars" href='editproduct?proid=${item.getId()}'></a>
+                                <a class="fas fa-pencil-alt" href='editproduct?proid=${item.getId()}'></a>
                             </p>
                             <p class="image-right">
-                                <a href="#" onclick="confirmRedirect(${item.getId()})">
-                                    <img class="small-icon" src='assets/img/delete.png' draggable='false' />
-                                </a>
+                                <a class="fas fa-trash" href="#" onclick="confirmRedirect(${item.getId()})" style="color:red"></a>                     
                             </p>
                         </c:if>
                         <p class="image-left image-bottom">${item.getName()}</p>
@@ -129,14 +127,15 @@
                             </a>
                             <c:if test="${loginedbusiness.getBusinessName()=='c'}">
                                 <p class="image-left">
-                                    <a class="fas fa-bars" href='editproduct?proid=${item.getId()}'></a>
+                                    <a class="fas fa-pencil-alt" href='editproduct?proid=${item.getId()}'></a>
                                 </p>
+                                </c:if>
                                 <p class="image-right">
-                                    <a href="#" onclick="confirmRedirect(${item.getId()})">
-                                        <img class="small-icon" src='assets/img/delete.png' draggable='false' />
-                                    </a>
+                                    <a class="far fa-star" href='#ADDTOWISHLIST'></a>
+                                    <c:if test="${loginedbusiness.getBusinessName()=='c'}">
+                                        <a class="fas fa-trash" href="#" onclick="confirmRedirect(${item.getId()})" style="color:red"></a>
+                                    </c:if>
                                 </p>
-                            </c:if>
                             <p class="image-left image-bottom">${item.getName()}</p>
                             <p class="image-right image-bottom">${item.getPrice()}$</p>
                         </div>                            
@@ -242,7 +241,7 @@
     </a>
             <c:if test="${logineduser.getUserName()!='tomcruz'}">
       <p class="image-left">
-        <a class="fas fa-bars" href='editproduct?proid=` + item.id + `'></a>
+        <a class="fas fa-pencil-alt" href='editproduct?proid=` + item.id + `'></a>
       </p>
       <p class="image-right">
         <a href="#" onclick="confirmRedirect(` + item.id + `">
@@ -251,7 +250,7 @@
       </p>
             </c:if>
     <p class="image-left image-bottom">` + item.name + `</p>
-    <p class="image-right image-bottom">` + item.price + `</p>
+    <p class="image-right image-bottom">` + item.price + `$</p>
   </div>`;
 
                                 // Append the productHtml to the productList container
@@ -282,7 +281,5 @@
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
         <!-- Core theme JS-->
         <script src="js/scripts.js"></script>
-
     </body>
-
 </html>

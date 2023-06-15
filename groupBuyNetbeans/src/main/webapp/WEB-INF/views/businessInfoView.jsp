@@ -37,13 +37,20 @@
 
                         </li>
                         <li class="has-subnav">
-                            <a href="${pageContext.request.contextPath}/productlist?businessId=${loginedbusiness.getBusinessID()}">
+                            <a href="${pageContext.request.contextPath}/productlist">
                                 <i class="fa fa-shopping-cart fa-2x"></i>
                                 <span class="nav-text">
-                                    My Offers / Products
+                                    My Offers
                                 </span>
                             </a>
-
+                        </li>
+                        <li class="has-subnav">
+                            <a href="${pageContext.request.contextPath}/updatebusinessproducts">
+                                <i class="fa fa-barcode fa-2x"></i>
+                                <span class="nav-text">
+                                    My Products
+                                </span>
+                            </a>
                         </li>
                         <li class="has-subnav">
                             <a href="#">

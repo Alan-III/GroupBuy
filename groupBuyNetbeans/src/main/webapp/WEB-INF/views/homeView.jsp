@@ -38,7 +38,7 @@
                             <button onClick="searchProducts()">Search</button>
                         </div>
                     </div> 
-                <div class="search-recommends">
+                <div class="search-recommends container mt-0">
                 </div>
                 <br>
                 <a class="btn btn-primary btn-xl text-uppercase" href="#categories">Browse Categories</a>

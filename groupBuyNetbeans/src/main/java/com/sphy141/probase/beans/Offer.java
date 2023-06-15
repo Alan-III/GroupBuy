@@ -15,18 +15,27 @@ import java.util.List;
  */
 public class Offer {
     
-   private float finalprice;
-        private float couponPrice;
-        private String title;
-        private float discount;
-        private int groupSize;
-        private String details;
-        private LocalDate offerExpire;
-        private LocalDate couponExpire;
+    private float finalprice;
+    private float couponPrice;
+    private String title;
+    private float discount;
+    private int groupSize;
+    private int id;
+    private String details;
+    private String offerExpire;
+    private String couponExpire;
     private List<String> imagePaths;
     private List<String> productCode;
 
     public Offer() {
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
     
 
@@ -78,19 +87,19 @@ public class Offer {
         this.details = details;
     }
 
-    public LocalDate getOfferExpire() {
+    public String getOfferExpire() {
         return offerExpire;
     }
 
-    public void setOfferExpire(LocalDate offerExpire) {
+    public void setOfferExpire(String offerExpire) {
         this.offerExpire = offerExpire;
     }
 
-    public LocalDate getCouponExpire() {
+    public String getCouponExpire() {
         return couponExpire;
     }
 
-    public void setCouponExpire(LocalDate couponExpire) {
+    public void setCouponExpire(String couponExpire) {
         this.couponExpire = couponExpire;
     }
 

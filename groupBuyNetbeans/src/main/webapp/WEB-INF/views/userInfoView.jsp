@@ -48,7 +48,7 @@
                         </li>
                         <li class="has-subnav">
                             <a href="#">
-                                <i class="fa fa-qrcode fa-2x"></i>
+                                <i class="fas fa-gift fa-2x"></i>
                                 <span class="nav-text">
                                     My Coupons
                                 </span>
@@ -57,7 +57,7 @@
                         </li>
                         <li class="has-subnav">
                             <a href="#">
-                                <i class="fa fa-circle fa-2x"></i>
+                                <i class="fas fa-star fa-2x"></i>
                                 <span class="nav-text">
                                     My Wishlist
                                 </span>
@@ -84,7 +84,7 @@
                             <a href="#">
                                 <i class="fa fa-cogs fa-2x"></i>
                                 <span class="nav-text">
-                                    Tools & Resources
+                                    Account Settings
                                 </span>
                             </a>
                         </li>

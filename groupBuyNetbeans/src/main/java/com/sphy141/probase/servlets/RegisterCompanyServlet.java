@@ -12,6 +12,7 @@ package com.sphy141.probase.servlets;
 
 import com.sphy141.probase.beans.BusinessAccount;
 import com.sphy141.probase.beans.UserAccount;
+import com.sphy141.probase.utils.CryptoUtils;
 import com.sphy141.probase.utils.DBUtils;
 import com.sphy141.probase.utils.MailUtils;
 import com.sphy141.probase.utils.MyUtils;
@@ -96,7 +97,7 @@ public class RegisterCompanyServlet extends HttpServlet{
                 business.setAfm(afm);
                 business.setIBAN(iban);
                 business.setBusinessName(businessName);
-                business.setPassword(password);
+                business.setPassword(CryptoUtils.hashString(password));
                 String verificationCode = UUID.randomUUID().toString().substring(0, 20);
                 business.setVerificationCode(verificationCode);
                 DBUtils.insertBusiness(conn, business);
