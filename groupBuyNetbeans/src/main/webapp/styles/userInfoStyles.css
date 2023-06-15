@@ -11,6 +11,14 @@
   box-sizing: border-box;
   font-family: 'Poppins', sans-serif;
 }
+.sidebar{
+    position: fixed;
+    z-index: 100;
+}
+.business-products{
+    padding-left: 4rem;
+    padding-right: 4rem;
+}
 .main_box{
   position: relative;
   top: 0;
@@ -19,7 +27,7 @@
   background: url("../assets/img/sidebar-bg.jpg") no-repeat;
   background-size: 100% 100%;
   display: inline-flex;
-  min-height: 100vh;
+  min-height: 85vh;
   height: fit-content;
   width: 100%;
 }
@@ -167,7 +175,6 @@
   display: flex;
   gap: 4vmin;
   user-select: none;
-  position: relative;
   top: 0;
   left: 0;
   width: 100%;
@@ -251,7 +258,7 @@ border-right:1px solid #e5e5e5;
 position:relative;
 top:0;
 bottom:0;
-height:auto;
+height:100vh;
 left:0;
 width:60px;
 overflow:hidden;

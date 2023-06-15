@@ -72,6 +72,7 @@ public class CreateOfferServlet extends HttpServlet {
                 productList = DBUtils.searchProduct(conn, searchParam);
                 
         } catch (SQLException ex) {
+
             ex.printStackTrace();
         }
         if(productList==null){
