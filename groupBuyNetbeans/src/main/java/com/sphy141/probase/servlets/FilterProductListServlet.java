@@ -21,6 +21,7 @@ import javax.servlet.http.HttpSession;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sphy141.probase.beans.Product;
+import com.sphy141.probase.beans.UserAccount;
 import java.io.PrintWriter;
 import java.util.List;
 import java.util.Map;
@@ -41,7 +42,22 @@ public class FilterProductListServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-
+        HttpSession session = req.getSession();
+        UserAccount user = MyUtils.getLoginedUser(session);
+        String userMailstr="";
+        if(user!=null){
+            req.setAttribute("logineduser", user);
+            userMailstr=user.getEmail();
+        }
+        else{
+            req.setAttribute("logineduser", null);
+        
+            BusinessAccount business = MyUtils.getLoginedBusiness(session);
+            if(business!=null)
+                req.setAttribute("loginedbusiness", business);
+            else
+                req.setAttribute("loginedbusiness", null);
+        }
         Connection conn = MyUtils.getStoredConnection(req);
         
         String searchQuerry = "";
@@ -76,9 +92,9 @@ public class FilterProductListServlet extends HttpServlet {
         String errorString = null;
         try {
             if (!checkedValuesJson.equals("{}"))   //Filters applied
-                productList = DBUtils.filterSearchProduct(conn, searchQuerry);
+                productList = DBUtils.filterSearchProduct(conn, searchQuerry, userMailstr);
             else   //No Filters applied get all products
-                productList = DBUtils.queryProduct(conn);
+                productList = DBUtils.queryProduct(conn, userMailstr);
             
         } catch (SQLException ex) {
             ex.printStackTrace();

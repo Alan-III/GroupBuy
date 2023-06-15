@@ -51,12 +51,15 @@
                                     <span class="current">$${product.getPrice()}</span>
                                 </div>
                                 <div class="rate">
-                                    Wishes:
-                                    <a href="#!" class="active">★</a>
-                                    <a href="#!" class="active">★</a>
-                                    <a href="#!" class="active">★</a>
-                                    <a href="#!">★</a>
-                                    <a href="#!">★</a>
+                                    Wishlist:
+                                    <c:choose>
+                                    <c:when test="${product.isWished()}">
+                                        <a href="#!" class="active">★</a>
+                                    </c:when>
+                                    <c:when test="true">
+                                        <a href="#!" >★</a>
+                                    </c:when>
+                                    </c:choose>
                                     (num)
                                 </div>
                             </div>
