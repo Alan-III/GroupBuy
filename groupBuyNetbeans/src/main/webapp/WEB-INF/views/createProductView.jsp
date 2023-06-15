@@ -29,7 +29,7 @@
                 <input type="checkbox" id="check" title="cb" placeholder="..">
                 <div class="btn_one">
                     <label for="check">
-                        <i class="fas fa-bars"></i>
+                        <i class="fas fa-filter"></i>
                     </label>
                 </div>
                 <div class="sidebar_menu">
@@ -44,7 +44,7 @@
                     <div class="menu">
                         <div id="side-menu">
                             <ul id="filtersContainer">
-                                <li><i class="fas fa-qrcode"></i>
+                                <li><i class="fas fa-filter"></i>
                                     <a href="#">Please Select Category</a>
                                 </li>
                             </ul>
@@ -53,7 +53,7 @@
                 </div>
 
 
-                <div id="userinfo" class="layout">
+                <div id="productinfo" class="layout">
                     <h3 class="text-center text-white pt-5">Create Product</h3>
                     <br>
                     <div class="loginclamp">

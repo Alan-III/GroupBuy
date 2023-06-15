@@ -152,20 +152,25 @@ public class DBUtils {
     }//queryProduct
 
     public static Product findProduct(Connection conn, String code) throws SQLException {
-        String sql = "SELECT *  FROM products WHERE  productCode = ? ";
+        String sql = "SELECT *  FROM products p INNER JOIN productphoto pp ON p.productID=pp.productID WHERE  productCode = ? ";
         List<Product> list = new ArrayList<Product>();
         PreparedStatement pst = conn.prepareStatement(sql);
         pst.setString(1, code);
         ResultSet rs = pst.executeQuery();
+        Product prod = null; 
         while (rs.next()) {
-            Product prod = new Product();
-            prod.setCode(rs.getString("productCode"));
-            prod.setName(rs.getString("productName"));
-            prod.setPrice(rs.getFloat("price"));
-            prod.setId(rs.getInt("productID"));
-            return prod;
+            if(prod==null){
+                prod=new Product();
+                prod.setCode(rs.getString("productCode"));
+                prod.setName(rs.getString("productName"));
+                prod.setDetails(rs.getString("details"));
+                prod.setPrice(rs.getFloat("price"));
+                prod.setId(rs.getInt("productID"));
+                prod.setCategoryID(rs.getInt("belong"));
+            }
+            prod.addImagePath(rs.getString("path"));
         }//while
-        return null;
+        return prod;
     }//findProduct
     
 // GET PRODUCTS OF A CERTAIN BUSINESS
@@ -684,6 +689,31 @@ public static List<Product> queryProductsInBusiness(Connection conn, int busines
             prod.setPrice(rs.getFloat("price"));
             prod.addImagePath(rs.getString("path"));
             list.add(prod);
+        }//while
+        return list;
+    }
+
+    public static List<Offer> queryProductOffers(Connection conn, String productCodeParam) throws SQLException {
+        String sql = "SELECT * FROM offerdetails od INNER JOIN offers o ON od.offerID=o.offerID WHERE productCode = ?";
+        List<Offer> list = new ArrayList<Offer>();
+        PreparedStatement pst = conn.prepareStatement(sql);
+        pst.setString(1, productCodeParam);
+        ResultSet rs = pst.executeQuery();
+        Offer of = null;
+        while (rs.next()) {
+            if(of==null || of.getId()!=rs.getInt("offerID")){
+                of = new Offer();
+                of.setId(rs.getInt("offerID"));
+                of.setCouponExpire(rs.getString("couponExpire"));
+                of.setCouponPrice(rs.getFloat("couponPrice"));
+                of.setDetails(rs.getString("details"));
+                of.setDiscount(rs.getFloat("discount"));
+                of.setFinalprice(rs.getFloat("finalPrice"));
+                of.setGroupSize(rs.getInt("groupSize"));
+                of.setTitle(rs.getString("title"));
+            }
+            of.addImagePath(rs.getString("path"));
+            list.add(of);
         }//while
         return list;
     }

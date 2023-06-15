@@ -7,6 +7,7 @@ package com.sphy141.probase.servlets;
 
 import com.sphy141.probase.beans.BusinessAccount;
 import com.sphy141.probase.beans.Category;
+import com.sphy141.probase.beans.Offer;
 import com.sphy141.probase.beans.Product;
 import com.sphy141.probase.beans.UserAccount;
 import com.sphy141.probase.utils.DBUtils;
@@ -60,31 +61,20 @@ public class ProductDetailsServlet extends HttpServlet {
             errorString = "There was a problem with product";
         }
         
-        List<Category> listall = null;
-        List<Category> genlist = new ArrayList<>();
-        List<Category> midlist = new ArrayList<>();
-        List<Category> sublist = new ArrayList<>();
+        List<Offer> productOffersList = null;
         try {
-            listall = DBUtils.queryCategories(conn);
+            productOffersList = DBUtils.queryProductOffers(conn, productCodeParam);
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
-        for (Category category : listall) {
-            if(category.getSubCategory()!=null){
-                sublist.add(category);
-            }else if(category.getMidCategory()!=null){
-                midlist.add(category);
-            }else{
-                genlist.add(category);
-            }
+        if(product==null){
+            errorString = "There was a problem with productOffersList";
         }
-            req.setAttribute("genCategory", genlist);
-            req.setAttribute("category", midlist);
-            req.setAttribute("subCategory", sublist);
             
-            req.setAttribute("errorString", errorString);
-            req.setAttribute("product", product);
-            RequestDispatcher dispatcher=this.getServletContext().getRequestDispatcher("/WEB-INF/views/productDetailsView.jsp");
+        req.setAttribute("errorString", errorString);
+        req.setAttribute("product", product);
+        req.setAttribute("productOffersList", productOffersList);
+        RequestDispatcher dispatcher=this.getServletContext().getRequestDispatcher("/WEB-INF/views/productDetailsView.jsp");
         dispatcher.forward(req, resp);
     }//doGet
 
