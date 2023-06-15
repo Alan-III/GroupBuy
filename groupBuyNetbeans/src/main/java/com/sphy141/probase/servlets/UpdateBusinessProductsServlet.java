@@ -78,23 +78,15 @@ public class UpdateBusinessProductsServlet extends HttpServlet {
         }
 
         List<Product> productList = null;
-        try {
-            productList = DBUtils.queryProductNotInBusiness(conn, business.getBusinessID());
-
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-        }
-        if (productList == null) {
-            errorString = "There was a problem with products";
-        }
         List<Product> businessProductList = null;
         try {
-            businessProductList = DBUtils.queryBusinessProducts(conn, business.getBusinessID());
+            productList = DBUtils.queryProductsNotInBusiness(conn, business.getBusinessID());
+            businessProductList = DBUtils.queryProductsInBusiness(conn, business.getBusinessID());
 
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
-        if (productList == null) {
+        if (productList == null || businessProductList == null) {
             errorString = "There was a problem with products";
         }
 

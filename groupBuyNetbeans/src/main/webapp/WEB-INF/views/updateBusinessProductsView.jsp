@@ -134,7 +134,8 @@
                                 </a>
                                 <c:if test="${loginedbusiness.getBusinessName()=='c'}">
                                     <p class="image-left">
-                                        <button class="fas fa-bars" onclick="moveProduct(${item.getCode()})"></button>
+                                        <a href="#" class="small-icon icon-minus" onclick="moveProduct(${item.getCode()})">
+                                        </a>
                                     </p>
                                     <p class="image-right">
                                         <a href="#" onclick="confirmRedirect(${item.getId()})">
@@ -165,7 +166,8 @@
                                 </a>
                                 <c:if test="${loginedbusiness.getBusinessName()=='c'}">
                                     <p class="image-left">
-                                        <button class="fas fa-bars" onclick="moveProduct(${item.getCode()})"></button>
+                                        <a href="#" class="small-icon icon-plus" onclick="moveProduct(${item.getCode()})">
+                                        </a>
                                     </p>
                                     <p class="image-right">
                                         <a href="#" onclick="confirmRedirect(${item.getId()})">
@@ -218,6 +220,8 @@
             // Clear existing options
             categorySelect.innerHTML = '<option value="" disabled selected></option>';
             subcategorySelect.innerHTML = '<option value="" disabled selected></option>';
+            // Make AJAX request to servlet with selected value and field name
+            categoryFilterProductsAjax(categoryName, "genCategory");
             // Populate options for categories based on selected general category
             if (categoryName in categories) {
             categories[categoryName].forEach(function (category) {
@@ -239,6 +243,8 @@
             var subcategorySelect = document.getElementById("subcategory");
             // Clear existing options
             subcategorySelect.innerHTML = '<option value="" disabled selected></option>';
+            // Make AJAX request to servlet with selected value and field name
+            categoryFilterProductsAjax(subcategoryName, "category");
             // Populate options for subcategories based on selected category
             if (subcategoryName in subcategories) {
             subcategories[subcategoryName].forEach(function (subcategory) {
@@ -256,11 +262,15 @@
             //--------------------//
             // Handle subcategory selection change
             var subcategorySelect = document.getElementById("subcategory");
+            subcategorySelect.addEventListener("change", function () {
+            var subcategoryName = this.value;
+            // Make AJAX request to servlet with selected value and field name
+            categoryFilterProductsAjax(subcategoryName, "subCategory");
+            // Rest of your code...
+            });
             //--------------------//
 
             function moveProduct(productCode) {
-
-
             // AJAX post to servlet with productId
             $.ajax({
             type: 'POST',
@@ -279,10 +289,14 @@
                     if (productDiv.length > 0) {
                     // Move the productDiv to #image-track2
                     productDiv.appendTo("#image-track2");
+                    // Change the button icon to fa-plus
+                    productDiv.find(".icon-minus").removeClass("icon-minus").addClass("icon-plus");
                     }
                     } else {
                     // Move the productDiv to #image-track
                     productDiv.appendTo("#image-track");
+                    // Change the button icon to fa-minus
+                    productDiv.find(".icon-plus").removeClass("icon-plus").addClass("icon-minus");
                     }
                     } else {
                     // Handle error case
@@ -295,6 +309,67 @@
                     }
             });
             }
+// Function to make AJAX post request to servlet
+            function categoryFilterProductsAjax(categoryName, categoryType) {
+            $.ajax({
+            type: 'POST',
+                    url: '${pageContext.request.contextPath}/ajaxproductsofcategory',
+                    data: {
+                    categoryName: categoryName,
+                            categoryType: categoryType
+                    },
+                    success: function (response) {
+                    // Handle success and populate the divs with the received response
+                    console.log(response);
+                    if(response!="false"){
+                        // Extract the lists from the response JSON
+                        var businessProducts = response.businessProducts;
+                        var notBusinessProducts = response.notBusinessProducts;
+                        // Populate the divs with the lists
+                        populateDivWithProducts("#image-track", businessProducts);
+                        populateDivWithProducts("#image-track2", notBusinessProducts);
+                    }
+                    },
+                    error: function () {
+                    // Handle error
+                    alert('Error occurred during the operation. Please try again later.');
+                    }
+            });
+            }
+
+            function populateDivWithProducts(divId, productList) {
+            var addicon;
+            if(divId=="#image-track"){
+                addicon = "icon-minus";
+            }
+            else
+                addicon = "icon-plus";
+            $(divId).empty();
+            productList.forEach(function (product) {
+            // Create and append the necessary elements based on your HTML structure
+            var productHtml = `<div class='product' data-product-code="` + product.code + `">
+                                <a class="product-image" href='${pageContext.request.contextPath}/productdetails?productCode=` + product.code + `'>
+                                    <img src='` + product.firstImagePath + `' draggable='false' />
+                                </a>
+            <c:if test="${loginedbusiness.getBusinessName()=='c'}">
+                                    <p class="image-left">
+                                        <a href="#" class="small-icon `+addicon+`" onclick="moveProduct(` + product.code + `)">
+                                        </a>
+                                    </p>
+                                    <p class="image-right">
+                                        <a href="#" onclick="confirmRedirect(` + product.id + `)">
+                                            <img class="small-icon" src='assets/img/delete.png' draggable='false' />
+                                        </a>
+                                    </p>
+            </c:if>
+                                <p class="image-left image-bottom">` + product.name + `</p>
+                                <p class="image-right image-bottom">` + product.price + `$</p>
+                            </div>`;
+            // Append the productHtml to the productList container
+            $(divId).append(productHtml);
+            });
+            }
+
 
         </script>
 

@@ -10,6 +10,24 @@
  * Copyright 2011-2022 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
  */
+.icon-plus{
+    background-image: url("../assets/img/plus.png");
+    background-size: cover;
+    background-repeat: no-repeat;
+    display: inline-block;
+    border: none;
+    padding: 0;
+    margin: 0;
+}
+.icon-minus{
+    background-image: url("../assets/img/minus.png");
+    background-size: cover;
+    background-repeat: no-repeat;
+    display: inline-block;
+    border: none;
+    padding: 0;
+    margin: 0;
+}
 .categories-flex{
     width: 50%;
     margin: auto;
