@@ -7,6 +7,7 @@ package com.sphy141.probase.servlets;
 
 import com.sphy141.probase.beans.BusinessAccount;
 import com.sphy141.probase.beans.UserAccount;
+import com.sphy141.probase.utils.CryptoUtils;
 import com.sphy141.probase.utils.DBUtils;
 import com.sphy141.probase.utils.MailUtils;
 import com.sphy141.probase.utils.MyUtils;
@@ -54,9 +55,9 @@ public class LoginServlet extends HttpServlet {
         }
         Connection conn = MyUtils.getStoredConnection(req);
         try {
-            user = DBUtils.findUser(conn, email, password);
+            user = DBUtils.findUser(conn, email, CryptoUtils.hashString(password));
             if(user==null){
-                business = DBUtils.findBusiness(conn, email, password);
+                business = DBUtils.findBusiness(conn, email, CryptoUtils.hashString(password));
                 if(business==null){
                     hasError=true;
                     errorString = "email or password is wrong, does not exist or email not verified";
