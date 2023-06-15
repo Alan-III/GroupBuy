@@ -133,52 +133,73 @@ public class DBUtils {
         return false;
     }//verifyBusiness
 
-    public static List<Product> queryProduct(Connection conn) throws SQLException {
-        String sql = "SELECT * FROM products p INNER JOIN productphoto pp ON p.productID=pp.productID GROUP BY p.productID";
+    //GET LIST OF PRODUCTS AND CHECK WITH EMAIL IF SOME OF THEM ARE WISHED. (email should be '' for null users or business)
+    public static List<Product> queryProduct(Connection conn, String userEmail) throws SQLException {
+        String sql = "SELECT * FROM products p INNER JOIN productphoto pp ON p.productID=pp.productID "
+                + "LEFT JOIN mywish mw ON mw.productCode=p.productCode AND (email = ? OR email IS NULL) GROUP BY p.productID";
         List<Product> list = new ArrayList<Product>();
         PreparedStatement pst = conn.prepareStatement(sql);
+        pst.setString(1, userEmail);
         ResultSet rs = pst.executeQuery();
         while (rs.next()) {
             Product prod = new Product();
+            prod.setId(rs.getInt("productID"));
+            prod.setCode(rs.getString("productCode"));
+            prod.setName(rs.getString("productName"));
+            prod.setDetails(rs.getString("details"));
+            prod.setPrice(rs.getFloat("price"));
+            prod.addImagePath(rs.getString("path"));
+            if(rs.getString("email")!=null)
+                prod.setIsWished(true);
+            list.add(prod);
+        }//while
+        return list;
+    }//queryProduct
+
+    //GET DATA OF CERTAIN PRODUCT AND CHECK WITH EMAIL IF IT IS WISHED. (email should be '' for null users or business)
+    public static Product findProduct(Connection conn, String code, String userEmail) throws SQLException {
+        String sql = "SELECT *  FROM products p INNER JOIN productphoto pp ON p.productID=pp.productID "
+                + "LEFT JOIN mywish mw ON mw.productCode=p.productCode AND (email = ? OR email IS NULL) WHERE  p.productCode = ? ";
+        PreparedStatement pst = conn.prepareStatement(sql);
+        pst.setString(1, userEmail);
+        pst.setString(2, code);
+        ResultSet rs = pst.executeQuery();
+        Product prod = null; 
+        while (rs.next()) {
+            if(prod==null){
+                prod=new Product();
+                prod.setCode(rs.getString("productCode"));
+                prod.setName(rs.getString("productName"));
+                prod.setDetails(rs.getString("details"));
+                prod.setPrice(rs.getFloat("price"));
+                prod.setId(rs.getInt("productID"));
+                prod.setCategoryID(rs.getInt("belong"));
+                if(rs.getString("email")!=null)
+                    prod.setIsWished(true);
+            }
+            prod.addImagePath(rs.getString("path"));
+        }//while
+        return prod;
+    }//findProduct
+    
+// GET PRODUCTS OF A CERTAIN BUSINESS
+public static List<Product> queryProductsInBusiness(Connection conn, int businessID) throws SQLException {
+    List<Product> list = new ArrayList<>();
+    String sql = "SELECT * FROM businessproducts bp INNER JOIN products p ON p.productCode=bp.productCode INNER JOIN productphoto pp ON p.productID=pp.productID WHERE businessID = ? GROUP BY pp.productID";
+    PreparedStatement pst = conn.prepareStatement(sql);
+    pst.setInt(1, businessID);
+    ResultSet rs = pst.executeQuery();
+    while (rs.next()) {
+        Product prod = new Product();
+            prod.setId(rs.getInt("productID"));
             prod.setCode(rs.getString("productCode"));
             prod.setName(rs.getString("productName"));
             prod.setDetails(rs.getString("details"));
             prod.setPrice(rs.getFloat("price"));
             prod.addImagePath(rs.getString("path"));
             list.add(prod);
-        }//while
-        return list;
-    }//queryProduct
-
-    public static Product findProduct(Connection conn, String code) throws SQLException {
-        String sql = "SELECT *  FROM products WHERE  productCode = ? ";
-        List<Product> list = new ArrayList<Product>();
-        PreparedStatement pst = conn.prepareStatement(sql);
-        pst.setString(1, code);
-        ResultSet rs = pst.executeQuery();
-        while (rs.next()) {
-            Product prod = new Product();
-            prod.setCode(rs.getString("productCode"));
-            prod.setName(rs.getString("productName"));
-            prod.setPrice(rs.getFloat("price"));
-            prod.setId(rs.getInt("productID"));
-            return prod;
-        }//while
-        return null;
-    }//findProduct
-    
-   
-public static List<String> queryBusinnesProducts(Connection conn, int businessID) throws SQLException {
-    List<String> codelist = new ArrayList<>();
-    String sql = "SELECT productCode FROM businessproducts WHERE businessID = ?";
-    PreparedStatement pst = conn.prepareStatement(sql);
-    pst.setInt(1, businessID);
-    ResultSet rs = pst.executeQuery();
-    while (rs.next()) {
-        String productCode = rs.getString("productCode");
-        codelist.add(productCode);
     }
-    return codelist;
+    return list;
 }
 
 
@@ -220,7 +241,7 @@ public static List<String> queryBusinnesProducts(Connection conn, int businessID
         pst.executeUpdate();
         
         List<String> paths = product.getImagePaths();
-        Product productNew = findProduct(conn, product.getCode());
+        Product productNew = findProduct(conn, product.getCode(), "");
         for (String path : paths) {
             String sql2 = "INSERT INTO productphoto (productID,path) VALUES(?,?)";
             PreparedStatement pst2 = conn.prepareCall(sql2);
@@ -438,12 +459,14 @@ public static List<String> queryBusinnesProducts(Connection conn, int businessID
     
     
     //SEARCH KEYWORD AND BRING LIST OF PRODUCTS
-    public static List<Product> searchProduct(Connection conn, String keyword) throws SQLException {
-        String sql = "SELECT * FROM group_buy.products p INNER JOIN productphoto pp ON p.productID=pp.productID where productName like ? or details like ? GROUP BY p.productID;";
+    public static List<Product> searchProduct(Connection conn, String keyword ,String useremail) throws SQLException {
+        String sql = "SELECT * FROM group_buy.products p INNER JOIN productphoto pp ON p.productID=pp.productID"
+                + " LEFT JOIN mywish mw ON mw.productCode=p.productCode AND (email = ? OR email IS NULL) WHERE productName like ? or details like ? GROUP BY p.productID;";
         List<Product> list = new ArrayList<Product>();
         PreparedStatement pst = conn.prepareStatement(sql);
-        pst.setString(1, "%"+keyword+"%");
+        pst.setString(1, useremail);
         pst.setString(2, "%"+keyword+"%");
+        pst.setString(3, "%"+keyword+"%");
         ResultSet rs = pst.executeQuery();
         while (rs.next()) {
             Product prod = new Product();
@@ -453,6 +476,8 @@ public static List<String> queryBusinnesProducts(Connection conn, int businessID
             prod.setDetails(rs.getString("details"));
             prod.setPrice(rs.getFloat("price"));
             prod.addImagePath(rs.getString("path"));
+            if(rs.getString("email")!=null)
+                    prod.setIsWished(true);
             list.add(prod);
         }//while
         return list;
@@ -534,9 +559,18 @@ public static List<String> queryBusinnesProducts(Connection conn, int businessID
     
     //GET A LIST OF FILTERS AND VALUES FOR A SPECIFIC CATEGORY NAME
     public static List<ProductFilter> findCategoryFilters(Connection conn, String categoryName) throws SQLException {
-        String sql = "SELECT distinct(filterName), f.filtersID, filtervalue FROM catergoryfilters cf INNER JOIN filtersdetails f on cf.filtersID=f.filtersID " +
-"INNER JOIN categories c on c.categoryID=cf.categoryID " +
-"INNER JOIN productfilters pf on pf.filtersID=f.filtersID WHERE subCategory = ? OR category = ? OR genCategory = ? ORDER BY f.filtersID;";
+        String sql = "SELECT f.filterName, f.filtersID, pf.filtervalue, countp AS repetitionCount\n" +
+"FROM catergoryfilters cf\n" +
+"INNER JOIN filtersdetails f ON cf.filtersID = f.filtersID\n" +
+"INNER JOIN categories c ON c.categoryID = cf.categoryID\n" +
+"LEFT JOIN (\n" +
+"    SELECT filtersID, filtervalue, COUNT(productID) AS countp\n" +
+"    FROM productfilters\n" +
+"    GROUP BY filtersID, filtervalue\n" +
+") pf ON pf.filtersID = f.filtersID\n" +
+"WHERE c.subCategory = ? OR c.category = ? OR c.genCategory = ?\n" +
+"GROUP BY f.filterName, f.filtersID, pf.filtervalue\n" +
+"ORDER BY f.filtersID;";
         PreparedStatement pst = conn.prepareStatement(sql);
         pst.setString(1, categoryName);
         pst.setString(2, categoryName);
@@ -554,11 +588,158 @@ public static List<String> queryBusinnesProducts(Connection conn, int businessID
                 filter = new ProductFilter();
                 filter.setFilterID(rs.getInt("filtersID"));
                 filter.setFilterName(rs.getString("filterName"));
+                
             }
-            filter.addExistingFilterValues(rs.getString("filtervalue"));
+            filter.addExistingFilterValues(rs.getString("filtervalue"),rs.getInt("repetitionCount"));
             // Filter unique because of distinct, add it to the list
         }//while
         filtersList.add(filter);
         return filtersList;
+    }
+
+    //GET LIST OF PRODUCTS THAT HAVE FILTERS CHECKED
+    public static List<Product> filterSearchProduct(Connection conn, String searchQuerry, String useremail) throws SQLException{
+        String sql = "SELECT * FROM products p INNER JOIN productfilters pf ON p.productID=pf.productID INNER JOIN productphoto pp ON p.productID=pp.productID"
+                + " LEFT JOIN mywish mw ON mw.productCode=p.productCode AND (email = ? OR email IS NULL) WHERE "+searchQuerry+"GROUP BY pp.productID";
+        PreparedStatement pst = conn.prepareStatement(sql);
+        pst.setString(1, useremail);
+        ResultSet rs = pst.executeQuery();
+        List<Product> list = new ArrayList<Product>();
+        while (rs.next()) {
+            Product prod = new Product();
+            prod.setCode(rs.getString("productCode"));
+            prod.setName(rs.getString("productName"));
+            prod.setPrice(rs.getFloat("price"));
+            prod.setId(rs.getInt("productID"));
+            prod.addImagePath(rs.getString("path"));
+            if(rs.getString("email")!=null)
+                    prod.setIsWished(true);
+            list.add(prod);
+        }//while
+        return list;
+    }
+
+    // TOGGLE A PRODUCT IN BUSINESS PRODUCTS. HANDLE DELETE OR INSERT
+    public static void toggleBusinessProduct(Connection conn, String productBarcode, int businessID) throws SQLException {
+        String sql = "CALL ToggleBusinessProduct(?, ?)";
+        PreparedStatement pst = conn.prepareCall(sql);
+        pst.setString(1, productBarcode);
+        pst.setInt(2, businessID);
+        pst.executeUpdate();
+    }
+
+    //GET LIST OF PRODUCTS NOT PROVIDED BY THE BUSINESS
+    public static List<Product> queryProductsNotInBusiness(Connection conn, int businessID) throws SQLException{
+        String sql = "SELECT * FROM products p INNER JOIN productphoto pp ON p.productID=pp.productID LEFT JOIN businessproducts bp ON p.productCode=bp.productCode WHERE businessID != ? OR businessID IS NULL GROUP BY p.productID";
+        List<Product> list = new ArrayList<Product>();
+        PreparedStatement pst = conn.prepareStatement(sql);
+        pst.setInt(1, businessID);
+        ResultSet rs = pst.executeQuery();
+        while (rs.next()) {
+            Product prod = new Product();
+            prod.setId(rs.getInt("productID"));
+            prod.setCode(rs.getString("productCode"));
+            prod.setName(rs.getString("productName"));
+            prod.setDetails(rs.getString("details"));
+            prod.setPrice(rs.getFloat("price"));
+            prod.addImagePath(rs.getString("path"));
+            list.add(prod);
+        }//while
+        return list;
+    }
+    
+    //GET LIST OF PRODUCTS OF A CERTAIN CATEGORY
+    public static List<Product> queryProductsInCategory(Connection conn, String categoryName, String categoryType) throws SQLException{
+        String sql = "SELECT * FROM products p INNER JOIN productphoto pp ON p.productID=pp.productID INNER JOIN categories c ON p.belong=c.categoryID WHERE "+categoryType+" = ?;";
+        List<Product> list = new ArrayList<Product>();
+        PreparedStatement pst = conn.prepareStatement(sql);
+        pst.setString(1, categoryName);
+        ResultSet rs = pst.executeQuery();
+        while (rs.next()) {
+            Product prod = new Product();
+            prod.setId(rs.getInt("productID"));
+            prod.setCode(rs.getString("productCode"));
+            prod.setName(rs.getString("productName"));
+            prod.setDetails(rs.getString("details"));
+            prod.setPrice(rs.getFloat("price"));
+            prod.addImagePath(rs.getString("path"));
+            list.add(prod);
+        }//while
+        return list;
+    }
+    
+    //GET LIST OF PRODUCTS NOT PROVIDED BY THE BUSINESS IN A CERTAIN CATEGORY
+    public static List<Product> queryProductsNotInBusinessInCategory(Connection conn, int businessID, String categoryType, String categoryName) throws SQLException{
+        String sql = "SELECT * FROM products p INNER JOIN productphoto pp ON p.productID=pp.productID INNER JOIN categories c ON p.belong=c.categoryID LEFT JOIN businessproducts bp ON p.productCode=bp.productCode WHERE "+categoryType+" = ?  AND (businessID != ? OR businessID IS NULL) GROUP BY p.productID ;";
+        List<Product> list = new ArrayList<Product>();
+        PreparedStatement pst = conn.prepareStatement(sql);
+        pst.setString(1, categoryName);
+        pst.setInt(2, businessID);
+        ResultSet rs = pst.executeQuery();
+        while (rs.next()) {
+            Product prod = new Product();
+            prod.setId(rs.getInt("productID"));
+            prod.setCode(rs.getString("productCode"));
+            prod.setName(rs.getString("productName"));
+            prod.setDetails(rs.getString("details"));
+            prod.setPrice(rs.getFloat("price"));
+            prod.addImagePath(rs.getString("path"));
+            list.add(prod);
+        }//while
+        return list;
+    }
+    
+    //GET LIST OF PRODUCTS PROVIDED BY THE BUSINESS IN A CERTAIN CATEGORY
+    public static List<Product> queryProductsInBusinessInCategory(Connection conn, int businessID, String categoryType, String categoryName) throws SQLException{
+        String sql = "SELECT * FROM products p INNER JOIN productphoto pp ON p.productID=pp.productID INNER JOIN categories c ON p.belong=c.categoryID LEFT JOIN businessproducts bp ON p.productCode=bp.productCode WHERE "+categoryType+" = ?  AND businessID = ? GROUP BY p.productID ;";
+        List<Product> list = new ArrayList<Product>();
+        PreparedStatement pst = conn.prepareStatement(sql);
+        pst.setString(1, categoryName);
+        pst.setInt(2, businessID);
+        ResultSet rs = pst.executeQuery();
+        while (rs.next()) {
+            Product prod = new Product();
+            prod.setId(rs.getInt("productID"));
+            prod.setCode(rs.getString("productCode"));
+            prod.setName(rs.getString("productName"));
+            prod.setDetails(rs.getString("details"));
+            prod.setPrice(rs.getFloat("price"));
+            prod.addImagePath(rs.getString("path"));
+            list.add(prod);
+        }//while
+        return list;
+    }
+
+    public static List<Offer> queryProductOffers(Connection conn, String productCodeParam) throws SQLException {
+        String sql = "SELECT * FROM offerdetails od INNER JOIN offers o ON od.offerID=o.offerID WHERE productCode = ?";
+        List<Offer> list = new ArrayList<Offer>();
+        PreparedStatement pst = conn.prepareStatement(sql);
+        pst.setString(1, productCodeParam);
+        ResultSet rs = pst.executeQuery();
+        Offer of = null;
+        while (rs.next()) {
+            if(of==null || of.getId()!=rs.getInt("offerID")){
+                of = new Offer();
+                of.setId(rs.getInt("offerID"));
+                of.setCouponExpire(rs.getString("couponExpire"));
+                of.setCouponPrice(rs.getFloat("couponPrice"));
+                of.setDetails(rs.getString("details"));
+                of.setDiscount(rs.getFloat("discount"));
+                of.setFinalprice(rs.getFloat("finalPrice"));
+                of.setGroupSize(rs.getInt("groupSize"));
+                of.setTitle(rs.getString("title"));
+            }
+            of.addImagePath(rs.getString("path"));
+            list.add(of);
+        }//while
+        return list;
+    }
+
+    public static void toggleProductWishForUser(Connection conn, String productCode, String userMailstr)throws SQLException {
+        String sql = "CALL ToggleProductWishForUser(?, ?)";
+        PreparedStatement pst = conn.prepareCall(sql);
+        pst.setString(1, productCode);
+        pst.setString(2, userMailstr);
+        pst.executeUpdate();
     }
 }

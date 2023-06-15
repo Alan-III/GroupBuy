@@ -9,6 +9,7 @@ import com.sphy141.probase.beans.BusinessAccount;
 import com.sphy141.probase.beans.Category;
 import com.sphy141.probase.beans.Product;
 import com.sphy141.probase.beans.UserAccount;
+import com.sphy141.probase.utils.CryptoUtils;
 import com.sphy141.probase.utils.DBUtils;
 import com.sphy141.probase.utils.MailUtils;
 import com.sphy141.probase.utils.MyUtils;
@@ -41,8 +42,11 @@ public class HomeServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         HttpSession session = req.getSession();
         UserAccount user = MyUtils.getLoginedUser(session);
-        if(user!=null)
+        String userMailstr=" ";
+        if(user!=null){
             req.setAttribute("logineduser", user);
+            userMailstr=user.getEmail();
+        }
         else{
             req.setAttribute("logineduser", null);
         
@@ -68,7 +72,7 @@ public class HomeServlet extends HttpServlet {
         //Load products to find keywords
         List<Product> productList = null;
         try {
-            productList = DBUtils.queryProduct(conn);
+            productList = DBUtils.queryProduct(conn, userMailstr);
         } catch (SQLException ex) {
             ex.printStackTrace();
         }

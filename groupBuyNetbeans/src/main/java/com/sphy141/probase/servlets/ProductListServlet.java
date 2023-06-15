@@ -39,8 +39,11 @@ public class ProductListServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         HttpSession session = req.getSession();
         UserAccount user = MyUtils.getLoginedUser(session);
-        if(user!=null)
+        String userMailstr="";
+        if(user!=null){
             req.setAttribute("logineduser", user);
+            userMailstr=user.getEmail();
+        }
         else{
             req.setAttribute("logineduser", null);
         
@@ -62,9 +65,9 @@ public class ProductListServlet extends HttpServlet {
         String errorString = null;
         try {
             if(searchParam==null || searchParam.length()==0)
-                productList = DBUtils.queryProduct(conn);
+                productList = DBUtils.queryProduct(conn, userMailstr);
             else
-                productList = DBUtils.searchProduct(conn, searchParam);
+                productList = DBUtils.searchProduct(conn, searchParam, userMailstr);
                 
         } catch (SQLException ex) {
             ex.printStackTrace();

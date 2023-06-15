@@ -200,7 +200,7 @@ public class CreateProductServlet extends HttpServlet {
         if (errorString == null) {
             Connection conn = MyUtils.getStoredConnection(req);
             try {
-                product = DBUtils.findProduct(conn, barcode);
+                product = DBUtils.findProduct(conn, barcode, "");
                 if (product != null) {
                     errorString = "Product BarCode exists";
                 } else {
@@ -222,7 +222,7 @@ public class CreateProductServlet extends HttpServlet {
                         product.setCategoryID(category.getCategoryID());
 
                         DBUtils.insertProduct(conn, product);
-                        product = DBUtils.findProduct(conn, barcode);
+                        product = DBUtils.findProduct(conn, barcode, "");
                         //------------------------------------------------------//
                         // Retrieve the filterInputs parameter
                         String filterInputsJson = req.getParameter("filterInputs");

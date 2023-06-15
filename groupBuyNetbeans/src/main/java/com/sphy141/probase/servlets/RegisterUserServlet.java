@@ -6,6 +6,7 @@
 package com.sphy141.probase.servlets;
 
 import com.sphy141.probase.beans.UserAccount;
+import com.sphy141.probase.utils.CryptoUtils;
 import com.sphy141.probase.utils.DBUtils;
 import com.sphy141.probase.utils.MailUtils;
 import com.sphy141.probase.utils.MyUtils;
@@ -89,7 +90,7 @@ public class RegisterUserServlet extends HttpServlet {
                 user.setLastName(lastName);
                 user.setEmail(email);
                 user.setUserName(username);
-                user.setPassword(password);
+                user.setPassword(CryptoUtils.hashString(password));
                 String verificationCode = UUID.randomUUID().toString().substring(0, 20);
                 user.setVerificationCode(verificationCode);
                 user.setUserID(DBUtils.insertUser(conn, user));

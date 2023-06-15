@@ -57,9 +57,9 @@ public class CreateOfferServlet extends HttpServlet {
         
         
         Connection conn = MyUtils.getStoredConnection(req);
-        List<String> codelist = null;
+        List<Product> codelist = null;
         try { 
-            codelist = DBUtils.queryBusinnesProducts(conn, business.getBusinessID());//loging get businessID
+            codelist = DBUtils.queryProductsInBusiness(conn, business.getBusinessID());//loging get businessID
             } catch (SQLException ex) {
             ex.printStackTrace();
         }
@@ -252,8 +252,8 @@ public class CreateOfferServlet extends HttpServlet {
             try {   
                     offer.setDiscount(offerdiscount);
                     offer.setGroupSize(size);
-                    offer.setOfferExpire(exdate);
-                    offer.setCouponExpire(excoupon);
+                    offer.setOfferExpire(oexdate);
+                    offer.setCouponExpire(oexcoupon);
                     offer.setTitle(name);
                     offer.setFinalprice(finalprice);
                     offer.setCouponPrice(coupprise);

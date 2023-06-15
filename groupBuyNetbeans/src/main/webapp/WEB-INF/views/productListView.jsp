@@ -21,7 +21,7 @@
                 <input type="checkbox" id="check" title="cb" placeholder="..">
                 <div class="btn_one">
                     <label for="check">
-                        <i class="fas fa-bars"></i>
+                        <i class="fas fa-filter"></i>
                     </label>
                 </div>
                 <div class="sidebar_menu">
@@ -37,20 +37,22 @@
                         <div id="side-menu">
                             <ul class="no-liststyle">
                             <c:if test="${filtersList==null}">
-                                <li><i class="fas fa-qrcode"></i>
+                                <li><i class="fas fa-filter"></i>
                                     <a href="#">No filters for this Category</a>
                                 </li>
                             </c:if>
 
                             <c:forEach items="${filtersList}" var="item">
                                 <li class="filter-item">
-                                    <i class="fas fa-qrcode"></i>
-                                    <span class="filter-name">${item.getFilterName()}</span>
+                                    <i class="fas fa-filter"></i>
+                                    <span class="filter-name" value="${item.getFilterID()}">${item.getFilterName()}</span>
                                     <ul class="filter-values no-liststyle hidden">
-                                        <c:forEach items="${item.getExistingFilterValues()}" var="itemoption">
+                                        <c:forEach items="${item.getExistingFilterValues()}" var="entry">
+                                            <c:set var="itemOption" value="${entry.key}" />
+                                            <c:set var="itemRepetition" value="${entry.value}" />
                                             <li>
-                                                <input type="checkbox" value="${itemoption}" id="${itemoption}">
-                                                <label for="${itemoption}">${itemoption}</label>
+                                                <input type="checkbox" value="${itemOption}" id="${itemOption}">
+                                                <label for="${itemOption}">${itemOption} (${itemRepetition})</label>
                                             </li>
                                         </c:forEach>
                                     </ul>
@@ -90,12 +92,10 @@
                         </a>
                         <c:if test="${logineduser.getUserName()!='tomcruz'}">
                             <p class="image-left">
-                                <a class="fas fa-bars" href='editproduct?proid=${item.getId()}'></a>
+                                <a class="fas fa-pencil-alt" href='editproduct?proid=${item.getId()}'></a>
                             </p>
                             <p class="image-right">
-                                <a href="#" onclick="confirmRedirect(${item.getId()})">
-                                    <img class="small-icon" src='assets/img/delete.png' draggable='false' />
-                                </a>
+                                <a class="fas fa-trash" href="#" onclick="confirmRedirect(${item.getId()})" style="color:red"></a>                     
                             </p>
                         </c:if>
                         <p class="image-left image-bottom">${item.getName()}</p>
@@ -113,6 +113,8 @@
                 <c:if test="${loginedbusiness!=null}">
                     <button class="add-product-btn btn btn-primary  text-uppercase" 
                             onClick="window.location.href = '${pageContext.request.contextPath}/createproduct';">Create Product</button>
+                    <button class="add-product-btn btn btn-primary  text-uppercase" 
+                            onClick="window.location.href = '${pageContext.request.contextPath}/updatebusinessproducts';">Change Business Products</button>
                 </c:if>
             </div>
             <div class="layout track-container border-yellow" id="trackcontainer2">
@@ -123,16 +125,25 @@
                             <a class="product-image" href='${pageContext.request.contextPath}/productdetails?productCode=${item.getCode()}'>
                                 <img src='${item.getFirstImagePath()}' draggable='false' />
                             </a>
-                            <c:if test="${logineduser.getUserName()!='tomcruz'}">
+                            <c:if test="${loginedbusiness.getBusinessName()=='c'}">
                                 <p class="image-left">
-                                    <a class="fas fa-bars" href='editproduct?proid=${item.getId()}'></a>
-                                </p>
-                                <p class="image-right">
-                                    <a href="#" onclick="confirmRedirect(${item.getId()})">
-                                        <img class="small-icon" src='assets/img/delete.png' draggable='false' />
-                                    </a>
+                                    <a class="fas fa-pencil-alt" href='editproduct?proid=${item.getId()}'></a>
                                 </p>
                             </c:if>
+                            <p class="image-right">
+                                <c:choose>
+                                    <c:when test="${item.isWished()}">
+                                        <a class="fas fa-star" href="" onclick="confirmWish(${item.getCode()})"></a>
+                                    </c:when>
+                                    <c:when test="true">
+                                        <a class="far fa-star" href="" onclick="confirmWish(${item.getCode()})"></a>
+                                    </c:when>
+                                </c:choose>
+
+                                <c:if test="${loginedbusiness.getBusinessName()=='c'}">
+                                    <a class="fas fa-trash" href="#" onclick="confirmRedirect(${item.getId()})" style="color:red"></a>
+                                </c:if>
+                            </p>
                             <p class="image-left image-bottom">${item.getName()}</p>
                             <p class="image-right image-bottom">${item.getPrice()}$</p>
                         </div>                            
@@ -197,20 +208,112 @@
             }
 
             $(document).ready(function () {
+                $(".filter-values li, .filter-values :checkbox").click(function (event) {
+                    event.stopPropagation(); // Prevent event from bubbling to parent elements
+
+                    var checkbox = $(this).find(":checkbox");
+                    checkbox.prop("checked", !checkbox.prop("checked")); // Toggle the checkbox state
+
+                    var checkedValues = {};
+
+                    $(".filter-values").each(function () {
+                        var filterID = $(this).siblings(".filter-name").attr("value");
+                        var checkedCheckboxes = $(this).find(":checkbox:checked").map(function () {
+                            return $(this).val();
+                        }).get();
+
+                        if (checkedCheckboxes.length > 0) {
+                            checkedValues[filterID] = checkedCheckboxes;
+                        }
+                    });
+
+                    console.log(checkedValues); // Print checkedValues in the console
+                    //
+                    // Perform AJAX POST request with the checked values
+                    $.ajax({
+                        url: "${pageContext.request.contextPath}/filterproductlist",
+                        type: "POST",
+                        data: {checkedValues: JSON.stringify(checkedValues)},
+                        dataType: "json", // Specify the expected data type as JSON
+                        success: function (response) {
+                            var productList = response; // The response is already parsed as JSON
+                            // Clear the existing productList HTML
+                            console.log(productList);
+                            $("#image-track2").empty();
+
+                            // Iterate over the productList and populate the HTML
+                            productList.forEach(function (item) {
+                                var productHtml = `<div class='product'>
+    <a class="product-image" href='${pageContext.request.contextPath}/productdetails?productCode=` + item.code + `'>
+      <img src='` + item.firstImagePath + `' draggable='false' />
+    </a>
+            <c:if test="${loginedbusiness.getBusinessName()=='c'}">
+                                <p class="image-left">
+                                    <a class="fas fa-pencil-alt" href='editproduct?proid=` + item.id + `'></a>
+                                </p>
+            </c:if>
+                            <p class="image-right">
+                               `;
+                                if (item.wished)
+                                    productHtml += `<a class="fas fa-star" href="" onclick="confirmWish(` + item.code + `)"></a>`;
+                                else
+                                    productHtml += `<a class="far fa-star" href="" onclick="confirmWish(` + item.code + `)"></a>`;
+
+                                productHtml += `<c:if test="${loginedbusiness.getBusinessName()=='c'}">
+                                    <a class="fas fa-trash" href="#" onclick="confirmRedirect(` + item.id + `)" style="color:red"></a>
+            </c:if>
+                            </p>
+    <p class="image-left image-bottom">` + item.name + `</p>
+    <p class="image-right image-bottom">` + item.price + `$</p>
+  </div>`;
+
+                                // Append the productHtml to the productList container
+                                $("#image-track2").append(productHtml);
+                            });
+
+                        },
+                        error: function (xhr, status, error) {
+                            // Handle the error
+                            console.log(error);
+                        }
+                    });
+
+                });
+                $(".filter-values label").click(function (event) {
+                    event.stopPropagation(); // Prevent event from bubbling to parent elements
+                });
                 $(".filter-item").click(function () {
                     $(this).find(".filter-values").toggleClass("hidden");
                 });
             });
-            </script>
-            <script type='text/javascript' src='js/listTrack.js'></script>
-            <script type='text/javascript' src='js/filterScroll.js'></script>
-            <!-- Footer-->
+            //Toggle wishes in DB and in div class
+            function confirmWish(productCode, element) {
+                $.ajax({
+                    type: "POST",
+                    url: "${pageContext.request.contextPath}/toggleproductwish",
+                    data: {productCode: productCode},
+                    success: function (response) {
+                        // Check the response and update the element's class accordingly
+                        if (response == "true") {
+                            if ($(element).hasClass("far")) {
+                                $(element).removeClass("far").addClass("fas");
+                            } else {
+                                $(element).removeClass("fas").addClass("far");
+                            }
+                        } else {
+                            var alert = alert("something went wrong");
+                        }
+                    }
+                });
+            }
+        </script>
+        <script type='text/javascript' src='js/listTrack.js'></script>
+        <script type='text/javascript' src='js/filterScroll.js'></script>
+        <!-- Footer-->
         <jsp:include page="_footer.jsp"></jsp:include>
         <!-- Bootstrap core JS-->
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
         <!-- Core theme JS-->
         <script src="js/scripts.js"></script>
-
     </body>
-
 </html>
