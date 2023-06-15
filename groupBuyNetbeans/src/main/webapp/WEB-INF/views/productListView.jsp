@@ -129,13 +129,21 @@
                                 <p class="image-left">
                                     <a class="fas fa-pencil-alt" href='editproduct?proid=${item.getId()}'></a>
                                 </p>
+                            </c:if>
+                            <p class="image-right">
+                                <c:choose>
+                                    <c:when test="${item.isWished()}">
+                                        <a class="fas fa-star" href="" onclick="confirmWish(${item.getCode()})"></a>
+                                    </c:when>
+                                    <c:when test="true">
+                                        <a class="far fa-star" href="" onclick="confirmWish(${item.getCode()})"></a>
+                                    </c:when>
+                                </c:choose>
+
+                                <c:if test="${loginedbusiness.getBusinessName()=='c'}">
+                                    <a class="fas fa-trash" href="#" onclick="confirmRedirect(${item.getId()})" style="color:red"></a>
                                 </c:if>
-                                <p class="image-right">
-                                    <a class="far fa-star" href='#ADDTOWISHLIST'></a>
-                                    <c:if test="${loginedbusiness.getBusinessName()=='c'}">
-                                        <a class="fas fa-trash" href="#" onclick="confirmRedirect(${item.getId()})" style="color:red"></a>
-                                    </c:if>
-                                </p>
+                            </p>
                             <p class="image-left image-bottom">${item.getName()}</p>
                             <p class="image-right image-bottom">${item.getPrice()}$</p>
                         </div>                            
@@ -239,16 +247,22 @@
     <a class="product-image" href='${pageContext.request.contextPath}/productdetails?productCode=` + item.code + `'>
       <img src='` + item.firstImagePath + `' draggable='false' />
     </a>
-            <c:if test="${logineduser.getUserName()!='tomcruz'}">
-      <p class="image-left">
-        <a class="fas fa-pencil-alt" href='editproduct?proid=` + item.id + `'></a>
-      </p>
-      <p class="image-right">
-        <a href="#" onclick="confirmRedirect(` + item.id + `">
-          <img class="small-icon" src='assets/img/delete.png' draggable='false' />
-        </a>
-      </p>
+            <c:if test="${loginedbusiness.getBusinessName()=='c'}">
+                                <p class="image-left">
+                                    <a class="fas fa-pencil-alt" href='editproduct?proid=` + item.id + `'></a>
+                                </p>
             </c:if>
+                            <p class="image-right">
+                               `;
+                                if (item.wished)
+                                    productHtml += `<a class="fas fa-star" href="" onclick="confirmWish(` + item.code + `)"></a>`;
+                                else
+                                    productHtml += `<a class="far fa-star" href="" onclick="confirmWish(` + item.code + `)"></a>`;
+
+                                productHtml += `<c:if test="${loginedbusiness.getBusinessName()=='c'}">
+                                    <a class="fas fa-trash" href="#" onclick="confirmRedirect(` + item.id + `)" style="color:red"></a>
+            </c:if>
+                            </p>
     <p class="image-left image-bottom">` + item.name + `</p>
     <p class="image-right image-bottom">` + item.price + `$</p>
   </div>`;
@@ -272,6 +286,26 @@
                     $(this).find(".filter-values").toggleClass("hidden");
                 });
             });
+            //Toggle wishes in DB and in div class
+            function confirmWish(productCode, element) {
+                $.ajax({
+                    type: "POST",
+                    url: "${pageContext.request.contextPath}/toggleproductwish",
+                    data: {productCode: productCode},
+                    success: function (response) {
+                        // Check the response and update the element's class accordingly
+                        if (response == "true") {
+                            if ($(element).hasClass("far")) {
+                                $(element).removeClass("far").addClass("fas");
+                            } else {
+                                $(element).removeClass("fas").addClass("far");
+                            }
+                        } else {
+                            var alert = alert("something went wrong");
+                        }
+                    }
+                });
+            }
         </script>
         <script type='text/javascript' src='js/listTrack.js'></script>
         <script type='text/javascript' src='js/filterScroll.js'></script>

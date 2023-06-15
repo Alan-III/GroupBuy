@@ -21,7 +21,12 @@ public class Product {
     private int categoryID;
     private float price;
     private List<String> imagePaths;
+    private boolean isWished;
 
+    public Product() {
+        this.imagePaths = new ArrayList<String>();
+        isWished = false;
+    }
     public int getId() {
         return id;
     }
@@ -36,6 +41,18 @@ public class Product {
     public void setCategoryID(int categoryID) {
         this.categoryID = categoryID;
     }
+
+    public boolean isWished() {
+        return isWished;
+    }
+
+    public void setIsWished(boolean isWished) {
+        this.isWished = isWished;
+    }
+    public void toggleIsWished() {
+        this.isWished = (! this.isWished);
+    }
+    
     public String getDetails() {
         return details;
     }
@@ -62,9 +79,6 @@ public class Product {
     }
     
 
-    public Product() {
-        this.imagePaths = new ArrayList<String>();
-    }
 
     public String getCode() {
         return code;
