@@ -1,3 +1,4 @@
+
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -38,12 +39,12 @@ import javax.servlet.http.Part;
  *
  * @author Alan
  */
-@WebServlet(urlPatterns = {"/createoffer"})
+@WebServlet(urlPatterns = {"/editoffer"})
 @MultipartConfig(
     fileSizeThreshold= 1024 *1024 * 1,
     maxRequestSize= 1024 *1024 * 100
 )
-public class CreateOfferServlet extends HttpServlet {
+public class EditOfferServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         HttpSession session = req.getSession();

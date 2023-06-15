@@ -14,11 +14,14 @@
         <meta name="description" content="" />
         <meta name="author" content="" />
         <title>GroupBuy - Create Offer</title>
+        <link rel="stylesheet" href="styles/productList.css">
+
         <link rel="stylesheet" href="styles/userInfoStyles.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css"/>
         <link href="styles/BootstrapStyles.css" rel="stylesheet" />
         <!--<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">-->
-
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        
     </head>
     <body>
         <!-- Navigation-->
@@ -132,23 +135,121 @@
                             <input type="file" class="form-control" required="required" id="oimage" name="oimage[]" min= "1" multiple/>
                             <label class="input-label-focused" for="oimage">Images</label> 
                         </div>
-                        
+                       
                         <div class="input-field">
-                            <select class="form-control" required="required" id="codes" name="codes[]">
-                            <c:forEach var="code" items="${codelist}">
-                                <option value="${code}">${code}</option>
-                            </c:forEach>
-                            </select>
+                            <input type="text" class="form-control" required="required" id="selectedCodesText" readonly>
+                            <select id="codes" multiple onchange="updateLabel()">
+</select>
                             <label class="input-label-focused" for="codes">Product Code</label>
+                        </div> 
+                        
+                        <div class="layout">
+                
+                            <div class="search_bar-small" style="width: inherit;">
+                                <img src="https://cdn.pixabay.com/photo/2013/07/12/15/55/clues-150586_960_720.png" alt="glass" height="35rem" width="35rem" />
+                                <input class="typewriter" id="search-box" type="text" placeholder="Type here to search..."/>
+                                <button class="add-product-btn btn btn-primary text-uppercase" onClick="searchProducts()">Search</button>
+                            </div>
                         </div>
-                        
-                        
+                        <div class="search-recommends layout">
+                        </div>
+
+                        <div class="layout track-container border-yellow" id="trackcontainer2">
+                <!-- Item slider-->
+                        <div id='image-track2' class="image-track" data-mouse-down-at='0' data-prev-percentage='0'>
+                            <c:forEach items="${productList}" var="item">
+                        <div class='product'>
+                            <a class="product-image" href='${pageContext.request.contextPath}/productdetails?productCode=${item.getCode()}'>
+                                <img src='${item.getFirstImagePath()}' draggable='false' />
+                            </a>
+                                <p class="image-left">
+                                    <a class="fas fa-bars" href='editproduct?proid=${item.getId()}'></a>
+                                </p>
+                                <p class="image-right">
+                                    <a href="#" onclick="confirmRedirect(${item.getId()})">
+                                        <img class="small-icon" src='assets/img/delete.png' draggable='false' />
+                                    </a>
+                                </p>
+                            <p class="image-left image-bottom">${item.getName()}</p>
+                            <p class="image-right image-bottom">${item.getPrice()}$</p>
+                        </div>                            
+                                </c:forEach>
+
+                        </div>
+
+                <!-- Item slider end-->
+                        </div>
+
+
                         <button type="submit" name="submit" class="btn btn-primary btn-block mb-4">Submit</button>
                     </form>
                 </div>
             </div>
         </div>
-        <script>
+                        <div class="layout track-container border-yellow" id="trackcontainer" hidden="hidden">
+                <!-- Item slider-->
+                <div id='image-track' class="image-track" data-mouse-down-at='0' data-prev-percentage='0' hidden="hidden">
+                        </div>
+                        </div>
+                        
+                        <script>
+            //DELETE CONFIRM
+            function confirmRedirect(productId) {
+                var confirmed = confirm("Are you sure you want to delete this product?");
+                if (confirmed) {
+                    window.location.href = "deleteproduct?proid=" + productId;
+                }
+            }
+            //LOAD NEXT PAGE WITH SEARCH
+            function searchProducts() {
+                var searchValue = document.getElementById("search-box").value;
+                if (searchValue.length)
+                    var url = "${pageContext.request.contextPath}/productlist?search=" + encodeURIComponent(searchValue);
+                else
+                    var url = "${pageContext.request.contextPath}/productlist";
+
+                window.location.href = url;
+            }
+            //SEARCH RESULTS
+            let availableKeywords = [<c:forEach var="keyword" items="${keywordsList}">"${keyword}",</c:forEach>];
+                    const recommendsBox = document.querySelector(".search-recommends");
+            const searchBox = document.getElementById("search-box");
+
+            searchBox.onkeyup = function () {
+                let result = [];
+                let input = searchBox.value;
+                if (input.length) {
+                    result = availableKeywords.filter((keyword) => {
+                        return keyword.toLowerCase().includes(input.toLowerCase());
+                    });
+                }
+                display(result);
+                if (!result.length) {
+                    recommendsBox.innerHTML = '';
+                }
+            }
+
+            function display(result) {
+                const maxItems = 10;
+                const limitedResult = result.slice(0, maxItems);
+                const content = limitedResult.map((list) => {
+                    return "<li onclick=selectInput(this)>" + list + "</li>";
+                });
+
+                recommendsBox.innerHTML = "<ul>" + content.join('') + "</li>";
+            }
+
+            function selectInput(list) {
+                searchBox.value = list.innerHTML;
+                recommendsBox.innerHTML = '';
+            }
+
+            $(document).ready(function () {
+                $(".filter-item").click(function () {
+                    $(this).find(".filter-values").toggleClass("hidden");
+                });
+            });
+          
             // Get today's date
             var today = new Date();
 
@@ -168,10 +269,14 @@
                 selectedCodes.push(selectElement.options[i].text);
             }
         }
-        var labelElement = document.getElementById("selectedCodeLabel");
-        labelElement.textContent = "Selected Codes: " + selectedCodes.join(", ");
+        // Προσθήκη επιλεγμένων κωδικών στο πεδίο κειμένου
+        var textFieldElement = document.getElementById("selectedCodesText");
+        textFieldElement.value = selectedCodes.join(", ");
     }
+   
 </script>
+ <script type='text/javascript' src='js/listTrack.js'></script>
+<script type='text/javascript' src='js/filterScroll.js'></script>
         
         <!-- Footer-->
         <jsp:include page="_footer.jsp"></jsp:include>
