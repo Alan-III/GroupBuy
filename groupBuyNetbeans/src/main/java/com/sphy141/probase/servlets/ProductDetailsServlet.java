@@ -33,28 +33,43 @@ import javax.servlet.http.HttpSession;
 public class ProductDetailsServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        //------------------CHECK LOGINED USER - BUSINESS - GET NOTIFICATIONS------------------TEMPLATE START
         HttpSession session = req.getSession();
         UserAccount user = MyUtils.getLoginedUser(session);
-        String userMailstr="";
-        if(user!=null){
+        BusinessAccount business = MyUtils.getLoginedBusiness(session);
+        Connection conn = MyUtils.getStoredConnection(req);
+        String userMailstr = " ";
+        String errorString = null;
+        int notificationsCount = 0;
+
+        if (user != null) {
             req.setAttribute("logineduser", user);
-            userMailstr=user.getEmail();
-        }
-        else{
+            userMailstr = user.getEmail();
+            try {
+                notificationsCount = DBUtils.countNotificationsNotReadBy(conn, user);
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+        } else {
             req.setAttribute("logineduser", null);
-        
-            BusinessAccount business = MyUtils.getLoginedBusiness(session);
-            if(business!=null)
+            
+            if (business != null) {
                 req.setAttribute("loginedbusiness", business);
-            else
+                try {
+                notificationsCount = DBUtils.countNotificationsNotReadBy(conn, business);
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+            } else {
                 req.setAttribute("loginedbusiness", null);
+            }
         }
+        req.setAttribute("notificationsCount", notificationsCount);
+        //------------------CHECK LOGINED USER - BUSINESS - GET NOTIFICATIONS------------------TEMPLATE END
         
         String productCodeParam = req.getParameter("productCode");
         
-        Connection conn = MyUtils.getStoredConnection(req);
         Product product = null;
-        String errorString = null;
         try {
             product = DBUtils.findProduct(conn, productCodeParam, userMailstr);
         } catch (SQLException ex) {

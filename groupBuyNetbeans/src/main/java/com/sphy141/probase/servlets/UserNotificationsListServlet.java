@@ -5,6 +5,7 @@
  */
 package com.sphy141.probase.servlets;
 
+import com.sphy141.probase.beans.BusinessAccount;
 import com.sphy141.probase.beans.Notification;
 import com.sphy141.probase.beans.UserAccount;
 import com.sphy141.probase.utils.DBUtils;
@@ -31,19 +32,31 @@ public class UserNotificationsListServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        //------------------CHECK LOGINED USER - BUSINESS - GET NOTIFICATIONS------------------TEMPLATE START
         HttpSession session = req.getSession();
         UserAccount user = MyUtils.getLoginedUser(session);
-        if(user==null){
+        Connection conn = MyUtils.getStoredConnection(req);
+        String errorString = null;
+        int notificationsCount = 0;
+
+        if (user != null) {
+            try {
+                notificationsCount = DBUtils.countNotificationsNotReadBy(conn, user);
+                req.setAttribute("logineduser", user);
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+        } else {
             resp.sendRedirect(req.getContextPath()+"/login");
             return;
         }
-        Connection conn = MyUtils.getStoredConnection(req);
+        req.setAttribute("notificationsCount", notificationsCount);
+        //------------------CHECK LOGINED USER - BUSINESS - GET NOTIFICATIONS------------------TEMPLATE END
         List<Notification> notificationsListRead = new ArrayList<Notification>();
         List<Notification> notificationsListNotRead = new ArrayList<Notification>();
-        String errorString = null;
         try {
-            notificationsListRead = DBUtils.queryUserNotificationsRead(conn, user);
-            notificationsListNotRead = DBUtils.queryUserNotificationsNotRead(conn, user);
+            notificationsListRead = DBUtils.queryNotificationsReadBy(conn, user);
+            notificationsListNotRead = DBUtils.queryNotificationsNotReadBy(conn, user);
                 
         } catch (SQLException ex) {
             ex.printStackTrace();

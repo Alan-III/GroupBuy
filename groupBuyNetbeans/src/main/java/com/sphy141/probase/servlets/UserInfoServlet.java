@@ -6,8 +6,11 @@
 package com.sphy141.probase.servlets;
 
 import com.sphy141.probase.beans.UserAccount;
+import com.sphy141.probase.utils.DBUtils;
 import com.sphy141.probase.utils.MyUtils;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.SQLException;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -26,11 +29,23 @@ public class UserInfoServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         HttpSession session = req.getSession();
         UserAccount user = MyUtils.getLoginedUser(session);
-        if(user==null){
+        Connection conn = MyUtils.getStoredConnection(req);
+        String errorString = null;
+        int notificationsCount = 0;
+
+        if (user != null) {
+            try {
+                notificationsCount = DBUtils.countNotificationsNotReadBy(conn, user);
+                req.setAttribute("logineduser", user);
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+        } else {
             resp.sendRedirect(req.getContextPath()+"/login");
             return;
         }
-        req.setAttribute("logineduser", user);
+        req.setAttribute("notificationsCount", notificationsCount);
+        //------------------CHECK LOGINED USER - BUSINESS - GET NOTIFICATIONS------------------TEMPLATE END
         RequestDispatcher dispatcher=this.getServletContext().getRequestDispatcher("/WEB-INF/views/userInfoView.jsp");
         dispatcher.forward(req, resp);
     }//doGet

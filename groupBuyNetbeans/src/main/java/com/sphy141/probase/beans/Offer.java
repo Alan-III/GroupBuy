@@ -5,6 +5,8 @@
  */
 package com.sphy141.probase.beans;
 
+import java.util.List;
+
 /**
  *
  * @author MITSOS GLA

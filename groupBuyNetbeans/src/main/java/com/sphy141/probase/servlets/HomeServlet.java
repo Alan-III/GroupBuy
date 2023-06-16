@@ -40,33 +40,40 @@ public class HomeServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        //------------------CHECK LOGINED USER - BUSINESS - GET NOTIFICATIONS------------------TEMPLATE START
         HttpSession session = req.getSession();
         UserAccount user = MyUtils.getLoginedUser(session);
+        BusinessAccount business = MyUtils.getLoginedBusiness(session);
         Connection conn = MyUtils.getStoredConnection(req);
         String userMailstr = " ";
+        String errorString = null;
         int notificationsCount = 0;
 
         if (user != null) {
             req.setAttribute("logineduser", user);
             userMailstr = user.getEmail();
             try {
-                notificationsCount = DBUtils.countUserNotificationsNotRead(conn, user);
+                notificationsCount = DBUtils.countNotificationsNotReadBy(conn, user);
             } catch (SQLException ex) {
                 ex.printStackTrace();
             }
         } else {
             req.setAttribute("logineduser", null);
-
-            BusinessAccount business = MyUtils.getLoginedBusiness(session);
+            
             if (business != null) {
                 req.setAttribute("loginedbusiness", business);
+                try {
+                notificationsCount = DBUtils.countNotificationsNotReadBy(conn, business);
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
             } else {
                 req.setAttribute("loginedbusiness", null);
             }
         }
-
+        req.setAttribute("notificationsCount", notificationsCount);
+        //------------------CHECK LOGINED USER - BUSINESS - GET NOTIFICATIONS------------------TEMPLATE END
         List<Category> categoriesList = null;
-        String errorString = null;
         try {
             categoriesList = DBUtils.queryCategories(conn);
         } catch (SQLException ex) {
@@ -106,7 +113,6 @@ public class HomeServlet extends HttpServlet {
         req.setAttribute("errorString", errorString);
         req.setAttribute("categorylist", categoriesList);
         req.setAttribute("keywordsList", keywordsList);
-        req.setAttribute("notificationsCount", notificationsCount);
 
         RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher("/WEB-INF/views/homeView.jsp");
         dispatcher.forward(req, resp);

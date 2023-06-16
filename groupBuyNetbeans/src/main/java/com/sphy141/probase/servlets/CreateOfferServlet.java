@@ -10,6 +10,7 @@ import com.sphy141.probase.beans.Category;
 import com.sphy141.probase.beans.Offer;
 import com.sphy141.probase.beans.Product;
 import com.sphy141.probase.beans.ProductFilter;
+import com.sphy141.probase.beans.UserAccount;
 import com.sphy141.probase.utils.DBUtils;
 import com.sphy141.probase.utils.MyUtils;
 import java.io.IOException;
@@ -49,17 +50,35 @@ public class CreateOfferServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        //------------------CHECK LOGINED USER - BUSINESS - GET NOTIFICATIONS------------------TEMPLATE START
         HttpSession session = req.getSession();
+        UserAccount user = MyUtils.getLoginedUser(session);
         BusinessAccount business = MyUtils.getLoginedBusiness(session);
+        Connection conn = MyUtils.getStoredConnection(req);
+        String userMailstr = " ";
         String errorString = null;
-        if (business == null) {
-            resp.sendRedirect(req.getContextPath() + "/home");  // REDIRECT TO ACCESS DENIED PAGE
+        int notificationsCount = 0;
+
+        if (user != null) {
+            resp.sendRedirect(req.getContextPath()+"/home");
             return;
         } else {
-            req.setAttribute("loginedbusiness", business);
+            req.setAttribute("logineduser", null);
+            
+            if (business != null) {
+                req.setAttribute("loginedbusiness", business);
+                try {
+                    notificationsCount = DBUtils.countNotificationsNotReadBy(conn, business);
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+            } else {
+                resp.sendRedirect(req.getContextPath()+"/login");
+                return;
+            }
         }
-
-        Connection conn = MyUtils.getStoredConnection(req);
+        req.setAttribute("notificationsCount", notificationsCount);
+        //------------------CHECK LOGINED USER - BUSINESS - GET NOTIFICATIONS------------------TEMPLATE END
 
         List<Product> businessProductList = null;
         try {
@@ -133,7 +152,7 @@ public class CreateOfferServlet extends HttpServlet {
                 // Save the file to the specified directory
                 Files.copy(imageFile.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
 //                imageFile.write(filePath.toString());
-                imagePaths.add("assets/databaseImages/offers/" +business.getBusinessName() + "/" + randomfolder1 + "/" + fileName);
+                imagePath=("assets/databaseImages/offers/" +business.getBusinessName() + "/" + randomfolder1 + "/" + fileName);
                 System.out.println("File saved: " + filePath);
             } catch (IOException e) {
                 // Handle the exception if file saving fails
@@ -142,7 +161,7 @@ public class CreateOfferServlet extends HttpServlet {
             }
 
         }//for
-        String path = imagePaths.get(0);
+        String path = imagePath;
 
         /* Collection<Part> businesPro = req.getBussinessProducts();       
         List<Part> productCodes = new ArrayList<>(businesPro);

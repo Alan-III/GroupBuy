@@ -11,6 +11,7 @@ import com.sphy141.probase.beans.Category;
 import com.sphy141.probase.beans.Offer;
 import com.sphy141.probase.beans.Product;
 import com.sphy141.probase.beans.ProductFilter;
+import com.sphy141.probase.beans.UserAccount;
 import com.sphy141.probase.utils.DBUtils;
 import com.sphy141.probase.utils.MyUtils;
 import java.io.IOException;
@@ -47,18 +48,35 @@ import javax.servlet.http.Part;
 public class EditOfferServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        //------------------CHECK LOGINED USER - BUSINESS - GET NOTIFICATIONS------------------TEMPLATE START
         HttpSession session = req.getSession();
+        UserAccount user = MyUtils.getLoginedUser(session);
         BusinessAccount business = MyUtils.getLoginedBusiness(session);
-        String errorString = null;
-        if (business == null) {
-            resp.sendRedirect(req.getContextPath() + "/home");  // REDIRECT TO ACCESS DENIED PAGE
-            return;
-        }
-        else
-            req.setAttribute("loginedbusiness", business);
-        
-       
         Connection conn = MyUtils.getStoredConnection(req);
+        String userMailstr = " ";
+        String errorString = null;
+        int notificationsCount = 0;
+
+        if (user != null) {
+            resp.sendRedirect(req.getContextPath()+"/home");
+            return;
+        } else {
+            req.setAttribute("logineduser", null);
+            
+            if (business != null) {
+                req.setAttribute("loginedbusiness", business);
+                try {
+                    notificationsCount = DBUtils.countNotificationsNotReadBy(conn, business);
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+            } else {
+                resp.sendRedirect(req.getContextPath()+"/login");
+                return;
+            }
+        }
+        req.setAttribute("notificationsCount", notificationsCount);
+        //------------------CHECK LOGINED USER - BUSINESS - GET NOTIFICATIONS------------------TEMPLATE END
         
         List<String> productList = null;
         List<Product> businessProductList = null;

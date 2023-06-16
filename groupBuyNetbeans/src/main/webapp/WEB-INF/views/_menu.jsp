@@ -27,7 +27,7 @@
                         <li class="nav-item"><a class="nav-link" href="${pageContext.request.contextPath}/userInfo">${logineduser.getUserName()}</a></li>
                         <li class="nav-item"><a class="nav-link" href="${pageContext.request.contextPath}/usernotifications">
                             <div class="far fa-bell"></div>
-<!--                            <c:if test="${notificationsCount!=0}">notifications not null-->
+                            <c:if test="${notificationsCount!=0}">
                                 <div class = "number">${notificationsCount}</div>
                             </c:if>
                             </a></li>
@@ -36,7 +36,7 @@
                         <li class="nav-item"><a class="nav-link" href="${pageContext.request.contextPath}/businessInfo">${loginedbusiness.getBusinessName()}</a></li>
                         <li class="nav-item"><a class="nav-link" href="${pageContext.request.contextPath}/businessnotifications">
                                 <div class="far fa-bell"></div>
-<!--                            <c:if test="${notificationsCount!=0}">notifications not null-->
+                            <c:if test="${notificationsCount!=0}">
                                 <div class = "number">${notificationsCount}</div>
                             </c:if>
                         </a></li>

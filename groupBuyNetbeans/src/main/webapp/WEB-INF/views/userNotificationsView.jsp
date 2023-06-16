@@ -163,7 +163,7 @@
                     // Retrieve notification ID and send Ajax request
                     var notificationId = $(this).data("notification-id");
                     // Send AJAX request with the notificationID
-                    $.post('your_servlet_url', {notificationID: notificationID}, function (data) {
+                    $.post('${pageContext.request.contextPath}/readnotification', {notificationID: notificationId}, function (data) {
                         // Handle the AJAX response
                         // ...
                     });

@@ -921,12 +921,15 @@ public static void UpdateOffer(Connection conn,Offer offer) throws SQLException 
         pst.executeUpdate();
     }
 
-    public static List<Notification> queryUserNotifications(Connection conn, UserAccount user) throws SQLException {
+    public static List<Notification> queryNotifications(Connection conn, UserAccount user) throws SQLException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+    public static List<Notification> queryNotifications(Connection conn, BusinessAccount business) throws SQLException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
     //GET NOTIFICATIONS READ BY THE USER
-    public static List<Notification> queryUserNotificationsRead(Connection conn, UserAccount user) throws SQLException {
+    public static List<Notification> queryNotificationsReadBy(Connection conn, UserAccount user) throws SQLException {
         String sql = "SELECT * FROM notifications n INNER JOIN mywish mw ON n.productCode=mw.productCode "
                 + "LEFT JOIN readnotifications rn ON n.notificationID=rn.notificationID WHERE mw.email=? AND rn.email=?";
         List<Notification> list = new ArrayList<Notification>();
@@ -945,9 +948,29 @@ public static void UpdateOffer(Connection conn,Offer offer) throws SQLException 
         }//while
         return list;
     }
+    //GET NOTIFICATIONS READ BY THE BUSINESS
+    public static List<Notification> queryNotificationsReadBy(Connection conn, BusinessAccount business) throws SQLException {
+        String sql = "SELECT * FROM notifications n INNER JOIN mywish mw ON n.productCode=mw.productCode "
+                + "LEFT JOIN readnotifications rn ON n.notificationID=rn.notificationID WHERE mw.email=? AND rn.email=?";
+        List<Notification> list = new ArrayList<Notification>();
+        PreparedStatement pst = conn.prepareStatement(sql);
+        pst.setString(1, business.getEmail());
+        pst.setString(2, business.getEmail());
+        ResultSet rs = pst.executeQuery();
+        while (rs.next()) {
+            Notification notif = new Notification();
+            notif.setId(rs.getInt("notificationID"));
+            notif.setNotificationTitle(rs.getString("title"));
+            notif.setDetails(rs.getString("details"));
+            notif.setDate(rs.getString("notificationDate"));
+            notif.setProductOrOfferName(rs.getString("productCode"));   // CHANGE TO OFFERS AND GET NAME
+            list.add(notif);
+        }//while
+        return list;
+    }
     
     //GET NOTIFICATIONS NOT READ BY THE USER
-    public static List<Notification> queryUserNotificationsNotRead(Connection conn, UserAccount user) throws SQLException {
+    public static List<Notification> queryNotificationsNotReadBy(Connection conn, UserAccount user) throws SQLException {
         String sql = "SELECT * FROM notifications n INNER JOIN mywish mw ON n.productCode=mw.productCode "
                 + "LEFT JOIN readnotifications rn ON n.notificationID=rn.notificationID WHERE mw.email=? AND (rn.email!=? OR rn.email IS NULL);";
         List<Notification> list = new ArrayList<Notification>();
@@ -966,9 +989,29 @@ public static void UpdateOffer(Connection conn,Offer offer) throws SQLException 
         }//while
         return list;
     }
+    //GET NOTIFICATIONS NOT READ BY THE BUSINESS
+    public static List<Notification> queryNotificationsNotReadBy(Connection conn,BusinessAccount business) throws SQLException {
+        String sql = "SELECT * FROM notifications n INNER JOIN mywish mw ON n.productCode=mw.productCode "
+                + "LEFT JOIN readnotifications rn ON n.notificationID=rn.notificationID WHERE mw.email=? AND (rn.email!=? OR rn.email IS NULL);";
+        List<Notification> list = new ArrayList<Notification>();
+        PreparedStatement pst = conn.prepareStatement(sql);
+        pst.setString(1, business.getEmail());
+        pst.setString(2, business.getEmail());
+        ResultSet rs = pst.executeQuery();
+        while (rs.next()) {
+            Notification notif = new Notification();
+            notif.setId(rs.getInt("notificationID"));
+            notif.setNotificationTitle(rs.getString("title"));
+            notif.setDetails(rs.getString("details"));
+            notif.setDate(rs.getString("notificationDate"));
+            notif.setProductOrOfferName(rs.getString("productCode"));   // CHANGE TO OFFERS AND GET NAME
+            list.add(notif);
+        }//while
+        return list;
+    }
     
     //GET NUMBER OF UNREAD NOTIFICATIONS
-    public static int countUserNotificationsNotRead(Connection conn, UserAccount user) throws SQLException {
+    public static int countNotificationsNotReadBy(Connection conn, UserAccount user) throws SQLException {
         String sql = "SELECT count(*) as notcount FROM notifications n INNER JOIN mywish mw ON n.productCode=mw.productCode "
                 + "LEFT JOIN readnotifications rn ON n.notificationID=rn.notificationID WHERE mw.email=? AND (rn.email!=? OR rn.email IS NULL);";
         List<Notification> list = new ArrayList<Notification>();
@@ -980,5 +1023,37 @@ public static void UpdateOffer(Connection conn,Offer offer) throws SQLException 
             return rs.getInt("notcount");
         }//while
         return 0;
+    }
+    //GET NUMBER OF UNREAD NOTIFICATIONS
+    public static int countNotificationsNotReadBy(Connection conn,BusinessAccount business) throws SQLException {
+        String sql = "SELECT count(*) as notcount FROM notifications n INNER JOIN mywish mw ON n.productCode=mw.productCode "
+                + "LEFT JOIN readnotifications rn ON n.notificationID=rn.notificationID WHERE mw.email=? AND (rn.email!=? OR rn.email IS NULL);";
+        List<Notification> list = new ArrayList<Notification>();
+        PreparedStatement pst = conn.prepareStatement(sql);
+        pst.setString(1, business.getEmail());
+        pst.setString(2, business.getEmail());
+        ResultSet rs = pst.executeQuery();
+        while (rs.next()) {
+            return rs.getInt("notcount");
+        }//while
+        return 0;
+    }
+    
+    //INSERT TO READ NOTIFICATIONS THE USER THAT READ THAT NOTIFICATION
+    public static void insertNotificationReadBy(Connection conn, int notificationID ,UserAccount user) throws SQLException {
+        String sql = "INSERT INTO readnotifications (notificationID,email) VALUES (?,?)";
+        PreparedStatement pst = conn.prepareStatement(sql);
+        pst.setInt(1, notificationID);
+        pst.setString(2, user.getEmail());
+        pst.executeUpdate();
+    }
+    
+    //INSERT TO READ NOTIFICATIONS THE BUSINESS THAT READ THAT NOTIFICATION
+    public static void insertNotificationReadBy(Connection conn, int notificationID ,BusinessAccount business) throws SQLException {
+        String sql = "INSERT INTO readnotifications (notificationID,email) VALUES (?,?)";
+        PreparedStatement pst = conn.prepareStatement(sql);
+        pst.setInt(1, notificationID);
+        pst.setString(2, business.getEmail());
+        pst.executeUpdate();
     }
 }
