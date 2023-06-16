@@ -10,6 +10,25 @@
  * Copyright 2011-2022 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
  */
+.number{
+      height: 22px;
+    width: 22px;
+    background-color: red;
+    border-radius: 100%;
+    color: #ffc800;
+    text-align: center;
+    position: absolute;
+    transform: translateY(-13px) translateX(13px);
+    font-size: small;
+    text-shadow: 1px 1px 0px #000000;
+}
+.number:empty {
+   display: none;
+}
+.border-circle{
+    border: 1px solid white;
+    border-radius: 100%;
+}
 .icon-plus{
     background-image: url("../assets/img/plus.png");
     background-size: cover;

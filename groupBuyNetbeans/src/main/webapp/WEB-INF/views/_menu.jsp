@@ -25,11 +25,16 @@
                     </c:if>
                     <c:if test="${logineduser!=null}">
                         <li class="nav-item"><a class="nav-link" href="/groupbuy/userInfo">${logineduser.getUserName()}</a></li>
+                        <li class="nav-item"><a class="nav-link far fa-bell" href="/groupbuy/usernotifications"></a></li>
                     </c:if>
                     <c:if test="${loginedbusiness!=null}">
                         <li class="nav-item"><a class="nav-link" href="/groupbuy/businessInfo">${loginedbusiness.getBusinessName()}</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/groupbuy/businessnotifications">
+<!--                            <c:if test="${loginedbusiness!=null}">notifications not null-->
+                                <div class="far fa-bell"></div><div class = "number">2</div>
+                            </c:if>
+                        </a></li>
                     </c:if>
-                
             </ul>
         </div>
     </div>
