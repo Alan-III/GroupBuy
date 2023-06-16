@@ -22,6 +22,7 @@ public class Product {
     private float price;
     private List<String> imagePaths;
     private boolean isWished;
+    private int wishesCount;
 
     public Product() {
         this.imagePaths = new ArrayList<String>();
@@ -40,6 +41,14 @@ public class Product {
 
     public void setCategoryID(int categoryID) {
         this.categoryID = categoryID;
+    }
+
+    public int getWishesCount() {
+        return wishesCount;
+    }
+
+    public void setWishesCount(int wishesCount) {
+        this.wishesCount = wishesCount;
     }
 
     public boolean isWished() {

@@ -145,16 +145,7 @@ a{
     }
 
 }
-.product-details .rate{
-    position: static;
-    margin-top: 10px;
 
-}
-.product-details .rate a{
-    font-size: 18px;
-    color: #bbb;
-}
-.product-details .rate a.active,
 .product-details .rate a:hover
 {
     color: #ffc800;
