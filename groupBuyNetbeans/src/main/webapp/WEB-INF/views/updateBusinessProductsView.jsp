@@ -140,11 +140,11 @@
                                 </a>
                                 <c:if test="${loginedbusiness.getBusinessName()=='c'}">
                                     <p class="image-left">
-                                        <a href="#" class="small-icon icon-minus" onclick="moveProduct(${item.getCode()})">
+                                        <a href="#image-track" class="small-icon icon-minus" onclick="moveProduct(${item.getCode()})">
                                         </a>
                                     </p>
                                     <p class="image-right">
-                                        <a href="#" onclick="confirmRedirect(${item.getId()})">
+                                        <a href="#image-track" onclick="confirmRedirect(${item.getId()})">
                                             <img class="small-icon" src='assets/img/delete.png' draggable='false' />
                                         </a>
                                     </p>
@@ -172,11 +172,11 @@
                                 </a>
                                 <c:if test="${loginedbusiness.getBusinessName()=='c'}">
                                     <p class="image-left">
-                                        <a href="#" class="small-icon icon-plus" onclick="moveProduct(${item.getCode()})">
+                                        <a href="#image-track" class="small-icon icon-plus" onclick="moveProduct(${item.getCode()})">
                                         </a>
                                     </p>
                                     <p class="image-right">
-                                        <a href="#" onclick="confirmRedirect(${item.getId()})">
+                                        <a href="#image-track" onclick="confirmRedirect(${item.getId()})">
                                             <img class="small-icon" src='assets/img/delete.png' draggable='false' />
                                         </a>
                                     </p>
@@ -359,11 +359,11 @@
                                 </a>
             <c:if test="${loginedbusiness.getBusinessName()=='c'}">
                                     <p class="image-left">
-                                        <a href="#" class="small-icon `+addicon+`" onclick="moveProduct(` + product.code + `)">
+                                        <a href="#image-track" class="small-icon `+addicon+`" onclick="moveProduct(` + product.code + `)">
                                         </a>
                                     </p>
                                     <p class="image-right">
-                                        <a href="#" onclick="confirmRedirect(` + product.id + `)">
+                                        <a href="#image-track" onclick="confirmRedirect(` + product.id + `)">
                                             <img class="small-icon" src='assets/img/delete.png' draggable='false' />
                                         </a>
                                     </p>

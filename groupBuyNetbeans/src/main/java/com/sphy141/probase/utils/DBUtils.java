@@ -7,6 +7,7 @@ package com.sphy141.probase.utils;
 
 import com.sphy141.probase.beans.BusinessAccount;
 import com.sphy141.probase.beans.Category;
+import com.sphy141.probase.beans.Notification;
 import com.sphy141.probase.beans.Offer;
 import com.sphy141.probase.beans.Product;
 import com.sphy141.probase.beans.ProductFilter;
@@ -346,6 +347,7 @@ public static List<Product> queryProductsInBusiness(Connection conn, int busines
         pst.setString(6, business.getAfm());
         pst.setString(7, business.getIBAN());
         pst.executeUpdate();
+        
         //insertPassword
         String sql1 = "INSERT INTO login (email, password) VALUES(?, ?)";
         PreparedStatement pst1 = conn.prepareCall(sql1);
@@ -739,8 +741,8 @@ public static List<Product> queryProductsInBusiness(Connection conn, int busines
                 of.setFinalprice(rs.getFloat("finalPrice"));
                 of.setGroupSize(rs.getInt("groupSize"));
                 of.setTitle(rs.getString("title"));
+                of.setImagePath(rs.getString("path"));
             }
-            of.addImagePath(rs.getString("path"));
             list.add(of);
         }//while
         return list;
@@ -752,5 +754,66 @@ public static List<Product> queryProductsInBusiness(Connection conn, int busines
         pst.setString(1, productCode);
         pst.setString(2, userMailstr);
         pst.executeUpdate();
+    }
+
+    public static List<Notification> queryUserNotifications(Connection conn, UserAccount user) throws SQLException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+    
+    //GET NOTIFICATIONS READ BY THE USER
+    public static List<Notification> queryUserNotificationsRead(Connection conn, UserAccount user) throws SQLException {
+        String sql = "SELECT * FROM notifications n INNER JOIN mywish mw ON n.productCode=mw.productCode "
+                + "LEFT JOIN readnotifications rn ON n.notificationID=rn.notificationID WHERE mw.email=? AND rn.email=?";
+        List<Notification> list = new ArrayList<Notification>();
+        PreparedStatement pst = conn.prepareStatement(sql);
+        pst.setString(1, user.getEmail());
+        pst.setString(2, user.getEmail());
+        ResultSet rs = pst.executeQuery();
+        while (rs.next()) {
+            Notification notif = new Notification();
+            notif.setId(rs.getInt("notificationID"));
+            notif.setNotificationTitle(rs.getString("title"));
+            notif.setDetails(rs.getString("details"));
+            notif.setDate(rs.getString("notificationDate"));
+            notif.setProductOrOfferName(rs.getString("productCode"));   // CHANGE TO OFFERS AND GET NAME
+            list.add(notif);
+        }//while
+        return list;
+    }
+    
+    //GET NOTIFICATIONS NOT READ BY THE USER
+    public static List<Notification> queryUserNotificationsNotRead(Connection conn, UserAccount user) throws SQLException {
+        String sql = "SELECT * FROM notifications n INNER JOIN mywish mw ON n.productCode=mw.productCode "
+                + "LEFT JOIN readnotifications rn ON n.notificationID=rn.notificationID WHERE mw.email=? AND (rn.email!=? OR rn.email IS NULL);";
+        List<Notification> list = new ArrayList<Notification>();
+        PreparedStatement pst = conn.prepareStatement(sql);
+        pst.setString(1, user.getEmail());
+        pst.setString(2, user.getEmail());
+        ResultSet rs = pst.executeQuery();
+        while (rs.next()) {
+            Notification notif = new Notification();
+            notif.setId(rs.getInt("notificationID"));
+            notif.setNotificationTitle(rs.getString("title"));
+            notif.setDetails(rs.getString("details"));
+            notif.setDate(rs.getString("notificationDate"));
+            notif.setProductOrOfferName(rs.getString("productCode"));   // CHANGE TO OFFERS AND GET NAME
+            list.add(notif);
+        }//while
+        return list;
+    }
+    
+    //GET NUMBER OF UNREAD NOTIFICATIONS
+    public static int countUserNotificationsNotRead(Connection conn, UserAccount user) throws SQLException {
+        String sql = "SELECT count(*) as notcount FROM notifications n INNER JOIN mywish mw ON n.productCode=mw.productCode "
+                + "LEFT JOIN readnotifications rn ON n.notificationID=rn.notificationID WHERE mw.email=? AND (rn.email!=? OR rn.email IS NULL);";
+        List<Notification> list = new ArrayList<Notification>();
+        PreparedStatement pst = conn.prepareStatement(sql);
+        pst.setString(1, user.getEmail());
+        pst.setString(2, user.getEmail());
+        ResultSet rs = pst.executeQuery();
+        while (rs.next()) {
+            return rs.getInt("notcount");
+        }//while
+        return 0;
     }
 }

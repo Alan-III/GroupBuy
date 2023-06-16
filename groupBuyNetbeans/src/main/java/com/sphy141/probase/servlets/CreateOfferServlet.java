@@ -120,7 +120,7 @@ public class CreateOfferServlet extends HttpServlet {
     
         Collection<Part> imageParts = req.getParts();
         List<Part> imageFiles = new ArrayList<>(imageParts);
-        List<String> imagePaths = new ArrayList<String>();
+        String imagePath= null;
         // Process the uploaded image files
         for (Part imageFile : imageFiles) {
             // Perform your desired operations with the image file
@@ -133,7 +133,7 @@ public class CreateOfferServlet extends HttpServlet {
                 // Save the file to the specified directory
                 Files.copy(imageFile.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
 //                imageFile.write(filePath.toString());
-                imagePaths.add("assets/databaseImages/offers/"+"/"+fileName);
+                imagePath="assets/databaseImages/offers/"+"/"+fileName;
                 System.out.println("File saved: " + filePath);
             } catch (IOException e) {
                 // Handle the exception if file saving fails
@@ -217,7 +217,7 @@ public class CreateOfferServlet extends HttpServlet {
         if (details == null || details.length() == 0) {
             errorString = "Product details cannot be empty";
         }//iff
-        if (imagePaths == null) {
+        if (imagePath == null) {
             errorString = "Product must have at least 1 image";
         }//iff
         
@@ -258,7 +258,7 @@ public class CreateOfferServlet extends HttpServlet {
                     offer.setFinalprice(finalprice);
                     offer.setCouponPrice(coupprise);
                     offer.setDetails(details);
-                    offer.setImagePaths(imagePaths);
+                    offer.setImagePath(imagePath);
                     DBUtils.insertOffer(conn, offer); 
                     resp.sendRedirect(req.getContextPath() + "/offerlist");
                     

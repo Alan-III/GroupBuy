@@ -48,7 +48,7 @@
                         </li>
                         <li class="has-subnav">
                             <a href="#">
-                                <i class="fas fa-gift fa-2x"></i>
+                                <i class="fa fa-gift fa-2x"></i>
                                 <span class="nav-text">
                                     My Coupons
                                 </span>
@@ -57,7 +57,7 @@
                         </li>
                         <li class="has-subnav">
                             <a href="#">
-                                <i class="fas fa-star fa-2x"></i>
+                                <i class="fa fa-star fa-2x"></i>
                                 <span class="nav-text">
                                     My Wishlist
                                 </span>
@@ -65,7 +65,7 @@
 
                         </li>
                         <li>
-                            <a href="#">
+                            <a href="${pageContext.request.contextPath}/usernotifications">
                                 <i class="fa fa-info fa-2x"></i>
                                 <span class="nav-text">
                                     Notifications
@@ -97,7 +97,7 @@
                             </a>
                         </li>
                         <li>
-                            <a href="/groupbuy/logout">
+                            <a href="${pageContext.request.contextPath}/logout">
                                 <i class="fa fa-power-off fa-2x"></i>
                                 <span class="nav-text">
                                     Logout
