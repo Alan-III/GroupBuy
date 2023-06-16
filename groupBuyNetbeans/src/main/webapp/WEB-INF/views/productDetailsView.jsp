@@ -54,13 +54,13 @@
                                     Wishlist:
                                     <c:choose>
                                     <c:when test="${product.isWished()}">
-                                        <a href="#!" class="active">★</a>
+                                        <a href="#!" class="fas fa-star" onclick="confirmWish(${product.getCode()},this)"></a>
                                     </c:when>
                                     <c:when test="true">
-                                        <a href="#!" >★</a>
+                                        <a href="#!" class="far fa-star" onclick="confirmWish(${product.getCode()},this)"></a>
                                     </c:when>
                                     </c:choose>
-                                    (num)
+                                    (${product.getWishesCount()})
                                 </div>
                             </div>
                             <hr>
@@ -150,6 +150,28 @@
                 if (confirmed) {
                     window.location.href = "deleteoffer?offerid=" + offerId;
                 }
+            }
+            
+            //Toggle wishes in DB and in div class
+            function confirmWish(productCode, element) {
+                        if ($(element).hasClass("far")) {
+                                $(element).removeClass("far").addClass("fas");
+                            } else {
+                                $(element).removeClass("fas").addClass("far");
+                            }
+                $.ajax({
+                    type: "POST",
+                    url: "${pageContext.request.contextPath}/toggleproductwish",
+                    data: {productCode: productCode},
+                    success: function (response) {
+                        // Check the response and update the element's class accordingly
+                        if (response == "true") {
+                            
+                        } else {
+                            var alert = alert("something went wrong");
+                        }
+                    }
+                });
             }
         </script>
 

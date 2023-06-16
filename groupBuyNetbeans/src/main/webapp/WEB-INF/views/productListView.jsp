@@ -131,15 +131,17 @@
                                 </p>
                             </c:if>
                             <p class="image-right">
-                                <c:choose>
-                                    <c:when test="${item.isWished()}">
-                                        <a class="fas fa-star" href="" onclick="confirmWish(${item.getCode()})"></a>
-                                    </c:when>
-                                    <c:when test="true">
-                                        <a class="far fa-star" href="" onclick="confirmWish(${item.getCode()})"></a>
-                                    </c:when>
-                                </c:choose>
-
+                                (${item.getWishesCount()})
+                                <c:if test="${logineduser!=null}">
+                                    <c:choose>
+                                        <c:when test="${item.isWished()}">
+                                            <a class="fas fa-star" href="" onclick="confirmWish(${item.getCode()},this)"></a>
+                                        </c:when>
+                                        <c:when test="true">
+                                            <a class="far fa-star" href="" onclick="confirmWish(${item.getCode()},this)"></a>
+                                        </c:when>
+                                    </c:choose>
+                                </c:if>
                                 <c:if test="${loginedbusiness.getBusinessName()=='c'}">
                                     <a class="fas fa-trash" href="#" onclick="confirmRedirect(${item.getId()})" style="color:red"></a>
                                 </c:if>
@@ -253,7 +255,7 @@
                                 </p>
             </c:if>
                             <p class="image-right">
-                               `;
+                               (`+item.wishesCount+`)`;
                                 if (item.wished)
                                     productHtml += `<a class="fas fa-star" href="" onclick="confirmWish(` + item.code + `)"></a>`;
                                 else
@@ -288,6 +290,11 @@
             });
             //Toggle wishes in DB and in div class
             function confirmWish(productCode, element) {
+                        if ($(element).hasClass("far")) {
+                                $(element).removeClass("far").addClass("fas");
+                            } else {
+                                $(element).removeClass("fas").addClass("far");
+                            }
                 $.ajax({
                     type: "POST",
                     url: "${pageContext.request.contextPath}/toggleproductwish",
@@ -295,11 +302,7 @@
                     success: function (response) {
                         // Check the response and update the element's class accordingly
                         if (response == "true") {
-                            if ($(element).hasClass("far")) {
-                                $(element).removeClass("far").addClass("fas");
-                            } else {
-                                $(element).removeClass("fas").addClass("far");
-                            }
+                            
                         } else {
                             var alert = alert("something went wrong");
                         }

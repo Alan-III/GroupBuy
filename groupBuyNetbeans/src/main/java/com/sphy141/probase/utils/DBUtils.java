@@ -136,7 +136,8 @@ public class DBUtils {
     //GET LIST OF PRODUCTS AND CHECK WITH EMAIL IF SOME OF THEM ARE WISHED. (email should be '' for null users or business)
     public static List<Product> queryProduct(Connection conn, String userEmail) throws SQLException {
         String sql = "SELECT * FROM products p INNER JOIN productphoto pp ON p.productID=pp.productID "
-                + "LEFT JOIN mywish mw ON mw.productCode=p.productCode AND (email = ? OR email IS NULL) GROUP BY p.productID";
+                + "LEFT JOIN mywish mw ON mw.productCode=p.productCode AND (email = ? OR email IS NULL) "
+                + "LEFT JOIN (select productCode,count(email) as wishcount from mywish GROUP BY productCode) c ON c.productCode=p.productCode GROUP BY p.productID";
         List<Product> list = new ArrayList<Product>();
         PreparedStatement pst = conn.prepareStatement(sql);
         pst.setString(1, userEmail);
@@ -149,6 +150,7 @@ public class DBUtils {
             prod.setDetails(rs.getString("details"));
             prod.setPrice(rs.getFloat("price"));
             prod.addImagePath(rs.getString("path"));
+            prod.setWishesCount(rs.getInt("wishcount"));
             if(rs.getString("email")!=null)
                 prod.setIsWished(true);
             list.add(prod);
@@ -159,10 +161,12 @@ public class DBUtils {
     //GET DATA OF CERTAIN PRODUCT AND CHECK WITH EMAIL IF IT IS WISHED. (email should be '' for null users or business)
     public static Product findProduct(Connection conn, String code, String userEmail) throws SQLException {
         String sql = "SELECT *  FROM products p INNER JOIN productphoto pp ON p.productID=pp.productID "
-                + "LEFT JOIN mywish mw ON mw.productCode=p.productCode AND (email = ? OR email IS NULL) WHERE  p.productCode = ? ";
+                + "LEFT JOIN mywish mw ON mw.productCode=p.productCode AND (email = ? OR email IS NULL) "
+                + "INNER JOIN (select count(email) as wishcount from mywish a where productCode=?) c WHERE  p.productCode = ? ";
         PreparedStatement pst = conn.prepareStatement(sql);
         pst.setString(1, userEmail);
         pst.setString(2, code);
+        pst.setString(3, code);
         ResultSet rs = pst.executeQuery();
         Product prod = null; 
         while (rs.next()) {
@@ -174,6 +178,7 @@ public class DBUtils {
                 prod.setPrice(rs.getFloat("price"));
                 prod.setId(rs.getInt("productID"));
                 prod.setCategoryID(rs.getInt("belong"));
+                prod.setWishesCount(rs.getInt("wishcount"));
                 if(rs.getString("email")!=null)
                     prod.setIsWished(true);
             }
@@ -461,7 +466,9 @@ public static List<Product> queryProductsInBusiness(Connection conn, int busines
     //SEARCH KEYWORD AND BRING LIST OF PRODUCTS
     public static List<Product> searchProduct(Connection conn, String keyword ,String useremail) throws SQLException {
         String sql = "SELECT * FROM group_buy.products p INNER JOIN productphoto pp ON p.productID=pp.productID"
-                + " LEFT JOIN mywish mw ON mw.productCode=p.productCode AND (email = ? OR email IS NULL) WHERE productName like ? or details like ? GROUP BY p.productID;";
+                + " LEFT JOIN mywish mw ON mw.productCode=p.productCode AND (email = ? OR email IS NULL) "
+                + "LEFT JOIN (select productCode,count(email) as wishcount from mywish GROUP BY productCode) c ON c.productCode=p.productCode"
+                + " WHERE productName like ? or details like ? GROUP BY p.productID;";
         List<Product> list = new ArrayList<Product>();
         PreparedStatement pst = conn.prepareStatement(sql);
         pst.setString(1, useremail);
@@ -476,6 +483,7 @@ public static List<Product> queryProductsInBusiness(Connection conn, int busines
             prod.setDetails(rs.getString("details"));
             prod.setPrice(rs.getFloat("price"));
             prod.addImagePath(rs.getString("path"));
+            prod.setWishesCount(rs.getInt("wishcount"));
             if(rs.getString("email")!=null)
                     prod.setIsWished(true);
             list.add(prod);
@@ -600,7 +608,9 @@ public static List<Product> queryProductsInBusiness(Connection conn, int busines
     //GET LIST OF PRODUCTS THAT HAVE FILTERS CHECKED
     public static List<Product> filterSearchProduct(Connection conn, String searchQuerry, String useremail) throws SQLException{
         String sql = "SELECT * FROM products p INNER JOIN productfilters pf ON p.productID=pf.productID INNER JOIN productphoto pp ON p.productID=pp.productID"
-                + " LEFT JOIN mywish mw ON mw.productCode=p.productCode AND (email = ? OR email IS NULL) WHERE "+searchQuerry+"GROUP BY pp.productID";
+                + " LEFT JOIN mywish mw ON mw.productCode=p.productCode AND (email = ? OR email IS NULL) "
+                + "LEFT JOIN (select productCode,count(email) as wishcount from mywish GROUP BY productCode) c ON c.productCode=p.productCode"
+                + " WHERE "+searchQuerry+"GROUP BY pp.productID";
         PreparedStatement pst = conn.prepareStatement(sql);
         pst.setString(1, useremail);
         ResultSet rs = pst.executeQuery();
@@ -612,6 +622,7 @@ public static List<Product> queryProductsInBusiness(Connection conn, int busines
             prod.setPrice(rs.getFloat("price"));
             prod.setId(rs.getInt("productID"));
             prod.addImagePath(rs.getString("path"));
+            prod.setWishesCount(rs.getInt("wishcount"));
             if(rs.getString("email")!=null)
                     prod.setIsWished(true);
             list.add(prod);
