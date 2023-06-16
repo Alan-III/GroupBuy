@@ -57,70 +57,24 @@ public class EditOfferServlet extends HttpServlet {
         else
             req.setAttribute("loginedbusiness", business);
         
-        
-        
-        String categoryIdParam = req.getParameter("catid");
-        String searchParam = req.getParameter("search");
-        
+       
         Connection conn = MyUtils.getStoredConnection(req);
         
-        //Get products ALL or Searched
-        List<Product> productList = null;
+        List<String> productList = null;
+        List<Product> businessProductList = null;
         try {
-            if(searchParam==null || searchParam.length()==0)
-                productList = DBUtils.queryProductInBusinness(conn, business.getBusinessID());
-            else
-                productList = DBUtils.searchProduct(conn, searchParam);
-                
+            productList = null;
+            businessProductList = DBUtils.queryProductsInBusiness(conn, business.getBusinessID());
+
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
-        if(productList==null){
+        if (businessProductList == null) {
             errorString = "There was a problem with products";
         }
-        
-        //Check if the keywords exist
-        ServletContext context = req.getServletContext();
-        List<String> keywordsList = (List<String>) context.getAttribute("keywordsList");
-        if (keywordsList == null) {
-            // The keywordsList attribute is not set
-            // Process categories and products for keywords
-            keywordsList = new ArrayList<>();
-            for (Product product : productList) {
-                keywordsList.add(product.getName());
-            }
-            List<Category> categoriesList = null;
-            try {
-                categoriesList = DBUtils.queryCategories(conn);
-            } catch (SQLException ex) {
-                ex.printStackTrace();
-            }
-            if(categoriesList==null){
-                errorString = "There was a problem with products";
-            }
-            for (Category category : categoriesList) {
-                keywordsList.add(category.getCategoryName());
-            }
-            // Set keywordsList attribute
-            context.setAttribute("keywordsList", keywordsList);
-        }
-        
-        //Get filters if category was selected
-        List<ProductFilter> filtersList = null;
-        if(categoryIdParam!=null){
-            try {
-                Category tempCategory = DBUtils.findCategory(conn, Integer.parseInt(categoryIdParam));
-                filtersList = DBUtils.findCategoryFilters(conn, tempCategory.getCategoryName());
-            } catch (SQLException ex) {
-                ex.printStackTrace();
-                errorString = "There was a problem with database";
-            }
-        }
-        
-            req.setAttribute("errorString", errorString);
-            req.setAttribute("productList", productList);
-            req.setAttribute("keywordsList", keywordsList);
-            req.setAttribute("filtersList", filtersList);
+        req.setAttribute("productList", productList);
+        req.setAttribute("businessProductList", businessProductList);
+
         
         RequestDispatcher dispatcher = this.getServletContext()
                 .getRequestDispatcher("/WEB-INF/views/createOfferView.jsp");
@@ -195,12 +149,12 @@ public class EditOfferServlet extends HttpServlet {
                 // Handle the exception if file saving fails
                 System.out.println("Error saving file: " + filePath);
                 e.printStackTrace();
-            }
-            
+            }     
             
         }//for
+            String path = imagePaths.get(0);
             
-       /* Collection<Part> businesPro = req.getBussinessProducts();       
+                    /* Collection<Part> businesPro = req.getBussinessProducts();       
         List<Part> productCodes = new ArrayList<>(businesPro);
         //proses to upload productcodes
         for (Part productCodes : productCodes ) {
@@ -314,7 +268,7 @@ public class EditOfferServlet extends HttpServlet {
                     offer.setFinalprice(finalprice);
                     offer.setCouponPrice(coupprise);
                     offer.setDetails(details);
-                    offer.setImagePaths(imagePaths);
+                    offer.setPath(path);
                     DBUtils.insertOffer(conn, offer); 
                     resp.sendRedirect(req.getContextPath() + "/offerlist");
                     

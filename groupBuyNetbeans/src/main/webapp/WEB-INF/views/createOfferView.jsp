@@ -136,63 +136,77 @@
                             <label class="input-label-focused" for="oimage">Images</label> 
                         </div>
                        
-                        <div class="input-field">
-                            <input type="text" class="form-control" required="required" id="selectedCodesText" readonly>
-                            <select id="codes" multiple onchange="updateLabel()">
-</select>
-                            <label class="input-label-focused" for="codes">Product Code</label>
-                        </div> 
-                        
-                        <div class="layout">
-                
-                            <div class="search_bar-small" style="width: inherit;">
-                                <img src="https://cdn.pixabay.com/photo/2013/07/12/15/55/clues-150586_960_720.png" alt="glass" height="35rem" width="35rem" />
-                                <input class="typewriter" id="search-box" type="text" placeholder="Type here to search..."/>
-                                <button class="add-product-btn btn btn-primary text-uppercase" onClick="searchProducts()">Search</button>
-                            </div>
-                        </div>
-                        <div class="search-recommends layout">
-                        </div>
-
-                        <div class="layout track-container border-yellow" id="trackcontainer2">
-                <!-- Item slider-->
-                        <div id='image-track2' class="image-track" data-mouse-down-at='0' data-prev-percentage='0'>
-                            <c:forEach items="${productList}" var="item">
-                        <div class='product'>
-                            <a class="product-image" href='${pageContext.request.contextPath}/productdetails?productCode=${item.getCode()}'>
-                                <img src='${item.getFirstImagePath()}' draggable='false' />
-                            </a>
-                                <p class="image-left">
-                                    <a class="fas fa-bars" href='editproduct?proid=${item.getId()}'></a>
-                                </p>
-                                <p class="image-right">
-                                    <a href="#" onclick="confirmRedirect(${item.getId()})">
-                                        <img class="small-icon" src='assets/img/delete.png' draggable='false' />
-                                    </a>
-                                </p>
-                            <p class="image-left image-bottom">${item.getName()}</p>
-                            <p class="image-right image-bottom">${item.getPrice()}$</p>
-                        </div>                            
-                                </c:forEach>
-
-                        </div>
-
-                <!-- Item slider end-->
-                        </div>
-
-
-                        <button type="submit" name="submit" class="btn btn-primary btn-block mb-4">Submit</button>
-                    </form>
+              
+                         <div class="layout mb-2">
+                    <h4 class="text-center">Offer Products</h4>
                 </div>
-            </div>
-        </div>
-                        <div class="layout track-container border-yellow" id="trackcontainer" hidden="hidden">
-                <!-- Item slider-->
-                <div id='image-track' class="image-track" data-mouse-down-at='0' data-prev-percentage='0' hidden="hidden">
-                        </div>
-                        </div>
+                <div class="layout track-container border-yellow" id="trackcontainer">
+                    <!-- Item slider-->
+                    <div id='image-track' class="image-track" data-mouse-down-at='0' data-prev-percentage='0'>
                         
+
+                    </div>
+
+                    <!-- Item slider end-->
+                </div>
+
+                <div class="layout mb-2">
+                    <h4 class="text-center">Business Products</h4>
+                </div>
+                <div class="layout track-container border-yellow mb-2" id="trackcontainer2">
+                    <!-- Item slider-->
+                    <div id='image-track2' class="image-track" data-mouse-down-at='0' data-prev-percentage='0'>
+                        <c:forEach items="${businessProductList}" var="item">
+                            <div class='product' data-product-code="${item.getCode()}">
+                                <a class="product-image" href='${pageContext.request.contextPath}/productdetails?productCode=${item.getCode()}'>
+                                    <img src='${item.getFirstImagePath()}' draggable='false' />
+                                </a>
+                                <c:if test="${loginedbusiness.getBusinessName()=='c'}">
+                                    <p class="image-left">
+                                        <a href="#" class="small-icon icon-plus" onclick="moveProduct(${item.getCode()})">
+                                        </a>
+                                    </p>
+                                    <p class="image-right">
+                                        <a href="#" onclick="confirmRedirect(${item.getId()})">
+                                            <img class="small-icon" src='assets/img/delete.png' draggable='false' />
+                                        </a>
+                                    </p>
+                                </c:if>
+                                <p class="image-left image-bottom">${item.getName()}</p>
+                                <p class="image-right image-bottom">${item.getPrice()}$</p>
+                            </div>                            
+                        </c:forEach>
+                    </div>
+                    <!-- Item slider end-->
+                </div> 
+            <button type="button" class="btn btn-primary btn-block mb-4" onclick="submitForm()">Submit</button>
+                    </form>             
                         <script>
+                            
+              function submitForm() {
+    // Create an array to store the product codes
+    var productCodes = [];
+  
+    // Iterate over each filter input element
+    $("#image-track").find(".product").each(function() {
+        var name = $(this).attr("data-product-code");
+        // Add the name to the array
+        productCodes.push(name);
+    });
+  
+    // Create a hidden input field for the product codes
+    var productCodesInput = $("<input>")
+        .attr("type", "hidden")
+        .attr("name", "productCodes")
+        .val(JSON.stringify(productCodes));
+  
+    // Append the hidden input field to the form
+    $("form").append(productCodesInput);
+  
+    // Submit the form
+    $("form").submit();
+}
+
             //DELETE CONFIRM
             function confirmRedirect(productId) {
                 var confirmed = confirm("Are you sure you want to delete this product?");
@@ -274,6 +288,26 @@
         textFieldElement.value = selectedCodes.join(", ");
     }
    
+   function moveProduct(productCode) {
+       // Check if the productDiv exists in #image-track2
+                    var productDiv = $("#image-track2").find(`.product[data-product-code='` + productCode + `']`);
+                    if (productDiv.length === 0) {
+                    // Search for the productDiv in #image-track
+                    productDiv = $("#image-track").find(`.product[data-product-code='` + productCode + `']`);
+                    if (productDiv.length > 0) {
+                    // Move the productDiv to #image-track2
+                    productDiv.appendTo("#image-track2");
+                    // Change the button icon to fa-plus
+                    productDiv.find(".icon-minus").removeClass("icon-minus").addClass("icon-plus");
+                    }
+                    } else {
+                    // Move the productDiv to #image-track
+                    productDiv.appendTo("#image-track");
+                    // Change the button icon to fa-minus
+                    productDiv.find(".icon-plus").removeClass("icon-plus").addClass("icon-minus");
+                    }
+            }
+// Function to make AJAX post request to servlet
 </script>
  <script type='text/javascript' src='js/listTrack.js'></script>
 <script type='text/javascript' src='js/filterScroll.js'></script>
