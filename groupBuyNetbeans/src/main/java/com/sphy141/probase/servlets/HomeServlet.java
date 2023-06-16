@@ -42,22 +42,29 @@ public class HomeServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         HttpSession session = req.getSession();
         UserAccount user = MyUtils.getLoginedUser(session);
-        String userMailstr=" ";
-        if(user!=null){
-            req.setAttribute("logineduser", user);
-            userMailstr=user.getEmail();
-        }
-        else{
-            req.setAttribute("logineduser", null);
-        
-            BusinessAccount business = MyUtils.getLoginedBusiness(session);
-            if(business!=null)
-                req.setAttribute("loginedbusiness", business);
-            else
-                req.setAttribute("loginedbusiness", null);
-        }
-        
         Connection conn = MyUtils.getStoredConnection(req);
+        String userMailstr = " ";
+        int notificationsCount = 0;
+
+        if (user != null) {
+            req.setAttribute("logineduser", user);
+            userMailstr = user.getEmail();
+            try {
+                notificationsCount = DBUtils.countUserNotificationsNotRead(conn, user);
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+        } else {
+            req.setAttribute("logineduser", null);
+
+            BusinessAccount business = MyUtils.getLoginedBusiness(session);
+            if (business != null) {
+                req.setAttribute("loginedbusiness", business);
+            } else {
+                req.setAttribute("loginedbusiness", null);
+            }
+        }
+
         List<Category> categoriesList = null;
         String errorString = null;
         try {
@@ -65,10 +72,10 @@ public class HomeServlet extends HttpServlet {
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
-        if(categoriesList==null){
+        if (categoriesList == null) {
             errorString = "There was a problem with products";
         }
-        
+
         //Load products to find keywords
         List<Product> productList = null;
         try {
@@ -76,7 +83,7 @@ public class HomeServlet extends HttpServlet {
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
-        if(categoriesList==null){
+        if (categoriesList == null) {
             errorString = "There was a problem with products";
         }
         //Check if the keywords exist
@@ -96,14 +103,12 @@ public class HomeServlet extends HttpServlet {
             context.setAttribute("keywordsList", keywordsList);
         }
 
-        
-        
         req.setAttribute("errorString", errorString);
         req.setAttribute("categorylist", categoriesList);
         req.setAttribute("keywordsList", keywordsList);
-        
-            
-        RequestDispatcher dispatcher=this.getServletContext().getRequestDispatcher("/WEB-INF/views/homeView.jsp");
+        req.setAttribute("notificationsCount", notificationsCount);
+
+        RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher("/WEB-INF/views/homeView.jsp");
         dispatcher.forward(req, resp);
     }//doGet
 
@@ -117,31 +122,30 @@ public class HomeServlet extends HttpServlet {
         String errorString = null;
         boolean hasError = false;
         UserAccount user = null;
-        
-        if(name == null || email == null || msg == null || name.length()==0 
-                || email.length()==0 || email.length()==0 || msg.length()==0){
-            hasError=true;
+
+        if (name == null || email == null || msg == null || name.length() == 0
+                || email.length() == 0 || email.length() == 0 || msg.length() == 0) {
+            hasError = true;
             errorString = "Please fill in the form";
         }
         Connection conn = MyUtils.getStoredConnection(req);
 
-        if (hasError){
+        if (hasError) {
             req.setAttribute("errorString", errorString);
-            RequestDispatcher dispatcher=this.getServletContext().getRequestDispatcher("/WEB-INF/views/homeView.jsp");
-        dispatcher.forward(req, resp);
-        }
-        else{
+            RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher("/WEB-INF/views/homeView.jsp");
+            dispatcher.forward(req, resp);
+        } else {
 
-                System.out.println("Mail Sent from: "+email);
+            System.out.println("Mail Sent from: " + email);
             try {
-                MailUtils.sendMail(name,email,phone,msg);
+                MailUtils.sendMail(name, email, phone, msg);
                 req.setAttribute("errorString", "Thank you for contacting us!");
             } catch (MessagingException ex) {
                 req.setAttribute("errorString", "Something went wrong");
             }
 
-            RequestDispatcher dispatcher=this.getServletContext().getRequestDispatcher("/WEB-INF/views/homeView.jsp");
-        dispatcher.forward(req, resp);
+            RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher("/WEB-INF/views/homeView.jsp");
+            dispatcher.forward(req, resp);
         }
     }//doPost
 

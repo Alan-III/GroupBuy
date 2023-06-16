@@ -92,6 +92,7 @@
                                 </span>
                             </a>
                         </li>
+                </ul>
                 </nav>
                 <div id="userinfo" class="layout">
                 <h3 class="text-center text-white pt-5">Business Details</h3>

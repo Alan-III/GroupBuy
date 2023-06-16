@@ -5,10 +5,6 @@
  */
 package com.sphy141.probase.beans;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  *
  * @author MITSOS GLA
