@@ -925,19 +925,29 @@ public static void UpdateOffer(Connection conn,Offer offer) throws SQLException 
     //GET NOTIFICATIONS READ BY THE USER
     public static List<Notification> queryNotificationsReadBy(Connection conn, UserAccount user) throws SQLException {
         String sql = "SELECT * FROM notifications n INNER JOIN mywish mw ON n.productCode=mw.productCode "
-                + "LEFT JOIN readnotifications rn ON n.notificationID=rn.notificationID WHERE mw.email=? AND rn.email=?";
+                + "LEFT JOIN readnotifications rn ON n.notificationID=rn.notificationID "
+                + "LEFT JOIN (SELECT productName,productCode FROM products) p ON n.productCode=p.productCode "
+                + "LEFT JOIN (SELECT title,offerID FROM offers) o ON n.offerID=o.offerID "
+                + "WHERE mw.email=? AND rn.email=?";
         List<Notification> list = new ArrayList<Notification>();
         PreparedStatement pst = conn.prepareStatement(sql);
         pst.setString(1, user.getEmail());
         pst.setString(2, user.getEmail());
         ResultSet rs = pst.executeQuery();
+        Product pro = new Product();
+        Offer of = new Offer();
         while (rs.next()) {
             Notification notif = new Notification();
             notif.setId(rs.getInt("notificationID"));
             notif.setNotificationTitle(rs.getString("title"));
             notif.setDetails(rs.getString("details"));
             notif.setDate(rs.getString("notificationDate"));
-            notif.setProductOrOfferName(rs.getString("productCode"));   // CHANGE TO OFFERS AND GET NAME
+            of.setTitle(rs.getString("title"));
+            of.setId(rs.getInt("offerID"));
+            pro.setName(rs.getString("productName"));
+            pro.setCode(rs.getString("productCode"));
+            notif.setOffer(of);
+            notif.setProduct(pro);
             list.add(notif);
         }//while
         return list;
@@ -945,19 +955,29 @@ public static void UpdateOffer(Connection conn,Offer offer) throws SQLException 
     //GET NOTIFICATIONS READ BY THE BUSINESS
     public static List<Notification> queryNotificationsReadBy(Connection conn, BusinessAccount business) throws SQLException {
         String sql = "SELECT * FROM notifications n INNER JOIN mywish mw ON n.productCode=mw.productCode "
-                + "LEFT JOIN readnotifications rn ON n.notificationID=rn.notificationID WHERE mw.email=? AND rn.email=?";
+                + "LEFT JOIN readnotifications rn ON n.notificationID=rn.notificationID "
+                + "LEFT JOIN (SELECT productName,productCode FROM products) p ON n.productCode=p.productCode "
+                + "LEFT JOIN (SELECT title,offerID FROM offers) o ON n.offerID=o.offerID "
+                + "WHERE mw.email=? AND rn.email=?";
         List<Notification> list = new ArrayList<Notification>();
         PreparedStatement pst = conn.prepareStatement(sql);
         pst.setString(1, business.getEmail());
         pst.setString(2, business.getEmail());
         ResultSet rs = pst.executeQuery();
+        Product pro = new Product();
+        Offer of = new Offer();
         while (rs.next()) {
             Notification notif = new Notification();
             notif.setId(rs.getInt("notificationID"));
             notif.setNotificationTitle(rs.getString("title"));
             notif.setDetails(rs.getString("details"));
             notif.setDate(rs.getString("notificationDate"));
-            notif.setProductOrOfferName(rs.getString("productCode"));   // CHANGE TO OFFERS AND GET NAME
+            of.setTitle(rs.getString("title"));
+            of.setId(rs.getInt("offerID"));
+            pro.setName(rs.getString("productName"));
+            pro.setCode(rs.getString("productCode"));
+            notif.setOffer(of);
+            notif.setProduct(pro);
             list.add(notif);
         }//while
         return list;
@@ -966,19 +986,29 @@ public static void UpdateOffer(Connection conn,Offer offer) throws SQLException 
     //GET NOTIFICATIONS NOT READ BY THE USER
     public static List<Notification> queryNotificationsNotReadBy(Connection conn, UserAccount user) throws SQLException {
         String sql = "SELECT * FROM notifications n INNER JOIN mywish mw ON n.productCode=mw.productCode "
-                + "LEFT JOIN readnotifications rn ON n.notificationID=rn.notificationID WHERE mw.email=? AND (rn.email!=? OR rn.email IS NULL);";
+                + "LEFT JOIN readnotifications rn ON n.notificationID=rn.notificationID "
+                + "LEFT JOIN (SELECT productName,productCode FROM products) p ON n.productCode=p.productCode "
+                + "LEFT JOIN (SELECT title,offerID FROM offers) o ON n.offerID=o.offerID "
+                + "WHERE mw.email=? AND (rn.email!=? OR rn.email IS NULL);";
         List<Notification> list = new ArrayList<Notification>();
         PreparedStatement pst = conn.prepareStatement(sql);
         pst.setString(1, user.getEmail());
         pst.setString(2, user.getEmail());
         ResultSet rs = pst.executeQuery();
+        Product pro = new Product();
+        Offer of = new Offer();
         while (rs.next()) {
             Notification notif = new Notification();
             notif.setId(rs.getInt("notificationID"));
             notif.setNotificationTitle(rs.getString("title"));
             notif.setDetails(rs.getString("details"));
             notif.setDate(rs.getString("notificationDate"));
-            notif.setProductOrOfferName(rs.getString("productCode"));   // CHANGE TO OFFERS AND GET NAME
+            of.setTitle(rs.getString("title"));
+            of.setId(rs.getInt("offerID"));
+            pro.setName(rs.getString("productName"));
+            pro.setCode(rs.getString("productCode"));
+            notif.setOffer(of);
+            notif.setProduct(pro);
             list.add(notif);
         }//while
         return list;
@@ -986,19 +1016,29 @@ public static void UpdateOffer(Connection conn,Offer offer) throws SQLException 
     //GET NOTIFICATIONS NOT READ BY THE BUSINESS
     public static List<Notification> queryNotificationsNotReadBy(Connection conn,BusinessAccount business) throws SQLException {
         String sql = "SELECT * FROM notifications n INNER JOIN mywish mw ON n.productCode=mw.productCode "
-                + "LEFT JOIN readnotifications rn ON n.notificationID=rn.notificationID WHERE mw.email=? AND (rn.email!=? OR rn.email IS NULL);";
+                + "LEFT JOIN readnotifications rn ON n.notificationID=rn.notificationID "
+                + "LEFT JOIN (SELECT productName,productCode FROM products) p ON n.productCode=p.productCode "
+                + "LEFT JOIN (SELECT title,offerID FROM offers) o ON n.offerID=o.offerID "
+                + "WHERE mw.email=? AND (rn.email!=? OR rn.email IS NULL);";
         List<Notification> list = new ArrayList<Notification>();
         PreparedStatement pst = conn.prepareStatement(sql);
         pst.setString(1, business.getEmail());
         pst.setString(2, business.getEmail());
         ResultSet rs = pst.executeQuery();
+        Product pro = new Product();
+        Offer of = new Offer();
         while (rs.next()) {
             Notification notif = new Notification();
             notif.setId(rs.getInt("notificationID"));
             notif.setNotificationTitle(rs.getString("title"));
             notif.setDetails(rs.getString("details"));
             notif.setDate(rs.getString("notificationDate"));
-            notif.setProductOrOfferName(rs.getString("productCode"));   // CHANGE TO OFFERS AND GET NAME
+            of.setTitle(rs.getString("title"));
+            of.setId(rs.getInt("offerID"));
+            pro.setName(rs.getString("productName"));
+            pro.setCode(rs.getString("productCode"));
+            notif.setOffer(of);
+            notif.setProduct(pro);
             list.add(notif);
         }//while
         return list;

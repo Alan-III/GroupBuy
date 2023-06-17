@@ -119,7 +119,8 @@
                                     <th>A/A</th>
                                     <th>Notification Title</th>
                                     <th>Details</th>
-                                    <th>Product or Offer Name</th>
+                                    <th>Product</th>
+                                    <th>Offer Name</th>
                                     <th>Date</th>
                                 </tr>
                             </thead>
@@ -129,7 +130,8 @@
                                         <td>${status.index + 1}</td>
                                         <td>${notification.getNotificationTitle()}</td>
                                         <td>${notification.getDetails()}</td>
-                                        <td>${notification.getProductOrOfferName()}</td>
+                                        <td><a href="${pageContext.request.contextPath}/productdetails?productCode=${notification.getProduct().getCode()}">${notification.getProduct().getName()}</a></td>
+                                        <td><a href="${pageContext.request.contextPath}/offerdetails?productCode=${notification.getOffer().getId()}">${notification.getOffer().getTitle()}</a></td>
                                         <td>${notification.getDate()}</td>
                                     </tr>
                                 </c:forEach>
@@ -138,7 +140,8 @@
                                         <td>${status.index + 1}</td>
                                         <td>${notification.getNotificationTitle()}</td>
                                         <td>${notification.getDetails()}</td>
-                                        <td>${notification.getProductOrOfferName()}</td>
+                                        <td><a href="${pageContext.request.contextPath}/productdetails?productCode=${notification.getProduct().getCode()}">${notification.getProduct().getName()}</a></td>
+                                        <td><a href="${pageContext.request.contextPath}/offerdetails?productCode=${notification.getOffer().getId()}">${notification.getOffer().getTitle()}</a></td>
                                         <td>${notification.getDate()}</td>
                                     </tr>
                                 </c:forEach>

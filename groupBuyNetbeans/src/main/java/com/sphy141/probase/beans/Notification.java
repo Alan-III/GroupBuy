@@ -13,7 +13,8 @@ public class Notification {
     private int id;
     private String notificationTitle;
     private String details;
-    private String productOrOfferName;
+    private Product product;
+    private Offer offer;
     private String date;
     
     // Constructor
@@ -45,14 +46,24 @@ public class Notification {
     public void setDetails(String details) {
         this.details = details;
     }
-    
-    public String getProductOrOfferName() {
-        return productOrOfferName;
+
+    public Product getProduct() {
+        return product;
+    }
+
+    public void setProduct(Product product) {
+        this.product = product;
+    }
+
+    public Offer getOffer() {
+        return offer;
+    }
+
+    public void setOffer(Offer offer) {
+        this.offer = offer;
     }
     
-    public void setProductOrOfferName(String productOrOfferName) {
-        this.productOrOfferName = productOrOfferName;
-    }
+    
     
     public String getDate() {
         return date;
