@@ -1,17 +1,19 @@
 *{
     font-family: 'Oswald', sans-serif;
 }
-.product-image-slider{
+.product-image-card-slider{
     display: flex;
     gap:1.5rem;
     transition: transform 0.5s ease;
     border-radius: 2rem;
 }
-.product-image-slider img{
+.product-image-card-slider img{
     border-radius: 2rem;
+    
 }
-.product-image img{
+.product-image-card img{
     width: 100%;
+    
 }
 .product-container{
     display: flex;
@@ -37,7 +39,7 @@ a{
     color: #bbb;
 }
 
-.product-image{
+.product-image-card{
     display: flex;
     flex-direction: column;
     align-items: center;

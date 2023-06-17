@@ -13,7 +13,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
         <meta name="description" content="" />
         <meta name="author" content="" />
-        <title>GroupBuy - Product Details</title>
+        <title>GroupBuy - Offer Details</title>
         <link rel="stylesheet" href="styles/productViewStyles.css"/>
         <link rel="stylesheet" href="styles/userInfoStyles.css"/>
         <link rel="stylesheet" href="styles/filterSidebarStyles.css"/>
@@ -31,43 +31,29 @@
                     <div id="productinfo" class="product-container">
                         <div class="product-image-card">
                             <div class="product-image-card-slider">
-                            <c:forEach items="${product.getImagePaths()}" var="imagepath">
-                                <img src="${imagepath}" draggable='false' />
-                            </c:forEach>
-                        </div>
-                        <div class="dots">
-                            <c:forEach items="${product.getImagePaths()}" var="imagepath" varStatus="loop">
-                                <a href="#!" class="${loop.index == 0 ? 'active' : ''}"><i></i></a>
-                                    </c:forEach>
+                            <img src="${offer.getPath()}" draggable='false' />
                         </div>
                     </div>
                     <div class="product-details">
                         <header>
-                            <h1 class="title">${product.getName()}</h1>
+                            <h1 class="title">${offer.getTitle()}</h1>
                             <span class="colorCat">subtitle</span>
                             <div class="flex-fill" style="display: flex; justify-content: space-between;">
                                 <div class="price">
-                                    <span class="before">$${product.getPrice()}</span>
-                                    <span class="current">$${product.getPrice()}</span>
+                                    <span class="before">$${offer.getFinalprice()}</span>
+                                    <span class="current">$${offer.getFinalprice()}</span>
+                                    <span class="current"> Fee: ${offer.getCouponPrice()}</span>
+                                    <span class="current">$ Discount: ${offer.getDiscount()}%</span>
                                 </div>
                                 <div class="rate">
-                                    Wishlist:
-                                    <c:choose>
-                                    <c:when test="${product.isWished()}">
-                                        <a href="#!" class="fas fa-star" onclick="confirmWish(${product.getCode()},this)"></a>
-                                    </c:when>
-                                    <c:when test="true">
-                                        <a href="#!" class="far fa-star" onclick="confirmWish(${product.getCode()},this)"></a>
-                                    </c:when>
-                                    </c:choose>
-                                    (${product.getWishesCount()})
+                                    number of joined users
                                 </div>
                             </div>
                             <hr>
                         </header>
                         <article>
                             <h5>Description</h5>
-                            <p>${product.getDetails()}</p>
+                            <p>${offer.getDetails()}</p>
                         </article>
                         <div class="controls">
                             <div class="color">
@@ -100,28 +86,40 @@
                 </div> 
                 <!-- product -->
                 <div class="layout mb-2 mt-4">
-                    <h4 class="text-center">Offers</h4>
+                    <h4 class="text-center">Products in Offer</h4>
                 </div>
                 <div class="layout track-container border-yellow mb-4 mt-2" id="trackcontainer">
                     <!-- Item slider-->
                     <div id='image-track' class="image-track" data-mouse-down-at='0' data-prev-percentage='0'>
-                        <c:forEach items="${productOffersList}" var="offer">
-                            <div class='product' data-product-code="${offer.getId()}">
-                                <a class="product-image" href='${pageContext.request.contextPath}/offerdetails?offerid=${offer.getId()}'>
-                                    <img src='${offer.getPath()}' draggable='false' />
-                                </a>
-                                <c:if test="${loginedbusiness.getBusinessName()=='c'}">
-                                    <p class="image-left">
-                                        <a class="fas fa-pencil-alt" href='editoffer?offerid=${offer.getId()}'></a>
-                                        </a>
-                                    </p>
-                                    <p class="image-right">
-                                        <a class="fas fa-trash" href="#" onclick="confirmRedirect(${offer.getId()})" style="color:red"></a>
-                                    </p>
+                        <c:forEach items="${offer.getProductList()}" var="item">
+                            <div class='product'>
+                            <a class="product-image" href='${pageContext.request.contextPath}/productdetails?productCode=${item.getCode()}'>
+                                <img src='${item.getFirstImagePath()}' draggable='false' />
+                            </a>
+                            <c:if test="${loginedbusiness.getBusinessName()=='c'}">
+                                <p class="image-left">
+                                    <a class="fas fa-pencil-alt" href='editproduct?proid=${item.getId()}'></a>
+                                </p>
+                            </c:if>
+                            <p class="image-right">
+                                (${item.getWishesCount()})
+                                <c:if test="${logineduser!=null}">
+                                    <c:choose>
+                                        <c:when test="${item.isWished()}">
+                                            <a class="fas fa-star" href="" onclick="confirmWish(${item.getCode()},this)"></a>
+                                        </c:when>
+                                        <c:when test="true">
+                                            <a class="far fa-star" href="" onclick="confirmWish(${item.getCode()},this)"></a>
+                                        </c:when>
+                                    </c:choose>
                                 </c:if>
-                                <p class="image-left image-bottom">${offer.getTitle()}</p>
-                                <p class="image-right image-bottom">${offer.getFinalprice()}$</p>
-                            </div>                            
+                                <c:if test="${loginedbusiness.getBusinessName()=='c'}">
+                                    <a class="fas fa-trash" href="#" onclick="confirmDeleteProduct(${item.getId()})" style="color:red"></a>
+                                </c:if>
+                            </p>
+                            <p class="image-left image-bottom">${item.getName()}</p>
+                            <p class="image-right image-bottom">${item.getPrice()}$</p>
+                        </div>                                    
                         </c:forEach>
 
                     </div>

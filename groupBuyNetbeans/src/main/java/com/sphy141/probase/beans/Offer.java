@@ -5,6 +5,7 @@
  */
 package com.sphy141.probase.beans;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -24,9 +25,10 @@ public class Offer {
     private String couponExpire;
     private String path;
     private String businessMail;
-    private List<String> productCode;
+    private List<Product> productsList;
 
     public Offer() {
+        this.productsList=new ArrayList<Product>();
     }
 
     public int getId() {
@@ -110,13 +112,15 @@ public class Offer {
         this.couponExpire = couponExpire;
     }
 
-
-    public List<String> getProductCode() {
-        return productCode;
+    public List<Product> getProductList() {
+        return productsList;
     }
 
-    public void setProductCode(List<String> productCode) {
-        this.productCode = productCode;
+    public void setProductList(List<Product> productsList) {
+        this.productsList = productsList;
+    }
+    public void addProductInList(Product product) {
+        this.productsList.add(product);
     }
 
     public String getPath() {
