@@ -37,28 +37,45 @@ public class FilterProductListServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-
+            resp.sendRedirect(req.getContextPath()+"/home");
+            return;
     }//doGet
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        //------------------CHECK LOGINED USER - BUSINESS - GET NOTIFICATIONS------------------TEMPLATE START
         HttpSession session = req.getSession();
         UserAccount user = MyUtils.getLoginedUser(session);
-        String userMailstr="";
-        if(user!=null){
-            req.setAttribute("logineduser", user);
-            userMailstr=user.getEmail();
-        }
-        else{
-            req.setAttribute("logineduser", null);
-        
-            BusinessAccount business = MyUtils.getLoginedBusiness(session);
-            if(business!=null)
-                req.setAttribute("loginedbusiness", business);
-            else
-                req.setAttribute("loginedbusiness", null);
-        }
+        BusinessAccount business = MyUtils.getLoginedBusiness(session);
         Connection conn = MyUtils.getStoredConnection(req);
+        String userMailstr = " ";
+        String errorString = null;
+        int notificationsCount = 0;
+
+        if (user != null) {
+            req.setAttribute("logineduser", user);
+            userMailstr = user.getEmail();
+            try {
+                notificationsCount = DBUtils.countNotificationsNotReadBy(conn, user);
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+        } else {
+            req.setAttribute("logineduser", null);
+            
+            if (business != null) {
+                req.setAttribute("loginedbusiness", business);
+                try {
+                notificationsCount = DBUtils.countNotificationsNotReadBy(conn, business);
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+            } else {
+                req.setAttribute("loginedbusiness", null);
+            }
+        }
+        req.setAttribute("notificationsCount", notificationsCount);
+        //------------------CHECK LOGINED USER - BUSINESS - GET NOTIFICATIONS------------------TEMPLATE END
         
         String searchQuerry = "";
         
@@ -89,7 +106,6 @@ public class FilterProductListServlet extends HttpServlet {
         //Filter Products
         //Get products ALL or Searched
         List<Product> productList = null;
-        String errorString = null;
         try {
             if (!checkedValuesJson.equals("{}"))   //Filters applied
                 productList = DBUtils.filterSearchProduct(conn, searchQuerry, userMailstr);

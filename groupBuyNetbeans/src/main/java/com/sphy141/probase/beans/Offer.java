@@ -5,8 +5,6 @@
  */
 package com.sphy141.probase.beans;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -24,7 +22,8 @@ public class Offer {
     private String details;
     private String offerExpire;
     private String couponExpire;
-    private List<String> imagePaths;
+    private String path;
+    private List<String> productCode;
 
     public Offer() {
     }
@@ -102,23 +101,20 @@ public class Offer {
         this.couponExpire = couponExpire;
     }
 
-    public List<String> getImagePaths() {
-        return imagePaths;
-    }
-    public String getFirstImagePath() {
-        if (imagePaths != null && !imagePaths.isEmpty()) {
-        return imagePaths.get(0);
-    }
-    return null; // Return null if the imagePath is empty or null
+
+    public List<String> getProductCode() {
+        return productCode;
     }
 
-    public void setImagePaths(List<String> imagePath) {
-        this.imagePaths = imagePath;
-    }
-    public void addImagePath(String imagePath) {
-        this.imagePaths.add(imagePath);
+    public void setProductCode(List<String> productCode) {
+        this.productCode = productCode;
     }
 
-   
-    
+    public String getPath() {
+        return path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
+    }
 }

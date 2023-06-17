@@ -37,6 +37,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.Part;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sphy141.probase.beans.UserAccount;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -54,17 +55,35 @@ public class CreateProductServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        //------------------CHECK LOGINED USER - BUSINESS - GET NOTIFICATIONS------------------TEMPLATE START
         HttpSession session = req.getSession();
+        UserAccount user = MyUtils.getLoginedUser(session);
         BusinessAccount business = MyUtils.getLoginedBusiness(session);
+        Connection conn = MyUtils.getStoredConnection(req);
+        String userMailstr = " ";
         String errorString = null;
-        if (business == null) {
-            resp.sendRedirect(req.getContextPath() + "/home");  // REDIRECT TO ACCESS DENIED PAGE
+        int notificationsCount = 0;
+
+        if (user != null) {
+            resp.sendRedirect(req.getContextPath()+"/home");
             return;
         } else {
-            req.setAttribute("loginedbusiness", business);
+            req.setAttribute("logineduser", null);
+            
+            if (business != null) {
+                req.setAttribute("loginedbusiness", business);
+                try {
+                    notificationsCount = DBUtils.countNotificationsNotReadBy(conn, business);
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+            } else {
+                resp.sendRedirect(req.getContextPath()+"/login");
+                return;
+            }
         }
-
-        Connection conn = MyUtils.getStoredConnection(req);
+        req.setAttribute("notificationsCount", notificationsCount);
+        //------------------CHECK LOGINED USER - BUSINESS - GET NOTIFICATIONS------------------TEMPLATE END
         // get lists of categories
         List<Category> listall = null;
         List<Category> genlist = new ArrayList<>();

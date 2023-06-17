@@ -6,12 +6,16 @@
 package com.sphy141.probase.servlets;
 
 import com.sphy141.probase.beans.BusinessAccount;
+import com.sphy141.probase.beans.Notification;
 import com.sphy141.probase.beans.UserAccount;
 import com.sphy141.probase.utils.DBUtils;
 import com.sphy141.probase.utils.MyUtils;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.List;
+import java.util.ArrayList;
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -23,59 +27,52 @@ import javax.servlet.http.HttpSession;
  *
  * @author Alan
  */
-@WebServlet(urlPatterns = {"/toggleproductwish"})
-public class ToggleProductWishServlet extends HttpServlet{
+@WebServlet(urlPatterns = {"/usernotifications"})
+public class UserNotificationsListServlet extends HttpServlet {
+
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-            resp.sendRedirect(req.getContextPath()+"/home");
-            return;
-    }
-    @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         //------------------CHECK LOGINED USER - BUSINESS - GET NOTIFICATIONS------------------TEMPLATE START
         HttpSession session = req.getSession();
         UserAccount user = MyUtils.getLoginedUser(session);
-        BusinessAccount business = MyUtils.getLoginedBusiness(session);
         Connection conn = MyUtils.getStoredConnection(req);
-        String userMailstr = " ";
         String errorString = null;
         int notificationsCount = 0;
 
         if (user != null) {
-            req.setAttribute("logineduser", user);
-            userMailstr = user.getEmail();
             try {
                 notificationsCount = DBUtils.countNotificationsNotReadBy(conn, user);
+                req.setAttribute("logineduser", user);
             } catch (SQLException ex) {
                 ex.printStackTrace();
             }
         } else {
-            req.setAttribute("logineduser", null);
-            
-            if (business != null) {
-                req.setAttribute("loginedbusiness", business);
-                try {
-                notificationsCount = DBUtils.countNotificationsNotReadBy(conn, business);
-            } catch (SQLException ex) {
-                ex.printStackTrace();
-            }
-            } else {
-                req.setAttribute("loginedbusiness", null);
-            }
+            resp.sendRedirect(req.getContextPath()+"/login");
+            return;
         }
         req.setAttribute("notificationsCount", notificationsCount);
         //------------------CHECK LOGINED USER - BUSINESS - GET NOTIFICATIONS------------------TEMPLATE END
-        //Get the filters cheched
-        String productCode = req.getParameter("productCode");
-
+        List<Notification> notificationsListRead = new ArrayList<Notification>();
+        List<Notification> notificationsListNotRead = new ArrayList<Notification>();
         try {
-            //Toggle Handler. if it exists delete it, if it doesn't Insert it
-            DBUtils.toggleProductWishForUser(conn, productCode, userMailstr);
+            notificationsListRead = DBUtils.queryNotificationsReadBy(conn, user);
+            notificationsListNotRead = DBUtils.queryNotificationsNotReadBy(conn, user);
+                
         } catch (SQLException ex) {
             ex.printStackTrace();
-            resp.getWriter().write("false");
-            return;
         }
-        resp.getWriter().write("true");
+        if(notificationsListRead==null || notificationsListNotRead==null){
+            errorString = "There was a problem with products";
+        }
+        req.setAttribute("logineduser", user);
+        req.setAttribute("notificationsListRead", notificationsListRead);
+        req.setAttribute("notificationsListNotRead", notificationsListNotRead);
+        RequestDispatcher dispatcher=this.getServletContext().getRequestDispatcher("/WEB-INF/views/userNotificationsView.jsp");
+        dispatcher.forward(req, resp);
+     }//doGet
+
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        doGet(req, resp);
     }
 }

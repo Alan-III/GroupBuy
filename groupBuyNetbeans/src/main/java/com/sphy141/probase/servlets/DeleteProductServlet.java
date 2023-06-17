@@ -6,6 +6,7 @@
 package com.sphy141.probase.servlets;
 
 import com.sphy141.probase.beans.BusinessAccount;
+import com.sphy141.probase.beans.UserAccount;
 import com.sphy141.probase.utils.DBUtils;
 import com.sphy141.probase.utils.MyUtils;
 import java.io.IOException;
@@ -28,19 +29,35 @@ public class DeleteProductServlet extends HttpServlet {
   
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        //------------------CHECK LOGINED USER - BUSINESS - GET NOTIFICATIONS------------------TEMPLATE START
         HttpSession session = req.getSession();
-        
+        UserAccount user = MyUtils.getLoginedUser(session);
         BusinessAccount business = MyUtils.getLoginedBusiness(session);
-        if(business!=null)
-            req.setAttribute("loginedbusiness", business);
-        else{
-            req.setAttribute("errorString", "Access Denied");
-            RequestDispatcher dispatcher=this.getServletContext().getRequestDispatcher("/WEB-INF/views/homeView.jsp");
-            dispatcher.forward(req, resp);
-            return;
-        }
-        
         Connection conn = MyUtils.getStoredConnection(req);
+        String userMailstr = " ";
+        String errorString = null;
+        int notificationsCount = 0;
+
+        if (user != null) {
+            resp.sendRedirect(req.getContextPath()+"/home");
+            return;
+        } else {
+            req.setAttribute("logineduser", null);
+            
+            if (business != null) {
+                req.setAttribute("loginedbusiness", business);
+                try {
+                    notificationsCount = DBUtils.countNotificationsNotReadBy(conn, business);
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+            } else {
+                resp.sendRedirect(req.getContextPath()+"/login");
+                return;
+            }
+        }
+        req.setAttribute("notificationsCount", notificationsCount);
+        //------------------CHECK LOGINED USER - BUSINESS - GET NOTIFICATIONS------------------TEMPLATE END
         try {
             DBUtils.deleteProduct(conn, Integer.parseInt(req.getParameter("proid")));
         } catch (SQLException ex) {

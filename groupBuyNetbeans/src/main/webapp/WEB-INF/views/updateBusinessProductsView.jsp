@@ -27,23 +27,30 @@
                 <div class="sidebar">
                     <nav class="main-menu">
                         <ul>
-                            <li>
-                                <a href="https://jbfarrow.com">
-                                    <i class="fa fa-home fa-2x"></i>
-                                    <span class="nav-text">
-                                        Business Details
-                                    </span>
-                                </a>
-
-                            </li>
-                            <li class="has-subnav">
-                                <a href="${pageContext.request.contextPath}/productlist?businessId=${loginedbusiness.getBusinessID()}">
-                                <i class="fa fa-shopping-cart fa-2x"></i>
+                        <li>
+                            <a href="https://jbfarrow.com">
+                                <i class="fa fa-home fa-2x"></i>
                                 <span class="nav-text">
-                                    My Offers / Products
+                                    Business Details
                                 </span>
                             </a>
 
+                        </li>
+                        <li class="has-subnav">
+                            <a href="${pageContext.request.contextPath}/productlist">
+                                <i class="fa fa-shopping-cart fa-2x"></i>
+                                <span class="nav-text">
+                                    My Offers
+                                </span>
+                            </a>
+                        </li>
+                        <li class="has-subnav">
+                            <a href="${pageContext.request.contextPath}/updatebusinessproducts">
+                                <i class="fa fa-barcode fa-2x"></i>
+                                <span class="nav-text">
+                                    My Products
+                                </span>
+                            </a>
                         </li>
                         <li class="has-subnav">
                             <a href="#">
@@ -85,8 +92,7 @@
                                 </span>
                             </a>
                         </li>
-                    </ul>
-
+                </ul>
                 </nav>
             </div>
             <div id="userinfo" class="business-products layout">
@@ -134,11 +140,11 @@
                                 </a>
                                 <c:if test="${loginedbusiness.getBusinessName()=='c'}">
                                     <p class="image-left">
-                                        <a href="#" class="small-icon icon-minus" onclick="moveProduct(${item.getCode()})">
+                                        <a href="#image-track" class="small-icon icon-minus" onclick="moveProduct(${item.getCode()})">
                                         </a>
                                     </p>
                                     <p class="image-right">
-                                        <a href="#" onclick="confirmRedirect(${item.getId()})">
+                                        <a href="#image-track" onclick="confirmRedirect(${item.getId()})">
                                             <img class="small-icon" src='assets/img/delete.png' draggable='false' />
                                         </a>
                                     </p>
@@ -166,11 +172,11 @@
                                 </a>
                                 <c:if test="${loginedbusiness.getBusinessName()=='c'}">
                                     <p class="image-left">
-                                        <a href="#" class="small-icon icon-plus" onclick="moveProduct(${item.getCode()})">
+                                        <a href="#image-track" class="small-icon icon-plus" onclick="moveProduct(${item.getCode()})">
                                         </a>
                                     </p>
                                     <p class="image-right">
-                                        <a href="#" onclick="confirmRedirect(${item.getId()})">
+                                        <a href="#image-track" onclick="confirmRedirect(${item.getId()})">
                                             <img class="small-icon" src='assets/img/delete.png' draggable='false' />
                                         </a>
                                     </p>
@@ -353,11 +359,11 @@
                                 </a>
             <c:if test="${loginedbusiness.getBusinessName()=='c'}">
                                     <p class="image-left">
-                                        <a href="#" class="small-icon `+addicon+`" onclick="moveProduct(` + product.code + `)">
+                                        <a href="#image-track" class="small-icon `+addicon+`" onclick="moveProduct(` + product.code + `)">
                                         </a>
                                     </p>
                                     <p class="image-right">
-                                        <a href="#" onclick="confirmRedirect(` + product.id + `)">
+                                        <a href="#image-track" onclick="confirmRedirect(` + product.id + `)">
                                             <img class="small-icon" src='assets/img/delete.png' draggable='false' />
                                         </a>
                                     </p>

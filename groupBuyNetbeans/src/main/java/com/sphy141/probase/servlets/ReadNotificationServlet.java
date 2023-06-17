@@ -23,13 +23,14 @@ import javax.servlet.http.HttpSession;
  *
  * @author Alan
  */
-@WebServlet(urlPatterns = {"/toggleproductwish"})
-public class ToggleProductWishServlet extends HttpServlet{
+@WebServlet(urlPatterns = {"/readnotification"})
+public class ReadNotificationServlet extends HttpServlet{
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-            resp.sendRedirect(req.getContextPath()+"/home");
+        resp.sendRedirect(req.getContextPath()+"/home");
             return;
     }
+    
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         //------------------CHECK LOGINED USER - BUSINESS - GET NOTIFICATIONS------------------TEMPLATE START
@@ -65,12 +66,17 @@ public class ToggleProductWishServlet extends HttpServlet{
         }
         req.setAttribute("notificationsCount", notificationsCount);
         //------------------CHECK LOGINED USER - BUSINESS - GET NOTIFICATIONS------------------TEMPLATE END
+        
         //Get the filters cheched
-        String productCode = req.getParameter("productCode");
+        String notificationIDstr = req.getParameter("notificationID");
+        int notificationID = Integer.parseInt(notificationIDstr);
 
         try {
-            //Toggle Handler. if it exists delete it, if it doesn't Insert it
-            DBUtils.toggleProductWishForUser(conn, productCode, userMailstr);
+            if(user!=null)
+                DBUtils.insertNotificationReadBy(conn, notificationID, user);
+            else
+                DBUtils.insertNotificationReadBy(conn, notificationID, business);
+                
         } catch (SQLException ex) {
             ex.printStackTrace();
             resp.getWriter().write("false");
