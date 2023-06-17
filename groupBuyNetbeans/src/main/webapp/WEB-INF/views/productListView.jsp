@@ -84,25 +84,24 @@
             <div class="layout track-container border-red" id="trackcontainer">
                 <!-- Item slider-->
                 <div id='image-track' class="image-track" data-mouse-down-at='0' data-prev-percentage='0'>
-                    <%--<c:forEach items="${list}" var="item">--%>
-                    <!--LIST OF OFFERS WITH IMAGES ETC -->
-                    <div class='product'>
-                        <a class="product-image" href='subject_details.php?subj=${item.getCode()}'>
-                            <img src='assets/img/smartphone.png' draggable='false' />
-                        </a>
-                        <c:if test="${logineduser.getUserName()!='tomcruz'}">
-                            <p class="image-left">
-                                <a class="fas fa-pencil-alt" href='editproduct?proid=${item.getId()}'></a>
-                            </p>
-                            <p class="image-right">
-                                <a class="fas fa-trash" href="#" onclick="confirmRedirect(${item.getId()})" style="color:red"></a>                     
-                            </p>
-                        </c:if>
-                        <p class="image-left image-bottom">${item.getName()}</p>
-                        <p class="image-right image-bottom">${item.getPrice()}$</p>
-                    </div>                            
-                    <%--</c:forEach>--%>
-
+                    <c:forEach items="${offersList}" var="offer">
+                            <div class='product' data-product-code="${offer.getId()}">
+                                <a class="product-image" href='${pageContext.request.contextPath}/offerdetails?offerid=${offer.getId()}'>
+                                    <img src='${offer.getPath()}' draggable='false' />
+                                </a>
+                                <c:if test="${loginedbusiness.getBusinessName()=='c'}">
+                                    <p class="image-left">
+                                        <a class="fas fa-pencil-alt" href='editoffer?offerid=${offer.getId()}'></a>
+                                        </a>
+                                    </p>
+                                    <p class="image-right">
+                                        <a class="fas fa-trash" href="#" onclick="confirmRedirect(${offer.getId()})" style="color:red"></a>
+                                    </p>
+                                </c:if>
+                                <p class="image-left image-bottom">${offer.getTitle()}</p>
+                                <p class="image-right image-bottom">${offer.getFinalprice()}$</p>
+                            </div>                            
+                        </c:forEach>
                 </div>
 
                 <!-- Item slider end-->
@@ -143,7 +142,7 @@
                                     </c:choose>
                                 </c:if>
                                 <c:if test="${loginedbusiness.getBusinessName()=='c'}">
-                                    <a class="fas fa-trash" href="#" onclick="confirmRedirect(${item.getId()})" style="color:red"></a>
+                                    <a class="fas fa-trash" href="#" onclick="confirmDeleteProduct(${item.getId()})" style="color:red"></a>
                                 </c:if>
                             </p>
                             <p class="image-left image-bottom">${item.getName()}</p>
@@ -158,11 +157,18 @@
 
         </div>
         <script>
-            //DELETE CONFIRM
-            function confirmRedirect(productId) {
+            //DELETE PRODUCT CONFIRM
+            function confirmDeleteProduct(productId) {
                 var confirmed = confirm("Are you sure you want to delete this product?");
                 if (confirmed) {
                     window.location.href = "deleteproduct?proid=" + productId;
+                }
+            }
+            //DELETE OFFER CONFIRM
+            function confirmDeleteOffer(offerId) {
+                var confirmed = confirm("Are you sure you want to delete this offer?");
+                if (confirmed) {
+                    window.location.href = "deleteoffer?offerid=" + offerId;
                 }
             }
             //LOAD NEXT PAGE WITH SEARCH

@@ -188,7 +188,7 @@ public class DBUtils {
         return prod;
     }//findProduct
     
-// GET PRODUCTS OF A CERTAIN OFFER
+// GET PRODUCTS OF A CERTAIN BUSINESS
 public static List<Product> queryProductsInBusiness(Connection conn, int businessID) throws SQLException {
     List<Product> list = new ArrayList<>();
     String sql = "SELECT * FROM businessproducts bp INNER JOIN products p ON p.productCode=bp.productCode INNER JOIN productphoto pp ON p.productID=pp.productID WHERE businessID = ? GROUP BY pp.productID";
@@ -208,7 +208,7 @@ public static List<Product> queryProductsInBusiness(Connection conn, int busines
     return list;
 }
 
-// GET PRODUCTS OF A CERTAIN OFFER
+// INSERT PRODUCTS IN A CERTAIN OFFER
 public static List<Product> insertProductInOffer(Connection conn, int businessID, String productCode) throws SQLException {
     List<Product> list = new ArrayList<>();
     String sql = "SELECT * FROM businessproducts bp INNER JOIN products p ON p.productCode=bp.productCode INNER JOIN productphoto pp ON p.productID=pp.productID WHERE businessID = ? GROUP BY pp.productID";
@@ -264,7 +264,7 @@ public static Offer findOffer(Connection conn,int offerID) throws SQLException {
         return null;
     }//findOffer
 
- //GET LIST OF PRODUCTS NOT PROVIDED BY THE BUSINESS
+ //GET LIST OF PRODUCTS IN AN OFFER
     public static List<Product> queryProductsInOffer(Connection conn, int offerID,int businessID) throws SQLException{
         String sql = "SELECT bp.productID,bp.productCode,p.productName,p.details,p.price\n" +
 "from offers o \n" +
@@ -293,8 +293,8 @@ public static Offer findOffer(Connection conn,int offerID) throws SQLException {
         return list;
     }
     
-    
-public static void CreateOffer(Connection conn,Offer offer, String email,List<String> productCodes ) throws SQLException {
+    //INSERT NEW OFFER TO DB
+public static void insertOffer(Connection conn,Offer offer, String email,List<String> productCodes ) throws SQLException {
         String sql = "insert into offers (title,finalPrice,discount,couponPrice,offerExpire,details,email,path,groupSize) values (?,?,?,?,?,?,?,?,?)";
         PreparedStatement pst = conn.prepareCall(sql);
         pst.setString(1, offer.getTitle());
@@ -420,42 +420,8 @@ public static void UpdateOffer(Connection conn,Offer offer) throws SQLException 
             pst2.setString(2, path);
             pst2.executeUpdate();
         }
-    }//insertProduct
+    }//insertProduct  
     
-    public static void insertOffer(Connection conn, Offer offer) throws SQLException {
-        String sql = "INSERT INTO offers (title,finalPrice,discount,couponPrice,offerExpire,couponExpire,details,groupsize,email) values (?,?,?,?,?,?,?,?,?)";
-        PreparedStatement pst = conn.prepareCall(sql);
-        pst.setString(1, offer.getTitle());
-        pst.setDouble(2, offer.getFinalprice());
-        pst.setDouble(3, offer.getDiscount());
-        pst.setDouble(4, offer.getCouponPrice());
-        pst.setDate(5, Date.valueOf(offer.getOfferExpire()));
-        pst.setDate(6, Date.valueOf(offer.getCouponExpire()));
-        pst.setString(7, offer.getDetails());
-        pst.setDouble(8, offer.getGroupSize());
-        /*email*/
-        pst.executeUpdate();
-        
-        
-        /*List<String> paths = offer.getImagePaths();
-        Product offerNew = findOffer(conn, offer.getOfferID());
-        for (String path : paths) {
-            String sql2 = "INSERT INTO offerphoto (offerID,path) VALUES(?,?)";
-            PreparedStatement pst2 = conn.prepareCall(sql2);
-            pst2.setInt(1, offerNew.getId());
-            pst2.setString(2, path);
-            pst2.executeUpdate();
-        }*/
-    }//insertProduct
-    
-    
-    /*public static void deleteOffer(Connection conn, String code) throws SQLException {
-        String sql = "DELETE FROM products WHERE offerID=? ";
-        PreparedStatement pst = conn.prepareStatement(sql);
-        pst.setInt(1,offerID);
-        pst.executeUpdate();
-    }//deleteProduct
-    */
     public static BusinessAccount findBusiness(Connection conn, String loginEmail, String password) throws SQLException {
         String sql = "SELECT businessID, supervisorFirstName, supervisorLastName, balance, businessName,"
                 + " IBAN,AFM, b.email as email, password FROM business b INNER JOIN login l ON b.email=l.email WHERE b.email = ? AND password = ?  AND enabled = 1";
@@ -889,7 +855,8 @@ public static void UpdateOffer(Connection conn,Offer offer) throws SQLException 
         return list;
     }
 
-    public static List<Offer> queryProductOffers(Connection conn, String productCodeParam) throws SQLException {
+    //GET A LIST OF OFFERS FOR A CERTAIN PRODUCT
+    public static List<Offer> queryOffersForProduct(Connection conn, String productCodeParam) throws SQLException {
         String sql = "SELECT * FROM offerdetails od INNER JOIN offers o ON od.offerID=o.offerID WHERE productCode = ?";
         List<Offer> list = new ArrayList<Offer>();
         PreparedStatement pst = conn.prepareStatement(sql);
@@ -900,7 +867,6 @@ public static void UpdateOffer(Connection conn,Offer offer) throws SQLException 
             if(of==null || of.getId()!=rs.getInt("offerID")){
                 of = new Offer();
                 of.setId(rs.getInt("offerID"));
-                of.setCouponExpire(rs.getString("couponExpire"));
                 of.setCouponPrice(rs.getFloat("couponPrice"));
                 of.setDetails(rs.getString("details"));
                 of.setDiscount(rs.getFloat("discount"));
@@ -908,11 +874,39 @@ public static void UpdateOffer(Connection conn,Offer offer) throws SQLException 
                 of.setGroupSize(rs.getInt("groupSize"));
                 of.setTitle(rs.getString("title"));
                 of.setPath(rs.getString("path"));
+                of.setBusinessMail(rs.getString("email"));
+                list.add(of);
+            }
+        }//while
+        return list;
+    }
+    
+    //GET A LIST OF ALL OFFERS
+    public static List<Offer> queryOffers(Connection conn) throws SQLException {
+        String sql = "SELECT * FROM offers";
+        List<Offer> list = new ArrayList<Offer>();
+        PreparedStatement pst = conn.prepareStatement(sql);
+        ResultSet rs = pst.executeQuery();
+        Offer of = null;
+        while (rs.next()) {
+            if(of==null || of.getId()!=rs.getInt("offerID")){
+                of = new Offer();
+                of.setId(rs.getInt("offerID"));
+                of.setCouponPrice(rs.getFloat("couponPrice"));
+                of.setDetails(rs.getString("details"));
+                of.setDiscount(rs.getFloat("discount"));
+                of.setFinalprice(rs.getFloat("finalPrice"));
+                of.setGroupSize(rs.getInt("groupSize"));
+                of.setTitle(rs.getString("title"));
+                of.setPath(rs.getString("path"));
+                of.setBusinessMail(rs.getString("email"));
+                list.add(of);
             }
         }//while
         return list;
     }
 
+    //INSERT OR DELETE WISH OF A PRODUCT FOR A USER
     public static void toggleProductWishForUser(Connection conn, String productCode, String userMailstr)throws SQLException {
         String sql = "CALL ToggleProductWishForUser(?, ?)";
         PreparedStatement pst = conn.prepareCall(sql);
@@ -1056,4 +1050,6 @@ public static void UpdateOffer(Connection conn,Offer offer) throws SQLException 
         pst.setString(2, business.getEmail());
         pst.executeUpdate();
     }
+    
+    
 }

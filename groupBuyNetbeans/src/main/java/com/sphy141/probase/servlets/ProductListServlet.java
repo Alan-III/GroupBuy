@@ -7,6 +7,7 @@ package com.sphy141.probase.servlets;
 
 import com.sphy141.probase.beans.BusinessAccount;
 import com.sphy141.probase.beans.Category;
+import com.sphy141.probase.beans.Offer;
 import com.sphy141.probase.beans.Product;
 import com.sphy141.probase.beans.ProductFilter;
 import com.sphy141.probase.beans.UserAccount;
@@ -77,9 +78,12 @@ public class ProductListServlet extends HttpServlet {
                 
         //Get products ALL or Searched
         List<Product> productList = null;
+        List<Offer> offersList = null;
         try {
-            if(searchParam==null || searchParam.length()==0)
+            if(searchParam==null || searchParam.length()==0){
                 productList = DBUtils.queryProduct(conn, userMailstr);
+                offersList = DBUtils.queryOffers(conn);
+            }
             else
                 productList = DBUtils.searchProduct(conn, searchParam, userMailstr);
                 
@@ -130,6 +134,7 @@ public class ProductListServlet extends HttpServlet {
         
             req.setAttribute("errorString", errorString);
             req.setAttribute("productList", productList);
+            req.setAttribute("offersList", offersList);
             req.setAttribute("keywordsList", keywordsList);
             req.setAttribute("filtersList", filtersList);
 //            req.setAttribute("logineduser", user);

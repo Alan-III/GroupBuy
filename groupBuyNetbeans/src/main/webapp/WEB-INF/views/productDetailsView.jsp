@@ -106,9 +106,9 @@
                     <!-- Item slider-->
                     <div id='image-track' class="image-track" data-mouse-down-at='0' data-prev-percentage='0'>
                         <c:forEach items="${productOffersList}" var="offer">
-                            <div class='product' data-product-code="${offer.getCode()}">
+                            <div class='product' data-product-code="${offer.getId()}">
                                 <a class="product-image" href='${pageContext.request.contextPath}/offerdetails?offerid=${offer.getId()}'>
-                                    <img src='${offer.getFirstImagePath()}' draggable='false' />
+                                    <img src='${offer.getPath()}' draggable='false' />
                                 </a>
                                 <c:if test="${loginedbusiness.getBusinessName()=='c'}">
                                     <p class="image-left">
@@ -119,8 +119,8 @@
                                         <a class="fas fa-trash" href="#" onclick="confirmRedirect(${offer.getId()})" style="color:red"></a>
                                     </p>
                                 </c:if>
-                                <p class="image-left image-bottom">${offer.getName()}</p>
-                                <p class="image-right image-bottom">${offer.getPrice()}$</p>
+                                <p class="image-left image-bottom">${offer.getTitle()}</p>
+                                <p class="image-right image-bottom">${offer.getFinalprice()}$</p>
                             </div>                            
                         </c:forEach>
 

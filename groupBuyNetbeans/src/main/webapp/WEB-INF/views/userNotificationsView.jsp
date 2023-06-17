@@ -25,7 +25,7 @@
         <jsp:include page="_menu.jsp"></jsp:include>
 
             <div class="main_box">
-
+<div class="sidebar">
                 <nav class="main-menu">
                     <ul>
                         <li>
@@ -106,6 +106,7 @@
                     </li> 
                 </ul>
             </nav>
+            </div>
             <div id="userinfo" class="px-4 layout">
                 <h3 class="text-center text-white pt-5 mb-4">User Notifications</h3>
                 <div class="container">

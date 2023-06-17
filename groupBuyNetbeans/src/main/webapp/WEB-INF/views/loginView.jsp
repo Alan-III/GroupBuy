@@ -211,12 +211,12 @@
                         </div>
                         <!-- IBAN input -->
                         <div class="form-outline mb-4 input-field">
-                            <input type="email" id="registeriban" name="registeriban" class="form-control" required="required" />
+                            <input type="text" id="registeriban" name="registeriban" class="form-control" required="required" />
                             <label class="form-label" for="registeriban">IBAN</label>
                         </div>
                         <!-- AFM input -->
                         <div class="form-outline mb-4 input-field">
-                            <input type="email" id="registerafm" name="registerafm" class="form-control" required="required" />
+                            <input type="text" id="registerafm" name="registerafm" class="form-control" required="required" />
                             <label class="form-label" for="registerafm">Tax Code</label>
                         </div>
                         
