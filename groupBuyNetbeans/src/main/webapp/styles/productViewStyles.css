@@ -50,6 +50,7 @@ a{
     width: 60%;
     max-width: 330px;
     overflow: hidden;
+    padding: 1.5rem;
 }
 .product-pic{
     max-width: 180px;
