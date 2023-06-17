@@ -931,20 +931,12 @@ public static void UpdateOffer(Connection conn,Offer offer) throws SQLException 
                 + "LEFT JOIN readnotifications rn ON n.notificationID=rn.notificationID \n"
                 + "LEFT JOIN (SELECT productName,productCode FROM products) p ON n.productCode=p.productCode\n"
                 + "LEFT JOIN (SELECT title as offerTitle,offerID FROM offers) o ON n.offerID=o.offerID\n"
-                + "WHERE mw.email=? AND rn.email=?\n"
-                + "union\n"
-                + "SELECT *,rn.email as seen FROM notifications n INNER JOIN mywish mw ON n.productCode=mw.productCode \n"
-                + "LEFT JOIN readnotifications rn ON n.notificationID=rn.notificationID \n"
-                + "LEFT JOIN (SELECT productName,productCode FROM products) p ON n.productCode=p.productCode\n"
-                + "LEFT JOIN (SELECT title as offerTitle,offerID FROM offers) o ON n.offerID=o.offerID\n"
-                + "WHERE mw.email=? AND (rn.email!=? OR rn.email IS NULL) \n"
+                + "WHERE mw.email=? AND (rn.email=? OR rn.email IS NULL) \n"
                 + "ORDER BY notificationDate desc;";
         List<Notification> list = new ArrayList<Notification>();
         PreparedStatement pst = conn.prepareStatement(sql);
         pst.setString(1, user.getEmail());
         pst.setString(2, user.getEmail());
-        pst.setString(3, user.getEmail());
-        pst.setString(4, user.getEmail());
         ResultSet rs = pst.executeQuery();
         while (rs.next()) {
             Product pro = new Product();
@@ -960,7 +952,7 @@ public static void UpdateOffer(Connection conn,Offer offer) throws SQLException 
             pro.setCode(rs.getString("productCode"));
             notif.setOffer(of);
             notif.setProduct(pro);
-            if (rs.getString("seen") == null) {
+            if (rs.getString("seen") != null) {
                 notif.setSeen(true);
             }
             list.add(notif);
@@ -973,20 +965,12 @@ public static void UpdateOffer(Connection conn,Offer offer) throws SQLException 
                 + "LEFT JOIN readnotifications rn ON n.notificationID=rn.notificationID \n"
                 + "LEFT JOIN (SELECT productName,productCode FROM products) p ON n.productCode=p.productCode\n"
                 + "LEFT JOIN (SELECT title as offerTitle,offerID FROM offers) o ON n.offerID=o.offerID\n"
-                + "WHERE mw.email=? AND rn.email=?\n"
-                + "union\n"
-                + "SELECT *,rn.email as seen FROM notifications n INNER JOIN mywish mw ON n.productCode=mw.productCode \n"
-                + "LEFT JOIN readnotifications rn ON n.notificationID=rn.notificationID \n"
-                + "LEFT JOIN (SELECT productName,productCode FROM products) p ON n.productCode=p.productCode\n"
-                + "LEFT JOIN (SELECT title as offerTitle,offerID FROM offers) o ON n.offerID=o.offerID\n"
-                + "WHERE mw.email=? AND (rn.email!=? OR rn.email IS NULL) \n"
+                + "WHERE mw.email=? AND (rn.email=? OR rn.email IS NULL) \n"
                 + "ORDER BY notificationDate desc;";
         List<Notification> list = new ArrayList<Notification>();
         PreparedStatement pst = conn.prepareStatement(sql);
         pst.setString(1, business.getEmail());
         pst.setString(2, business.getEmail());
-        pst.setString(3, business.getEmail());
-        pst.setString(4, business.getEmail());
         ResultSet rs = pst.executeQuery();
         while (rs.next()) {
             Product pro = new Product();
@@ -1002,7 +986,7 @@ public static void UpdateOffer(Connection conn,Offer offer) throws SQLException 
             pro.setCode(rs.getString("productCode"));
             notif.setOffer(of);
             notif.setProduct(pro);
-            if (rs.getString("seen") == null) {
+            if (rs.getString("seen") != null) {
                 notif.setSeen(true);
             }
             list.add(notif);
@@ -1137,7 +1121,7 @@ public static void UpdateOffer(Connection conn,Offer offer) throws SQLException 
     //GET NUMBER OF UNREAD NOTIFICATIONS
     public static int countNotificationsNotReadBy(Connection conn, UserAccount user) throws SQLException {
         String sql = "SELECT count(*) as notcount FROM notifications n INNER JOIN mywish mw ON n.productCode=mw.productCode "
-                + "LEFT JOIN readnotifications rn ON n.notificationID=rn.notificationID WHERE mw.email=? AND (rn.email!=? OR rn.email IS NULL);";
+                + "LEFT JOIN readnotifications rn ON n.notificationID=rn.notificationID AND rn.email=? WHERE mw.email=? AND rn.email IS NULL;";
         List<Notification> list = new ArrayList<Notification>();
         PreparedStatement pst = conn.prepareStatement(sql);
         pst.setString(1, user.getEmail());
@@ -1152,7 +1136,7 @@ public static void UpdateOffer(Connection conn,Offer offer) throws SQLException 
     //GET NUMBER OF UNREAD NOTIFICATIONS
     public static int countNotificationsNotReadBy(Connection conn, BusinessAccount business) throws SQLException {
         String sql = "SELECT count(*) as notcount FROM notifications n INNER JOIN mywish mw ON n.productCode=mw.productCode "
-                + "LEFT JOIN readnotifications rn ON n.notificationID=rn.notificationID WHERE mw.email=? AND (rn.email!=? OR rn.email IS NULL);";
+                + "LEFT JOIN readnotifications rn ON n.notificationID=rn.notificationID AND rn.email=? WHERE mw.email=? AND rn.email IS NULL;";
         List<Notification> list = new ArrayList<Notification>();
         PreparedStatement pst = conn.prepareStatement(sql);
         pst.setString(1, business.getEmail());
@@ -1182,4 +1166,30 @@ public static void UpdateOffer(Connection conn,Offer offer) throws SQLException 
         pst.executeUpdate();
     }
 
+    //SEARCH KEYWORD AND BRING LIST OF OFFERS
+    public static List<Offer> searchOffer(Connection conn, String keyword) throws SQLException {
+        String sql = "SELECT * FROM offers o LEFT JOIN (SELECT count(*) AS participants,offerID FROM coupontokens "
+                + "GROUP BY offerID) ct ON o.offerID=ct.offerID "
+                + "WHERE title like ? or details like ? ;";
+        List<Offer> list = new ArrayList<Offer>();
+        PreparedStatement pst = conn.prepareStatement(sql);
+        pst.setString(1, "%" + keyword + "%");
+        pst.setString(2, "%" + keyword + "%");
+        ResultSet rs = pst.executeQuery();
+        while (rs.next()) {
+                Offer offer = new Offer();
+                offer.setId(rs.getInt("offerID"));
+                offer.setTitle(rs.getString("title"));
+                offer.setFinalprice(rs.getFloat("finalPrice"));
+                offer.setDiscount(rs.getFloat("discount"));
+                offer.setDetails(rs.getString("details"));
+                offer.setCouponPrice(rs.getFloat("couponPrice"));
+                offer.setGroupSize(rs.getInt("groupSize"));
+                offer.setOfferExpire(rs.getString("offerExpire"));
+                offer.setPath(rs.getString("path"));
+                offer.setParticipants(rs.getInt("participants"));
+                list.add(offer);
+        }//while
+        return list;
+    }//queryProduct
 }

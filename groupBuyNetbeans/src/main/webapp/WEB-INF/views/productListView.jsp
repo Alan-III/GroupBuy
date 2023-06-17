@@ -296,6 +296,7 @@
             });
             //Toggle wishes in DB and in div class
             function confirmWish(productCode, element) {
+                if(${logineduser!=null}){
                         if ($(element).hasClass("far")) {
                                 $(element).removeClass("far").addClass("fas");
                             } else {
@@ -314,6 +315,9 @@
                         }
                     }
                 });
+                }
+                else
+                    alert("You need to be logged in to wishlist products");
             }
         </script>
         <script type='text/javascript' src='js/listTrack.js'></script>

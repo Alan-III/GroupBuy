@@ -89,13 +89,6 @@
                                 <a href="#!" class="option">(1)</a>
                             </div>
                         </div>
-                        <div class="product-footer mt-5">
-                            <button type="button">
-                                <img src="http://co0kie.github.io/codepen/nike-product-page/cart.png" alt="">
-                                <span>add to cart</span>
-                            </button>
-                            <a href="#!"><img src="http://co0kie.github.io/codepen/nike-product-page/share.png" alt=""></a>
-                        </div>
                     </div>
                 </div> 
                 <!-- product -->
@@ -154,6 +147,7 @@
             
             //Toggle wishes in DB and in div class
             function confirmWish(productCode, element) {
+                if(${logineduser!=null}){
                         if ($(element).hasClass("far")) {
                                 $(element).removeClass("far").addClass("fas");
                             } else {
@@ -168,10 +162,13 @@
                         if (response == "true") {
                             
                         } else {
-                            var alert = alert("something went wrong");
+                            alert("something went wrong");
                         }
                     }
                 });
+                }
+                else
+                    alert("You need to be logged in to wishlist products");
             }
         </script>
 

@@ -80,12 +80,21 @@ a{
         margin-top: 5px;
         font-size: 18px;
         .current{
+            color: white;
+            margin-left: 6px;
+        }
+        .fee{
             color: #fe6168;
+            margin-left: 6px;
+        }
+        .discount{
+            color: #ffc800;
             margin-left: 6px;
         }
     }
     .before{
         text-decoration: line-through;
+        color: crimson;
     }
     header{
         margin-bottom: 50px;
@@ -136,15 +145,15 @@ a{
             display: flex;
             margin: 15px 5px;
         }
-    }
-    .color li+li{
-        margin-left: 15px;
-    }
-    .colors{
-        width: 20px;
-        height: 20px;
-        border-radius: 50%;
-        display: block;
+        .color li{
+            margin-left: 15px;
+            .colors{
+                width: 20px;
+                height: 20px;
+                border-radius: 50%;
+                display: block;
+            }
+        }
     }
 
 }
@@ -211,11 +220,14 @@ a{
         align-items: center;
         border-radius: 7px;
         cursor: pointer;
-        background: linear-gradient(to bottom, red 0%, yellow 100%);
+        background: linear-gradient(to bottom, #1b1b19 0%, #fe6168 50%,#1b1b19 100%);
         box-shadow: 0 10px 30px 0 rgba(red, 0.7);
         transition: 200ms;
         &:hover{
-            background: linear-gradient(to bottom, blue 0%, red 100%);
+            background: linear-gradient(to bottom, #1b1b19 0%, #23CE6B 50%, #1b1b19 100%);
+            >span{
+                color: #ffc800;
+            }
         }
         >img{
             width: 31px;

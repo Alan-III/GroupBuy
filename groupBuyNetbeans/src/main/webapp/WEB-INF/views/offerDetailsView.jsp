@@ -40,13 +40,12 @@
                             <span class="colorCat">subtitle</span>
                             <div class="flex-fill" style="display: flex; justify-content: space-between;">
                                 <div class="price">
-                                    <span class="before">$${offer.getFinalprice()}</span>
-                                    <span class="current">$${offer.getFinalprice()}</span>
-                                    <span class="current"> Fee: ${offer.getCouponPrice()}</span>
-                                    <span class="current">$ Discount: ${offer.getDiscount()}%</span>
+                                    <span class="before">Price: $${Math.round(offer.getFinalprice()*100/(100-offer.getDiscount()) * 10) / 10}</span>
+                                    <span class="discount">Offer: $${offer.getFinalprice()}</span>
+                                    <span class="fee"> Fee: $${offer.getCouponPrice()}</span>
                                 </div>
                                 <div class="rate">
-                                    number of joined users
+                                    Joined: ${offer.getParticipants()}/${offer.getGroupSize()}
                                 </div>
                             </div>
                             <hr>
@@ -55,31 +54,15 @@
                             <h5>Description</h5>
                             <p>${offer.getDetails()}</p>
                         </article>
-                        <div class="controls">
-                            <div class="color">
-                                <h5>color</h5>
-                                <ul>
-                                    <li><a href="#!" class="colors color-bdot1 active"></a></li>
-                                    <li><a href="#!" class="colors color-bdot2"></a></li>
-                                    <li><a href="#!" class="colors color-bdot3"></a></li>
-                                    <li><a href="#!" class="colors color-bdot4"></a></li>
-                                    <li><a href="#!" class="colors color-bdot5"></a></li>
-                                </ul>
-                            </div>
-                            <div class="size">
-                                <h5>size</h5>
-                                <a href="#!" class="option">(UK 8)</a>
-                            </div>
-                            <div class="qty">
-                                <h5>qty</h5>
-                                <a href="#!" class="option">(1)</a>
-                            </div>
-                        </div>
                         <div class="product-footer mt-5">
                             <button type="button">
                                 <img src="http://co0kie.github.io/codepen/nike-product-page/cart.png" alt="">
-                                <span>add to cart</span>
+                                <span>join offer</span>
                             </button>
+                            <div>
+                                <div class="price" style="color: #fe6168">Expires on:</div>
+                                <span style="color: #b3900e"> ${offer.getOfferExpire()}</span>
+                            </div>
                             <a href="#!"><img src="http://co0kie.github.io/codepen/nike-product-page/share.png" alt=""></a>
                         </div>
                     </div>
@@ -91,7 +74,7 @@
                 <div class="layout track-container border-yellow mb-4 mt-2" id="trackcontainer">
                     <!-- Item slider-->
                     <div id='image-track' class="image-track" data-mouse-down-at='0' data-prev-percentage='0'>
-                        <c:forEach items="${offer.getProductList()}" var="item">
+                        <c:forEach items="${offer.getProductsList()}" var="item">
                             <div class='product'>
                             <a class="product-image" href='${pageContext.request.contextPath}/productdetails?productCode=${item.getCode()}'>
                                 <img src='${item.getFirstImagePath()}' draggable='false' />
@@ -103,16 +86,6 @@
                             </c:if>
                             <p class="image-right">
                                 (${item.getWishesCount()})
-                                <c:if test="${logineduser!=null}">
-                                    <c:choose>
-                                        <c:when test="${item.isWished()}">
-                                            <a class="fas fa-star" href="" onclick="confirmWish(${item.getCode()},this)"></a>
-                                        </c:when>
-                                        <c:when test="true">
-                                            <a class="far fa-star" href="" onclick="confirmWish(${item.getCode()},this)"></a>
-                                        </c:when>
-                                    </c:choose>
-                                </c:if>
                                 <c:if test="${loginedbusiness.getBusinessName()=='c'}">
                                     <a class="fas fa-trash" href="#" onclick="confirmDeleteProduct(${item.getId()})" style="color:red"></a>
                                 </c:if>

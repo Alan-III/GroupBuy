@@ -24,6 +24,7 @@ public class Offer {
     private String offerExpire;
     private String couponExpire;
     private String path;
+    private int participants;
     private String businessMail;
     private List<Product> productsList;
 
@@ -37,6 +38,28 @@ public class Offer {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public int getParticipants() {
+        return participants;
+    }
+
+    public void setParticipants(int participants) {
+        this.participants = participants;
+    }
+    public void addParticipants(int participants) {
+        this.participants += participants;
+    }
+
+    public List<Product> getProductsList() {
+        return productsList;
+    }
+
+    public void setProductsList(List<Product> productsList) {
+        this.productsList = productsList;
+    }
+    public void addProductInList(Product product) {
+        this.productsList.add(product);
     }
 
     public String getBusinessMail() {
@@ -110,17 +133,6 @@ public class Offer {
 
     public void setCouponExpire(String couponExpire) {
         this.couponExpire = couponExpire;
-    }
-
-    public List<Product> getProductList() {
-        return productsList;
-    }
-
-    public void setProductList(List<Product> productsList) {
-        this.productsList = productsList;
-    }
-    public void addProductInList(Product product) {
-        this.productsList.add(product);
     }
 
     public String getPath() {
