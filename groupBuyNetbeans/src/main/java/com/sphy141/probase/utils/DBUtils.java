@@ -17,8 +17,10 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -311,14 +313,32 @@ public static void insertOffer(Connection conn,Offer offer, String email,List<St
         ResultSet generatedKeys=pst.getGeneratedKeys();
         if (generatedKeys.next()){
             int offerID = generatedKeys.getInt(1);
-        
+            // Get the current date
+            Calendar calendar = Calendar.getInstance();
+            java.util.Date currentDate = calendar.getTime();
+
+            // Format the date as "YYYY-MM-DD"
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            String formattedDate = dateFormat.format(currentDate);
         
         for (String productCode : productCodes) {
+            //INSERT LIST OF PRODUCTS IN OFFERDETAILS
             sql = "insert into offerdetails (offerID,productCode) values (?,?)";
             pst = conn.prepareCall(sql);
             pst.setInt (1,  offerID);
             pst.setString (2, productCode);
             pst.executeUpdate();
+            
+            //INSERT NOTIFICATIONS FOR EACH PRODUCT
+            sql = "insert into notifications (title,details,offerID,productCode,notificationDate) values (?,?,?,?,?)";
+            pst = conn.prepareCall(sql);
+            pst.setString (1,  "New Offer");
+            pst.setString (2, offer.getDetails());
+            pst.setInt (3, offerID);
+            pst.setString (4, productCode);
+            pst.setString(5, formattedDate);
+            pst.executeUpdate();
+            
             }//for
         }
         
@@ -916,10 +936,84 @@ public static void UpdateOffer(Connection conn,Offer offer) throws SQLException 
     }
 
     public static List<Notification> queryNotifications(Connection conn, UserAccount user) throws SQLException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        String sql = "SELECT *,rn.email as seen FROM notifications n INNER JOIN mywish mw ON n.productCode=mw.productCode \n" +
+            "LEFT JOIN readnotifications rn ON n.notificationID=rn.notificationID \n" +
+            "LEFT JOIN (SELECT productName,productCode FROM products) p ON n.productCode=p.productCode\n" +
+            "LEFT JOIN (SELECT title as offerTitle,offerID FROM offers) o ON n.offerID=o.offerID\n" +
+            "WHERE mw.email=? AND rn.email=?\n" +
+            "union\n" +
+            "SELECT *,rn.email as seen FROM notifications n INNER JOIN mywish mw ON n.productCode=mw.productCode \n" +
+            "LEFT JOIN readnotifications rn ON n.notificationID=rn.notificationID \n" +
+            "LEFT JOIN (SELECT productName,productCode FROM products) p ON n.productCode=p.productCode\n" +
+            "LEFT JOIN (SELECT title as offerTitle,offerID FROM offers) o ON n.offerID=o.offerID\n" +
+            "WHERE mw.email=? AND (rn.email!=? OR rn.email IS NULL) \n" +
+            "ORDER BY notificationDate desc;";
+        List<Notification> list = new ArrayList<Notification>();
+        PreparedStatement pst = conn.prepareStatement(sql);
+        pst.setString(1, user.getEmail());
+        pst.setString(2, user.getEmail());
+        pst.setString(3, user.getEmail());
+        pst.setString(4, user.getEmail());
+        ResultSet rs = pst.executeQuery();
+        while (rs.next()) {
+            Product pro = new Product();
+            Offer of = new Offer();
+            Notification notif = new Notification();
+            notif.setId(rs.getInt("notificationID"));
+            notif.setNotificationTitle(rs.getString("title"));
+            notif.setDetails(rs.getString("details"));
+            notif.setDate(rs.getString("notificationDate"));
+            of.setTitle(rs.getString("offerTitle"));
+            of.setId(rs.getInt("offerID"));
+            pro.setName(rs.getString("productName"));
+            pro.setCode(rs.getString("productCode"));
+            notif.setOffer(of);
+            notif.setProduct(pro);
+            if(rs.getString("seen")==null)
+                notif.setSeen(true);
+            list.add(notif);
+        }//while
+        return list;
     }
     public static List<Notification> queryNotifications(Connection conn, BusinessAccount business) throws SQLException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        String sql = "SELECT *,rn.email as seen FROM notifications n INNER JOIN mywish mw ON n.productCode=mw.productCode \n" +
+            "LEFT JOIN readnotifications rn ON n.notificationID=rn.notificationID \n" +
+            "LEFT JOIN (SELECT productName,productCode FROM products) p ON n.productCode=p.productCode\n" +
+            "LEFT JOIN (SELECT title as offerTitle,offerID FROM offers) o ON n.offerID=o.offerID\n" +
+            "WHERE mw.email=? AND rn.email=?\n" +
+            "union\n" +
+            "SELECT *,rn.email as seen FROM notifications n INNER JOIN mywish mw ON n.productCode=mw.productCode \n" +
+            "LEFT JOIN readnotifications rn ON n.notificationID=rn.notificationID \n" +
+            "LEFT JOIN (SELECT productName,productCode FROM products) p ON n.productCode=p.productCode\n" +
+            "LEFT JOIN (SELECT title as offerTitle,offerID FROM offers) o ON n.offerID=o.offerID\n" +
+            "WHERE mw.email=? AND (rn.email!=? OR rn.email IS NULL) \n" +
+            "ORDER BY notificationDate desc;";
+        List<Notification> list = new ArrayList<Notification>();
+        PreparedStatement pst = conn.prepareStatement(sql);
+        pst.setString(1, business.getEmail());
+        pst.setString(2, business.getEmail());
+        pst.setString(3, business.getEmail());
+        pst.setString(4, business.getEmail());
+        ResultSet rs = pst.executeQuery();
+        while (rs.next()) {
+            Product pro = new Product();
+            Offer of = new Offer();
+            Notification notif = new Notification();
+            notif.setId(rs.getInt("notificationID"));
+            notif.setNotificationTitle(rs.getString("title"));
+            notif.setDetails(rs.getString("details"));
+            notif.setDate(rs.getString("notificationDate"));
+            of.setTitle(rs.getString("offerTitle"));
+            of.setId(rs.getInt("offerID"));
+            pro.setName(rs.getString("productName"));
+            pro.setCode(rs.getString("productCode"));
+            notif.setOffer(of);
+            notif.setProduct(pro);
+            if(rs.getString("seen")==null)
+                notif.setSeen(true);
+            list.add(notif);
+        }//while
+        return list;
     }
     
     //GET NOTIFICATIONS READ BY THE USER

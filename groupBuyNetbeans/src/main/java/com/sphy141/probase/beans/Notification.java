@@ -16,6 +16,7 @@ public class Notification {
     private Product product;
     private Offer offer;
     private String date;
+    private boolean seen;
     
     // Constructor
     public Notification() {
@@ -29,6 +30,14 @@ public class Notification {
     
     public void setId(int id) {
         this.id = id;
+    }
+
+    public boolean isSeen() {
+        return seen;
+    }
+
+    public void setSeen(boolean seen) {
+        this.seen = seen;
     }
     
     public String getNotificationTitle() {
