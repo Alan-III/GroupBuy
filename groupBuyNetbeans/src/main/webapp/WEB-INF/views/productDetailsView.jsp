@@ -95,7 +95,7 @@
                 <div class="layout mb-2 mt-4">
                     <h4 class="text-center">Offers</h4>
                 </div>
-                <div class="layout track-container border-yellow mb-4 mt-2" id="trackcontainer">
+                <div class="layout track-container mb-4 mt-2" id="trackcontainer">
                     <!-- Item slider-->
                     <div id='image-track' class="image-track" data-mouse-down-at='0' data-prev-percentage='0'>
                         <c:forEach items="${productOffersList}" var="offer">
@@ -122,11 +122,72 @@
                 </div>
             </div>
         </div>
-        <div class="layout track-container border-yellow mb-4 mt-2" id="trackcontainer2" hidden="hidden">
+        <div class="layout track-container mb-4 mt-2" id="trackcontainer2" hidden="hidden">
             <!-- Item slider-->
             <div id='image-track2' class="image-track" data-mouse-down-at='0' data-prev-percentage='0' hidden="hidden"></div>    
         </div>
         <script>
+            //JOIN OFFER CONFIRM
+            function confirmJoinOffer(offerId, fee) {
+                // ALERT WITH FUNCTIONAL CONFIRM & CANCEL BUTTON
+                console.log("fire");
+                Swal.fire({
+                    title: 'Join Offer?',
+                    text: "You will be charged a fee of "+fee+"$.\nYour fee will be returned if you leave the offer before it is accepted by the business.",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, Join!',
+                    customClass: {
+                        confirmButton: 'btn btn-primary me-1',
+                        cancelButton: 'btn btn-label-secondary'
+                    },
+                    buttonsStyling: false
+                }).then(function (result) {
+                    if (result.value) {
+                        // Send AJAX request to delete the product
+                        $.ajax({
+                            url: '${pageContext.request.contextPath}/joinoffer',
+                            method: 'POST',
+                            data: {
+                                proid: productId
+                            },
+                            success: function (response) {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Joined!',
+                                    text: 'You have joined the offer!\nYou will be notified when it is completed to pay the remainder for the products.',
+                                    customClass: {
+                                        confirmButton: 'btn btn-success'
+                                    }
+                                });
+                                // Perform any necessary UI updates after successful deletion
+                                // For example, removing the deleted row from the table
+                            },
+                            error: function (xhr, status, error) {
+                                Swal.fire({
+                                    title: 'Error',
+                                    text: 'An error occurred.',
+                                    icon: 'error',
+                                    customClass: {
+                                        confirmButton: 'btn btn-success'
+                                    }
+                                });
+                            }
+                        });
+                    } else if (result.dismiss === Swal.DismissReason.cancel) {
+                        Swal.fire({
+                            title: 'Cancelled',
+                            text: 'You can wishlist the products to be notified when offers are made.',
+                            icon: 'error',
+                            customClass: {
+                                confirmButton: 'btn btn-success'
+                            }
+                        });
+                    }
+                });
+            }
             //PRODUCT IMAGE SLIDER
             $(document).ready(function () {
                 $('.dots a').click(function () {

@@ -84,7 +84,7 @@
                             onClick="window.location.href = '${pageContext.request.contextPath}/createoffer';">Create Offer</button>
                 </c:if>
             </div>
-            <div class="layout track-container border-red" id="trackcontainer">
+            <div class="layout track-container" id="trackcontainer">
                 <!-- Item slider-->
                 <div id='image-track' class="image-track" data-mouse-down-at='0' data-prev-percentage='0'>
                     <c:forEach items="${offersList}" var="offer">
@@ -119,7 +119,7 @@
                             onClick="window.location.href = '${pageContext.request.contextPath}/updatebusinessproducts';">Change Business Products</button>
                 </c:if>
             </div>
-            <div class="layout track-container border-yellow" id="trackcontainer2">
+            <div class="layout track-container" id="trackcontainer2">
                 <!-- Item slider-->
                 <div id='image-track2' class="image-track" data-mouse-down-at='0' data-prev-percentage='0'>
                     <c:forEach items="${productList}" var="item">

@@ -142,7 +142,7 @@
                 <div class="layout mb-2">
                     <h4 class="text-center">Products in the Offer </h4>
                 </div>
-                <div class="layout track-container border-yellow mb-2 w-75 m-auto" id="trackcontainer">
+                <div class="layout track-container mb-2 w-75 m-auto" id="trackcontainer">
                     <!-- Item slider-->
                     <div id='image-track' class="image-track" data-mouse-down-at='0' data-prev-percentage='0'>
 
@@ -153,7 +153,7 @@
                 <div class="layout mb-2">
                     <h4 class="text-center">My Business Products</h4>
                 </div>
-                <div class="layout track-container border-yellow mb-2 w-75 m-auto" id="trackcontainer2">
+                <div class="layout track-container mb-2 w-75 m-auto" id="trackcontainer2">
                     <!-- Item slider-->
                     <div id='image-track2' class="image-track" data-mouse-down-at='0' data-prev-percentage='0'>
                         <c:forEach items="${businessProductList}" var="item">

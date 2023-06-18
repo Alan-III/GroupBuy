@@ -39,12 +39,19 @@
                             <h1 class="title">${offer.getTitle()}</h1>
                             <span class="colorCat">subtitle</span>
                             <div class="flex-fill" style="display: flex; justify-content: space-between;">
-                                <div class="price">
-                                    <span class="before">Price: $${Math.round(offer.getFinalprice()*100/(100-offer.getDiscount()) * 10) / 10}</span>
-                                    <span class="discount">Offer: $${offer.getFinalprice()}</span>
-                                    <span class="fee"> Fee: $${offer.getCouponPrice()}</span>
-                                </div>
-                                <div class="rate">
+                                <table class="price">
+                                    <tr>
+                                        <td class="before">Full Price:</td>
+                                        <td class="discount">Offer:</td>
+                                        <td class="fee"> Fee:</td>
+                                    <tr>
+                                    <tr>
+                                        <td class="before">$${Math.round(offer.getFinalprice()*100/(100-offer.getDiscount()) * 10) / 10}</td>
+                                        <td class="discount">$${offer.getFinalprice()}</td>
+                                        <td class="fee">$${offer.getCouponPrice()}</td>
+                                    <tr>
+                                </table>
+                                <div class="rate mt-1 offset-1">
                                     Joined: ${offer.getParticipants()}/${offer.getGroupSize()}
                                 </div>
                             </div>
@@ -71,7 +78,7 @@
                 <div class="layout mb-2 mt-4">
                     <h4 class="text-center">Products in Offer</h4>
                 </div>
-                <div class="layout track-container border-yellow mb-4 mt-2" id="trackcontainer">
+                <div class="layout track-container mb-4 mt-2" id="trackcontainer">
                     <!-- Item slider-->
                     <div id='image-track' class="image-track" data-mouse-down-at='0' data-prev-percentage='0'>
                         <c:forEach items="${offer.getProductsList()}" var="item">
@@ -100,7 +107,7 @@
                 </div>
             </div>
         </div>
-        <div class="layout track-container border-yellow mb-4 mt-2" id="trackcontainer2" hidden="hidden">
+        <div class="layout track-container mb-4 mt-2" id="trackcontainer2" hidden="hidden">
             <!-- Item slider-->
             <div id='image-track2' class="image-track" data-mouse-down-at='0' data-prev-percentage='0' hidden="hidden"></div>    
         </div>

@@ -17,8 +17,8 @@
 }
 .product-container{
     display: flex;
-    margin-left: 300px;
-    margin-right: 300px;
+    margin: auto;
+    width: max-content;
     height: fit-content;
 }
 
@@ -79,6 +79,8 @@ a{
         font-weight: 700;
         margin-top: 5px;
         font-size: 18px;
+        width: fit-content;
+        border-collapse: collapse;
         .current{
             color: white;
             margin-left: 6px;
@@ -90,6 +92,9 @@ a{
         .discount{
             color: #ffc800;
             margin-left: 6px;
+        }
+        >tbody tr td {
+            padding-right: 15px; /* Adjust the value as per your desired spacing */
         }
     }
     .before{
@@ -187,6 +192,7 @@ a{
         top: 12px;
         right: 10px;
         margin-top: 0;
+        width: fit-content;
     }
     .controls > div{
         &.qty{
