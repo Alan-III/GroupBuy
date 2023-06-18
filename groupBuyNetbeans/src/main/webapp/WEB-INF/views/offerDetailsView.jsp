@@ -14,13 +14,19 @@
         <meta name="description" content="" />
         <meta name="author" content="" />
         <title>GroupBuy - Offer Details</title>
+        <!--Sweet Alert-->
+        <link rel="stylesheet" href="styles/animate.css" />
+        <link rel="stylesheet" href="styles/sweetalert2.css" />
+        <!--Site Styles-->
         <link rel="stylesheet" href="styles/productViewStyles.css"/>
         <link rel="stylesheet" href="styles/userInfoStyles.css"/>
         <link rel="stylesheet" href="styles/filterSidebarStyles.css"/>
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css"/>
         <link rel="stylesheet" href="styles/BootstrapStyles.css" />
-        <!--<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">-->
+        <!--Fonts-->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css"/>
+        <!--Jquery-->
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script src="https://www.paypal.com/sdk/js?client-id=AXs6H0x4pAvgK7AETNsfSbYd1MOMyfmNZZzcPPppfxGk1NKBOVukD-fXSXaRBGSTWK_BsvyfWcVOQGTA&currency=USD"></script>
     </head>
     <body>
         <!-- Navigation-->
@@ -31,7 +37,7 @@
                     <div id="productinfo" class="product-container">
                         <div class="product-image-card">
                             <div class="product-image-card-slider">
-                            <img src="${offer.getPath()}" draggable='false' />
+                                <img src="${offer.getPath()}" draggable='false' />
                         </div>
                     </div>
                     <div class="product-details">
@@ -62,7 +68,7 @@
                             <p>${offer.getDetails()}</p>
                         </article>
                         <div class="product-footer mt-5">
-                            <button type="button">
+                            <button type="button" onclick="confirmJoinOffer(${offer.getId()}, ${offer.getCouponPrice()})">
                                 <img src="http://co0kie.github.io/codepen/nike-product-page/cart.png" alt="">
                                 <span>join offer</span>
                             </button>
@@ -83,23 +89,23 @@
                     <div id='image-track' class="image-track" data-mouse-down-at='0' data-prev-percentage='0'>
                         <c:forEach items="${offer.getProductsList()}" var="item">
                             <div class='product'>
-                            <a class="product-image" href='${pageContext.request.contextPath}/productdetails?productCode=${item.getCode()}'>
-                                <img src='${item.getFirstImagePath()}' draggable='false' />
-                            </a>
-                            <c:if test="${loginedbusiness.getBusinessName()=='c'}">
-                                <p class="image-left">
-                                    <a class="fas fa-pencil-alt" href='editproduct?proid=${item.getId()}'></a>
-                                </p>
-                            </c:if>
-                            <p class="image-right">
-                                (${item.getWishesCount()})
+                                <a class="product-image" href='${pageContext.request.contextPath}/productdetails?productCode=${item.getCode()}'>
+                                    <img src='${item.getFirstImagePath()}' draggable='false' />
+                                </a>
                                 <c:if test="${loginedbusiness.getBusinessName()=='c'}">
-                                    <a class="fas fa-trash" href="#" onclick="confirmDeleteProduct(${item.getId()})" style="color:red"></a>
+                                    <p class="image-left">
+                                        <a class="fas fa-pencil-alt" href='editproduct?proid=${item.getId()}'></a>
+                                    </p>
                                 </c:if>
-                            </p>
-                            <p class="image-left image-bottom">${item.getName()}</p>
-                            <p class="image-right image-bottom">${item.getPrice()}$</p>
-                        </div>                                    
+                                <p class="image-right">
+                                    (${item.getWishesCount()})
+                                    <c:if test="${loginedbusiness.getBusinessName()=='c'}">
+                                        <a class="fas fa-trash" href="#" onclick="confirmDeleteProduct(${item.getId()})" style="color:red"></a>
+                                    </c:if>
+                                </p>
+                                <p class="image-left image-bottom">${item.getName()}</p>
+                                <p class="image-right image-bottom">${item.getPrice()}$</p>
+                            </div>                                    
                         </c:forEach>
 
                     </div>
@@ -112,6 +118,58 @@
             <div id='image-track2' class="image-track" data-mouse-down-at='0' data-prev-percentage='0' hidden="hidden"></div>    
         </div>
         <script>
+            //JOIN OFFER CONFIRM
+            function confirmJoinOffer(offerID, fee) {
+                // ALERT WITH FUNCTIONAL CONFIRM & CANCEL BUTTON
+                console.log("fire");
+                Swal.fire({
+                    title: 'Join Offer?',
+                    text: "You will be charged a small fee of " + fee + "$ to join. It will be returned if you decide to exit the offer before it closes.",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, Join!',
+                    customClass: {
+                        confirmButton: 'btn btn-primary me-1',
+                        cancelButton: 'btn btn-label-secondary'
+                    },
+                    buttonsStyling: false
+                }).then(function (result) {
+                    if (result.value) {
+                        Swal.fire({
+                            title: '<strong>HTML <u>example</u></strong>',
+                            type: 'info',
+                            html:
+                                    "You can use <b>bold text</b>, " +
+                                    '<div id="paypal-button-container"></div>' +
+                                    "and other HTML tags",
+                            showCloseButton: true,
+                            showCancelButton: true,
+                            focusConfirm: false,
+                            confirmButtonText: '<i class="fa fa-thumbs-up"></i> Great!',
+                            confirmButtonAriaLabel: 'Thumbs up, great!',
+                            cancelButtonText: '<i class="fa fa-thumbs-down"></i>',
+                            cancelButtonAriaLabel: 'Thumbs down',
+                            customClass: {
+                                confirmButton: 'btn btn-primary me-1',
+                                cancelButton: 'btn btn-label-secondary'
+                            },
+                            buttonsStyling: false
+                        })
+
+                    } else if (result.dismiss === Swal.DismissReason.cancel) {
+                        Swal.fire({
+                            title: 'Cancelled',
+                            text: 'Wishlist the products to be notifified for new offers',
+                            icon: 'error',
+                            customClass: {
+                                confirmButton: 'btn btn-success'
+                            }
+                        });
+                    }
+                });
+            }
             //PRODUCT IMAGE SLIDER
             $(document).ready(function () {
                 $('.dots a').click(function () {
@@ -129,14 +187,14 @@
                     window.location.href = "deleteoffer?offerid=" + offerId;
                 }
             }
-            
+
             //Toggle wishes in DB and in div class
             function confirmWish(productCode, element) {
-                        if ($(element).hasClass("far")) {
-                                $(element).removeClass("far").addClass("fas");
-                            } else {
-                                $(element).removeClass("fas").addClass("far");
-                            }
+                if ($(element).hasClass("far")) {
+                    $(element).removeClass("far").addClass("fas");
+                } else {
+                    $(element).removeClass("fas").addClass("far");
+                }
                 $.ajax({
                     type: "POST",
                     url: "${pageContext.request.contextPath}/toggleproductwish",
@@ -144,7 +202,7 @@
                     success: function (response) {
                         // Check the response and update the element's class accordingly
                         if (response == "true") {
-                            
+
                         } else {
                             var alert = alert("something went wrong");
                         }
@@ -152,14 +210,19 @@
                 });
             }
         </script>
-
+<div id="paypal-button-container"></div>
         <!-- Footer-->
         <jsp:include page="_footer.jsp"></jsp:include>
         <!-- Bootstrap core JS-->
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+        <!-- Sweet Alert JS-->
+        <script src="js/sweetalert2.js"></script>
         <!-- Core theme JS-->
         <script src="js/scripts.js"></script>
         <script src="js/listTrack.js"></script>
+        <!-- PayPal JS-->
+        
+        <script src="js/paypal.js"></script>
     </body>
 
 </html>

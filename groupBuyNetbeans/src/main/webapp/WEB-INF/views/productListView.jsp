@@ -8,12 +8,15 @@
         <meta name="description" content="" />
         <meta name="author" content="" />
         <title>GroupBuy - ProductList</title>
+        <!--Sweet Alert-->
         <link rel="stylesheet" href="styles/animate.css" />
         <link rel="stylesheet" href="styles/sweetalert2.css" />
+        <!--Site Styles-->
         <link rel="stylesheet" href="styles/productListStyles.css">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css"/>
         <link href="styles/BootstrapStyles.css" rel="stylesheet" />
-        <!--<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">-->
+        <!--Fonts-->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css"/>
+        <!--Jquery-->
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
     </head>
@@ -436,6 +439,7 @@
         <jsp:include page="_footer.jsp"></jsp:include>
         <!-- Bootstrap core JS-->
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+        <!-- Sweet Alert JS-->
         <script src="js/sweetalert2.js"></script>
         <!-- Core theme JS-->
         <script src="js/scripts.js"></script>
