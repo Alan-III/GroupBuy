@@ -13,7 +13,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
         <meta name="description" content="" />
         <meta name="author" content="" />
-        <title>GroupBuy - Review Payment</title>
+        <title>GroupBuy - Payment Review </title>
         <link rel="stylesheet" href="styles/userInfoStyles.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css"/>
         <link href="styles/BootstrapStyles.css" rel="stylesheet" />
@@ -109,18 +109,18 @@
             </div>
                 <div id="userinfo" class="layout">
                 <h3 class="text-center text-white pt-5">Please Review your transaction:</h3>
-                <form class="container" action="execute_payment" method="post">
+                <form class="container" action="executepayment" method="post">
                 <h5 class="text-center text-white pt-5">Transaction Details:</h5>
                 <p>Description: ${transaction.description}</p>
                 <p>Subtotal: ${transaction.amount.details.subtotal}</p>
                 <p>Shipping: ${transaction.amount.details.shipping}</p>
                 <p>Tax: ${transaction.amount.details.tax}</p>
-                <p>Total: ${transaction.amount.details.total}</p>
+                <p>Total: ${transaction.amount.total}</p>
                 
                 <h5 class="text-center text-white pt-5">Payer Information:</h5>
-                <p>Billing First Name: ${payer.firstName}</p>
-                <p>Billing Last Name: ${payer.lastName}</p>
-                <p>Billing Email: ${payer.email}</p>
+                <p>Billing First Name: ${payerInfo.firstName}</p>
+                <p>Billing Last Name: ${payerInfo.lastName}</p>
+                <p>Billing Email: ${payerInfo.email}</p>
                 <p>User Full Name: ${logineduser.getLastName()} ${logineduser.getFirstName()}</p>
                 <p>User Email: ${logineduser.getEmail()}</p>
                 
@@ -129,9 +129,11 @@
                 <p>Line 1: ${shippingAddress.line1}</p>
                 <p>City: ${shippingAddress.city}</p>
                 <p>State: ${shippingAddress.state}</p>
-                <p>Country Code: ${shippingAddress.country}</p>
+                <p>Country Code: ${shippingAddress.countryCode}</p>
                 <p>Postal Code: ${shippingAddress.postalCode}</p>
                 
+                <input type="hidden" name="paymentId" value="${paymentId}"/>
+                <input type="hidden" name="payerId" value="${payerId}"/>
                 <input type="submit" value="Pay Now" />
                 </form>
             </div>
