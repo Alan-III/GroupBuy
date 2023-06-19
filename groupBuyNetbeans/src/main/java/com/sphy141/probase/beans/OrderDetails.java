@@ -9,16 +9,55 @@ package com.sphy141.probase.beans;
  *
  * @author Alan
  */
-public class Transaction {
+public class OrderDetails {
     private int id;
     private String accountEmail;
-    private double amount;
+    //private double amount;  //change to subtotal, tax etc
     private String details;
     private String date;
     private String type;
     private String status;
+    private int offerId;
     
-    public Transaction(){
+    private float shipping;
+    private float tax;
+    private float subtotal;
+    private float total;
+    
+    
+    public OrderDetails(){
+    }
+
+    public String getTax() {
+        return String.format("%.2f",tax);
+    }
+
+    public void setTax(float tax) {
+        this.tax = tax;
+    }
+
+    public String getSubtotal() {
+        return String.format("%.2f",subtotal);
+    }
+
+    public void setSubtotal(float subtotal) {
+        this.subtotal = subtotal;
+    }
+
+    public String getTotal() {
+        return String.format("%.2f",total);
+    }
+
+    public void setTotal(float total) {
+        this.total = total;
+    }
+
+    public String getShipping() {
+        return String.format("%.2f",shipping);
+    }
+
+    public void setShipping(float shipping) {
+        this.shipping = shipping;
     }
 
     public int getId() {
@@ -37,13 +76,13 @@ public class Transaction {
         this.accountEmail = accountEmail;
     }
 
-    public double getAmount() {
-        return amount;
-    }
-
-    public void setAmount(double amount) {
-        this.amount = amount;
-    }
+//    public double getAmount() {
+//        return amount;
+//    }
+//
+//    public void setAmount(double amount) {
+//        this.amount = amount;
+//    }
 
     public String getDetails() {
         return details;
@@ -75,6 +114,14 @@ public class Transaction {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public int getOfferId() {
+        return offerId;
+    }
+
+    public void setOfferId(int offerId) {
+        this.offerId = offerId;
     }
     
 }

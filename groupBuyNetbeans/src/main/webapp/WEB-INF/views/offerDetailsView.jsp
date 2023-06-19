@@ -137,27 +137,40 @@
                     buttonsStyling: false
                 }).then(function (result) {
                     if (result.value) {
-                        Swal.fire({
-                            title: '<strong>HTML <u>example</u></strong>',
-                            type: 'info',
-                            html:
-                                    "You can use <b>bold text</b>, " +
-                                    '<div id="paypal-button-container"></div>' +
-                                    "and other HTML tags",
-                            showCloseButton: true,
-                            showCancelButton: true,
-                            focusConfirm: false,
-                            confirmButtonText: '<i class="fa fa-thumbs-up"></i> Great!',
-                            confirmButtonAriaLabel: 'Thumbs up, great!',
-                            cancelButtonText: '<i class="fa fa-thumbs-down"></i>',
-                            cancelButtonAriaLabel: 'Thumbs down',
-                            customClass: {
-                                confirmButton: 'btn btn-primary me-1',
-                                cancelButton: 'btn btn-label-secondary'
+                        // Send AJAX request to delete the product
+                        $.ajax({
+                            url: '${pageContext.request.contextPath}/authorizepayment',
+                            method: 'POST',
+                            data: {
+                                offerId: offerID,
+                                total: fee,
+                                subtotal: "40",
+                                shipping: "5",
+                                tax: "10"
                             },
-                            buttonsStyling: false
-                        })
-
+                            success: function (response) {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Payment in progress!',
+                                    text: 'Joining offer.',
+                                    customClass: {
+                                        confirmButton: 'btn btn-success'
+                                    }
+                                }).then(function () {
+                                    window.location.href = response.redirectUrl; // Redirect to PayPal approval link
+                                });
+                            },
+                            error: function (xhr, status, error) {
+                                Swal.fire({
+                                    title: 'Error',
+                                    text: 'An error occurred.',
+                                    icon: 'error',
+                                    customClass: {
+                                        confirmButton: 'btn btn-success'
+                                    }
+                                });
+                            }
+                        });
                     } else if (result.dismiss === Swal.DismissReason.cancel) {
                         Swal.fire({
                             title: 'Cancelled',
@@ -210,7 +223,7 @@
                 });
             }
         </script>
-<div id="paypal-button-container"></div>
+        <div id="paypal-button-container"></div>
         <!-- Footer-->
         <jsp:include page="_footer.jsp"></jsp:include>
         <!-- Bootstrap core JS-->
@@ -221,7 +234,7 @@
         <script src="js/scripts.js"></script>
         <script src="js/listTrack.js"></script>
         <!-- PayPal JS-->
-        
+
         <script src="js/paypal.js"></script>
     </body>
 
