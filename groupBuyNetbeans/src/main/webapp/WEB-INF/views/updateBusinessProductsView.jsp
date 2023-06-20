@@ -140,7 +140,7 @@
                                 </a>
                                 <c:if test="${loginedbusiness.getBusinessName()=='c'}">
                                     <p class="image-left">
-                                        <a href="#image-track" class="small-icon icon-minus" onclick="moveProduct(${item.getCode()})">
+                                        <a href="#image-track" class="small-icon icon-minus" onclick="moveProduct('${item.getCode()}')">
                                         </a>
                                     </p>
                                     <p class="image-right">
@@ -172,7 +172,7 @@
                                 </a>
                                 <c:if test="${loginedbusiness.getBusinessName()=='c'}">
                                     <p class="image-left">
-                                        <a href="#image-track" class="small-icon icon-plus" onclick="moveProduct(${item.getCode()})">
+                                        <a href="#image-track" class="small-icon icon-plus" onclick="moveProduct('${item.getCode()}')">
                                         </a>
                                     </p>
                                     <p class="image-right">
