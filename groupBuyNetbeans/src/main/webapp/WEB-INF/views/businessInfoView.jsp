@@ -25,8 +25,9 @@
         <jsp:include page="_menu.jsp"></jsp:include>
             <div class="main_box">
 
-                <nav class="main-menu">
-                    <ul>
+                <div class="sidebar">
+                    <nav class="main-menu">
+                        <ul>
                         <li>
                             <a href="https://jbfarrow.com">
                                 <i class="fa fa-home fa-2x"></i>
@@ -94,6 +95,7 @@
                         </li>
                 </ul>
                 </nav>
+            </div>
                 <div id="userinfo" class="layout">
                 <h3 class="text-center text-white pt-5">Business Details</h3>
                 <div class="container">

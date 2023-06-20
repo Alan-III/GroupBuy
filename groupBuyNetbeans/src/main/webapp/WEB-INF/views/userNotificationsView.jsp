@@ -25,7 +25,7 @@
         <jsp:include page="_menu.jsp"></jsp:include>
 
             <div class="main_box">
-
+<div class="sidebar">
                 <nav class="main-menu">
                     <ul>
                         <li>
@@ -106,38 +106,40 @@
                     </li> 
                 </ul>
             </nav>
+            </div>
             <div id="userinfo" class="px-4 layout">
                 <h3 class="text-center text-white pt-5 mb-4">User Notifications</h3>
                 <div class="container">
                     <div class="layout">
 
 
-                        <table class="m-auto w-100">
-                            <thead>
+                        <table class="m-auto w-100 text-center border-yellow notification-table">
+                            <thead class="border-red mb-2">
                                 <tr>
                                     <th>A/A</th>
                                     <th>Notification Title</th>
                                     <th>Details</th>
-                                    <th>Product or Offer Name</th>
+                                    <th>Product</th>
+                                    <th>Offer Name</th>
                                     <th>Date</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <c:forEach items="${notificationsListNotRead}" var="notification" varStatus="status">
-                                    <tr style="background-color: #ffc800aa;" data-notification-id="${notification.getId()}" class="notification-row">
+                                <c:forEach items="${notificationsList}" var="notification" varStatus="status">
+                                    <c:choose>
+                                        <c:when test="${notification.isSeen()}">
+                                            <tr data-notification-id="${notification.getId()}" class="notification-row mb-2">
+                                        </c:when>
+                                        <c:when test="true">
+                                            <tr style="background-color: #ffc800aa;" data-notification-id="${notification.getId()}" class="notification-row mb-2">
+                                        </c:when>
+                                    </c:choose>
+                                    
                                         <td>${status.index + 1}</td>
                                         <td>${notification.getNotificationTitle()}</td>
                                         <td>${notification.getDetails()}</td>
-                                        <td>${notification.getProductOrOfferName()}</td>
-                                        <td>${notification.getDate()}</td>
-                                    </tr>
-                                </c:forEach>
-                                <c:forEach items="${notificationsListRead}" var="notification" varStatus="status">
-                                    <tr data-notification-id="${notification.getId()}" class="notification-row">
-                                        <td>${status.index + 1}</td>
-                                        <td>${notification.getNotificationTitle()}</td>
-                                        <td>${notification.getDetails()}</td>
-                                        <td>${notification.getProductOrOfferName()}</td>
+                                        <td><a href="${pageContext.request.contextPath}/productdetails?productCode=${notification.getProduct().getCode()}">${notification.getProduct().getName()}</a></td>
+                                        <td><a href="${pageContext.request.contextPath}/offerdetails?productCode=${notification.getOffer().getId()}">${notification.getOffer().getTitle()}</a></td>
                                         <td>${notification.getDate()}</td>
                                     </tr>
                                 </c:forEach>

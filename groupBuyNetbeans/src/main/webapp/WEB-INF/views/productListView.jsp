@@ -8,11 +8,17 @@
         <meta name="description" content="" />
         <meta name="author" content="" />
         <title>GroupBuy - ProductList</title>
+        <!--Sweet Alert-->
+        <link rel="stylesheet" href="styles/animate.css" />
+        <link rel="stylesheet" href="styles/sweetalert2.css" />
+        <!--Site Styles-->
         <link rel="stylesheet" href="styles/productListStyles.css">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css"/>
         <link href="styles/BootstrapStyles.css" rel="stylesheet" />
-        <!--<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">-->
+        <!--Fonts-->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css"/>
+        <!--Jquery-->
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
     </head>
     <body>
         <!-- Navigation-->
@@ -81,28 +87,27 @@
                             onClick="window.location.href = '${pageContext.request.contextPath}/createoffer';">Create Offer</button>
                 </c:if>
             </div>
-            <div class="layout track-container border-red" id="trackcontainer">
+            <div class="layout track-container" id="trackcontainer">
                 <!-- Item slider-->
                 <div id='image-track' class="image-track" data-mouse-down-at='0' data-prev-percentage='0'>
-                    <%--<c:forEach items="${list}" var="item">--%>
-                    <!--LIST OF OFFERS WITH IMAGES ETC -->
-                    <div class='product'>
-                        <a class="product-image" href='subject_details.php?subj=${item.getCode()}'>
-                            <img src='assets/img/smartphone.png' draggable='false' />
-                        </a>
-                        <c:if test="${logineduser.getUserName()!='tomcruz'}">
-                            <p class="image-left">
-                                <a class="fas fa-pencil-alt" href='editproduct?proid=${item.getId()}'></a>
-                            </p>
-                            <p class="image-right">
-                                <a class="fas fa-trash" href="#" onclick="confirmRedirect(${item.getId()})" style="color:red"></a>                     
-                            </p>
-                        </c:if>
-                        <p class="image-left image-bottom">${item.getName()}</p>
-                        <p class="image-right image-bottom">${item.getPrice()}$</p>
-                    </div>                            
-                    <%--</c:forEach>--%>
-
+                    <c:forEach items="${offersList}" var="offer">
+                        <div class='product' data-product-code="${offer.getId()}">
+                            <a class="product-image" href='${pageContext.request.contextPath}/offerdetails?offerid=${offer.getId()}'>
+                                <img src='${offer.getPath()}' draggable='false' />
+                            </a>
+                            <c:if test="${loginedbusiness.getBusinessName()=='c'}">
+                                <p class="image-left">
+                                    <a class="fas fa-pencil-alt" href='editoffer?offerid=${offer.getId()}'></a>
+                                    </a>
+                                </p>
+                                <p class="image-right">
+                                    <a class="fas fa-trash" href="#" onclick="confirmRedirect(${offer.getId()})" style="color:red"></a>
+                                </p>
+                            </c:if>
+                            <p class="image-left image-bottom">${offer.getTitle()}</p>
+                            <p class="image-right image-bottom">${offer.getFinalprice()}$</p>
+                        </div>                            
+                    </c:forEach>
                 </div>
 
                 <!-- Item slider end-->
@@ -117,7 +122,7 @@
                             onClick="window.location.href = '${pageContext.request.contextPath}/updatebusinessproducts';">Change Business Products</button>
                 </c:if>
             </div>
-            <div class="layout track-container border-yellow" id="trackcontainer2">
+            <div class="layout track-container" id="trackcontainer2">
                 <!-- Item slider-->
                 <div id='image-track2' class="image-track" data-mouse-down-at='0' data-prev-percentage='0'>
                     <c:forEach items="${productList}" var="item">
@@ -135,15 +140,15 @@
                                 <c:if test="${logineduser!=null}">
                                     <c:choose>
                                         <c:when test="${item.isWished()}">
-                                            <a class="fas fa-star" href="" onclick="confirmWish(${item.getCode()},this)"></a>
+                                            <a class="fas fa-star" href="" onclick="confirmWish('${item.getCode()}', this)"></a>
                                         </c:when>
                                         <c:when test="true">
-                                            <a class="far fa-star" href="" onclick="confirmWish(${item.getCode()},this)"></a>
+                                            <a class="far fa-star" href="" onclick="confirmWish('${item.getCode()}', this)"></a>
                                         </c:when>
                                     </c:choose>
                                 </c:if>
                                 <c:if test="${loginedbusiness.getBusinessName()=='c'}">
-                                    <a class="fas fa-trash" href="#" onclick="confirmRedirect(${item.getId()})" style="color:red"></a>
+                                    <a class="fas fa-trash" href="#" onclick="confirmDeleteProduct(${item.getId()})" style="color:red"></a>
                                 </c:if>
                             </p>
                             <p class="image-left image-bottom">${item.getName()}</p>
@@ -158,12 +163,127 @@
 
         </div>
         <script>
-            //DELETE CONFIRM
-            function confirmRedirect(productId) {
-                var confirmed = confirm("Are you sure you want to delete this product?");
-                if (confirmed) {
-                    window.location.href = "deleteproduct?proid=" + productId;
-                }
+            //DELETE PRODUCT CONFIRM
+            function confirmDeleteProduct(productId) {
+                // ALERT WITH FUNCTIONAL CONFIRM & CANCEL BUTTON
+                console.log("fire");
+                Swal.fire({
+                    title: 'Are you sure you want to delete this product?',
+                    text: "You won't be able to revert this!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, delete it!',
+                    customClass: {
+                        confirmButton: 'btn btn-primary me-1',
+                        cancelButton: 'btn btn-label-secondary'
+                    },
+                    buttonsStyling: false
+                }).then(function (result) {
+                    if (result.value) {
+                        // Send AJAX request to delete the product
+                        $.ajax({
+                            url: '${pageContext.request.contextPath}/deleteproduct',
+                            method: 'GET',
+                            data: {
+                                proid: productId
+                            },
+                            success: function (response) {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Deleted!',
+                                    text: 'The product has been deleted.',
+                                    customClass: {
+                                        confirmButton: 'btn btn-success'
+                                    }
+                                });
+                                // Perform any necessary UI updates after successful deletion
+                                // For example, removing the deleted row from the table
+                            },
+                            error: function (xhr, status, error) {
+                                Swal.fire({
+                                    title: 'Error',
+                                    text: 'An error occurred while deleting the product.',
+                                    icon: 'error',
+                                    customClass: {
+                                        confirmButton: 'btn btn-success'
+                                    }
+                                });
+                            }
+                        });
+                    } else if (result.dismiss === Swal.DismissReason.cancel) {
+                        Swal.fire({
+                            title: 'Cancelled',
+                            text: 'The product is safe :)',
+                            icon: 'error',
+                            customClass: {
+                                confirmButton: 'btn btn-success'
+                            }
+                        });
+                    }
+                });
+            }
+            //DELETE OFFER CONFIRM
+            function confirmDeleteOffer(offerid) {
+                // ALERT WITH FUNCTIONAL CONFIRM & CANCEL BUTTON
+                console.log("fire");
+                Swal.fire({
+                    title: 'Are you sure you want to delete this offer?',
+                    text: "You won't be able to revert this!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, delete it!',
+                    customClass: {
+                        confirmButton: 'btn btn-primary me-1',
+                        cancelButton: 'btn btn-label-secondary'
+                    },
+                    buttonsStyling: false
+                }).then(function (result) {
+                    if (result.value) {
+                        // Send AJAX request to delete the product
+                        $.ajax({
+                            url: '${pageContext.request.contextPath}/deleteoffer',
+                            method: 'GET',
+                            data: {
+                                offerid: offerid
+                            },
+                            success: function (response) {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Deleted!',
+                                    text: 'The offer has been deleted.',
+                                    customClass: {
+                                        confirmButton: 'btn btn-success'
+                                    }
+                                });
+                                // Perform any necessary UI updates after successful deletion
+                                // For example, removing the deleted row from the table
+                            },
+                            error: function (xhr, status, error) {
+                                Swal.fire({
+                                    title: 'Error',
+                                    text: 'An error occurred while deleting the offer.',
+                                    icon: 'error',
+                                    customClass: {
+                                        confirmButton: 'btn btn-success'
+                                    }
+                                });
+                            }
+                        });
+                    } else if (result.dismiss === Swal.DismissReason.cancel) {
+                        Swal.fire({
+                            title: 'Cancelled',
+                            text: 'The offer is safe :)',
+                            icon: 'error',
+                            customClass: {
+                                confirmButton: 'btn btn-success'
+                            }
+                        });
+                    }
+                });
             }
             //LOAD NEXT PAGE WITH SEARCH
             function searchProducts() {
@@ -255,7 +375,7 @@
                                 </p>
             </c:if>
                             <p class="image-right">
-                               (`+item.wishesCount+`)`;
+                               (` + item.wishesCount + `)`;
                                 if (item.wished)
                                     productHtml += `<a class="fas fa-star" href="" onclick="confirmWish(` + item.code + `)"></a>`;
                                 else
@@ -290,24 +410,27 @@
             });
             //Toggle wishes in DB and in div class
             function confirmWish(productCode, element) {
-                        if ($(element).hasClass("far")) {
-                                $(element).removeClass("far").addClass("fas");
-                            } else {
-                                $(element).removeClass("fas").addClass("far");
-                            }
-                $.ajax({
-                    type: "POST",
-                    url: "${pageContext.request.contextPath}/toggleproductwish",
-                    data: {productCode: productCode},
-                    success: function (response) {
-                        // Check the response and update the element's class accordingly
-                        if (response == "true") {
-                            
-                        } else {
-                            var alert = alert("something went wrong");
-                        }
+                if (${logineduser!=null}) {
+                    if ($(element).hasClass("far")) {
+                        $(element).removeClass("far").addClass("fas");
+                    } else {
+                        $(element).removeClass("fas").addClass("far");
                     }
-                });
+                    $.ajax({
+                        type: "POST",
+                        url: "${pageContext.request.contextPath}/toggleproductwish",
+                        data: {productCode: productCode},
+                        success: function (response) {
+                            // Check the response and update the element's class accordingly
+                            if (response == "true") {
+
+                            } else {
+                                var alert = alert("something went wrong");
+                            }
+                        }
+                    });
+                } else
+                    alert("You need to be logged in to wishlist products");
             }
         </script>
         <script type='text/javascript' src='js/listTrack.js'></script>
@@ -316,6 +439,8 @@
         <jsp:include page="_footer.jsp"></jsp:include>
         <!-- Bootstrap core JS-->
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+        <!-- Sweet Alert JS-->
+        <script src="js/sweetalert2.js"></script>
         <!-- Core theme JS-->
         <script src="js/scripts.js"></script>
     </body>

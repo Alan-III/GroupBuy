@@ -130,7 +130,7 @@
                 <div class="layout mb-2">
                     <h4 class="text-center">Your Business Products</h4>
                 </div>
-                <div class="layout track-container border-yellow" id="trackcontainer">
+                <div class="layout track-container" id="trackcontainer">
                     <!-- Item slider-->
                     <div id='image-track' class="image-track" data-mouse-down-at='0' data-prev-percentage='0'>
                         <c:forEach items="${businessProductList}" var="item">
@@ -140,7 +140,7 @@
                                 </a>
                                 <c:if test="${loginedbusiness.getBusinessName()=='c'}">
                                     <p class="image-left">
-                                        <a href="#image-track" class="small-icon icon-minus" onclick="moveProduct(${item.getCode()})">
+                                        <a href="#image-track" class="small-icon icon-minus" onclick="moveProduct('${item.getCode()}')">
                                         </a>
                                     </p>
                                     <p class="image-right">
@@ -162,7 +162,7 @@
                 <div class="layout mb-2">
                     <h4 class="text-center">Products not offered by your business</h4>
                 </div>
-                <div class="layout track-container border-yellow mb-2" id="trackcontainer2">
+                <div class="layout track-container mb-2" id="trackcontainer2">
                     <!-- Item slider-->
                     <div id='image-track2' class="image-track" data-mouse-down-at='0' data-prev-percentage='0'>
                         <c:forEach items="${productList}" var="item">
@@ -172,7 +172,7 @@
                                 </a>
                                 <c:if test="${loginedbusiness.getBusinessName()=='c'}">
                                     <p class="image-left">
-                                        <a href="#image-track" class="small-icon icon-plus" onclick="moveProduct(${item.getCode()})">
+                                        <a href="#image-track" class="small-icon icon-plus" onclick="moveProduct('${item.getCode()}')">
                                         </a>
                                     </p>
                                     <p class="image-right">

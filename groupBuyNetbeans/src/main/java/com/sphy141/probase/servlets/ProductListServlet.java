@@ -7,6 +7,7 @@ package com.sphy141.probase.servlets;
 
 import com.sphy141.probase.beans.BusinessAccount;
 import com.sphy141.probase.beans.Category;
+import com.sphy141.probase.beans.Offer;
 import com.sphy141.probase.beans.Product;
 import com.sphy141.probase.beans.ProductFilter;
 import com.sphy141.probase.beans.UserAccount;
@@ -77,44 +78,58 @@ public class ProductListServlet extends HttpServlet {
                 
         //Get products ALL or Searched
         List<Product> productList = null;
+        List<Offer> offersList = null;
         try {
-            if(searchParam==null || searchParam.length()==0)
+            if(searchParam==null || searchParam.length()==0){
                 productList = DBUtils.queryProduct(conn, userMailstr);
-            else
+                offersList = DBUtils.queryOffers(conn);
+            }
+            else{
                 productList = DBUtils.searchProduct(conn, searchParam, userMailstr);
+                offersList = DBUtils.searchOffer(conn,searchParam);
+            }
                 
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
-        if(productList==null){
-            errorString = "There was a problem with products";
-        }
-        
-        //Check if the keywords exist
+        //------------------CHECK FOR KEYWORDS FOR SEARCH------------------TEMPLATE START
         ServletContext context = req.getServletContext();
         List<String> keywordsList = (List<String>) context.getAttribute("keywordsList");
         if (keywordsList == null) {
-            // The keywordsList attribute is not set
-            // Process categories and products for keywords
-            keywordsList = new ArrayList<>();
-            for (Product product : productList) {
-                keywordsList.add(product.getName());
-            }
+            // The keywordsList attribute is not set GET LISTS
+            //Load to find keywords
             List<Category> categoriesList = null;
             try {
                 categoriesList = DBUtils.queryCategories(conn);
+                if(searchParam!=null && searchParam.length()>0){
+                    productList = DBUtils.queryProduct(conn, userMailstr);
+                    offersList = DBUtils.queryOffers(conn);
+                }
             } catch (SQLException ex) {
                 ex.printStackTrace();
             }
-            if(categoriesList==null){
-                errorString = "There was a problem with products";
+            if (categoriesList == null) {
+               
             }
-            for (Category category : categoriesList) {
-                keywordsList.add(category.getCategoryName());
-            }
+            // Process categories and products for keywords
+            keywordsList = new ArrayList<>();
+            if (productList != null)
+                for (Product product : productList) {
+                    keywordsList.add(product.getName());
+                }
+            if (offersList != null)
+                for (Offer offer : offersList) {
+                    keywordsList.add(offer.getTitle());
+                }
+            if (categoriesList != null)
+                for (Category category : categoriesList) {
+                    keywordsList.add(category.getCategoryName());
+                }
             // Set keywordsList attribute
             context.setAttribute("keywordsList", keywordsList);
         }
+        req.setAttribute("keywordsList", keywordsList);
+        //------------------CHECK FOR KEYWORDS FOR SEARCH------------------TEMPLATE END
         
         //Get filters if category was selected
         List<ProductFilter> filtersList = null;
@@ -130,6 +145,7 @@ public class ProductListServlet extends HttpServlet {
         
             req.setAttribute("errorString", errorString);
             req.setAttribute("productList", productList);
+            req.setAttribute("offersList", offersList);
             req.setAttribute("keywordsList", keywordsList);
             req.setAttribute("filtersList", filtersList);
 //            req.setAttribute("logineduser", user);

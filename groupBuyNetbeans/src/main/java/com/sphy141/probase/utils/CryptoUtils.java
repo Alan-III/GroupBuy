@@ -37,7 +37,6 @@ public class CryptoUtils {
             // Handle the exception
             e.printStackTrace();
         }
-
         return null;
     }
 }

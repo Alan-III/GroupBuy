@@ -1,22 +1,24 @@
 *{
     font-family: 'Oswald', sans-serif;
 }
-.product-image-slider{
+.product-image-card-slider{
     display: flex;
     gap:1.5rem;
     transition: transform 0.5s ease;
     border-radius: 2rem;
 }
-.product-image-slider img{
+.product-image-card-slider img{
     border-radius: 2rem;
+    
 }
-.product-image img{
+.product-image-card img{
     width: 100%;
+    
 }
 .product-container{
     display: flex;
-    margin-left: 300px;
-    margin-right: 300px;
+    margin: auto;
+    width: max-content;
     height: fit-content;
 }
 
@@ -37,7 +39,7 @@ a{
     color: #bbb;
 }
 
-.product-image{
+.product-image-card{
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -48,6 +50,7 @@ a{
     width: 60%;
     max-width: 330px;
     overflow: hidden;
+    padding: 1.5rem;
 }
 .product-pic{
     max-width: 180px;
@@ -76,13 +79,27 @@ a{
         font-weight: 700;
         margin-top: 5px;
         font-size: 18px;
+        width: fit-content;
+        border-collapse: collapse;
         .current{
+            color: white;
+            margin-left: 6px;
+        }
+        .fee{
             color: #fe6168;
             margin-left: 6px;
+        }
+        .discount{
+            color: #ffc800;
+            margin-left: 6px;
+        }
+        >tbody tr td {
+            padding-right: 15px; /* Adjust the value as per your desired spacing */
         }
     }
     .before{
         text-decoration: line-through;
+        color: crimson;
     }
     header{
         margin-bottom: 50px;
@@ -133,15 +150,15 @@ a{
             display: flex;
             margin: 15px 5px;
         }
-    }
-    .color li+li{
-        margin-left: 15px;
-    }
-    .colors{
-        width: 20px;
-        height: 20px;
-        border-radius: 50%;
-        display: block;
+        .color li{
+            margin-left: 15px;
+            .colors{
+                width: 20px;
+                height: 20px;
+                border-radius: 50%;
+                display: block;
+            }
+        }
     }
 
 }
@@ -175,6 +192,7 @@ a{
         top: 12px;
         right: 10px;
         margin-top: 0;
+        width: fit-content;
     }
     .controls > div{
         &.qty{
@@ -208,11 +226,11 @@ a{
         align-items: center;
         border-radius: 7px;
         cursor: pointer;
-        background: linear-gradient(to bottom, red 0%, yellow 100%);
+        background: linear-gradient(to bottom, #1b1b19 0%, #fe6168 50%,#1b1b19 100%);
         box-shadow: 0 10px 30px 0 rgba(red, 0.7);
         transition: 200ms;
         &:hover{
-            background: linear-gradient(to bottom, blue 0%, red 100%);
+            background: linear-gradient(to bottom, #1b1b19 0%, #23CE6B 50%, #1b1b19 100%);
         }
         >img{
             width: 31px;
@@ -223,6 +241,11 @@ a{
             font-weight: 700;
             margin-left: 10px;
             color: white;
+        }
+    }
+    >button.leave-offer-btn{
+        &:hover{
+            background: linear-gradient(to bottom, #1b1b19 0%, red 50%, #1b1b19 100%);
         }
     }
     >a{

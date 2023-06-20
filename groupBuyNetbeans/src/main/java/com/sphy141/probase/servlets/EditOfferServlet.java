@@ -277,7 +277,7 @@ public class EditOfferServlet extends HttpServlet {
            
             Connection conn = MyUtils.getStoredConnection(req);
             
-            try {   
+            //try {   
                     offer.setDiscount(offerdiscount);
                     offer.setGroupSize(size);
                     offer.setOfferExpire(oexdate);
@@ -287,14 +287,14 @@ public class EditOfferServlet extends HttpServlet {
                     offer.setCouponPrice(coupprise);
                     offer.setDetails(details);
                     offer.setPath(path);
-                    DBUtils.insertOffer(conn, offer); 
+                    //DBUtils.insertOffer(conn, offer); 
                     resp.sendRedirect(req.getContextPath() + "/offerlist");
                     
                 
-            } catch (SQLException ex) {
-                ex.printStackTrace();
+            //} catch (SQLException ex) {
+                //ex.printStackTrace();
                 errorString = "There is a problem with the database";
-            }
+            //}
         }//if
         if (errorString != null) {
             req.setAttribute("errorString", errorString);

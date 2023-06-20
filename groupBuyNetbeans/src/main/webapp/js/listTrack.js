@@ -18,7 +18,7 @@ const handleOnWheelHorizontal = (e, trackElement) => {
   const lastChildRect = lastChild.getBoundingClientRect();
   const trackContainerRect = trackContainer.getBoundingClientRect();
 
-  if (lastChildRect.right + nextPercentage +200 < trackContainerRect.right && nextPercentage < prevPercentage) {
+  if (lastChildRect.right + nextPercentage/2 + 400 < trackContainerRect.right && nextPercentage < prevPercentage) {
     // Stop scrolling if the last child is in the middle
   }
   else{

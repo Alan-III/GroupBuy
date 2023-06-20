@@ -7,6 +7,7 @@ package com.sphy141.probase.servlets;
 
 import com.sphy141.probase.beans.BusinessAccount;
 import com.sphy141.probase.beans.Category;
+import com.sphy141.probase.beans.Offer;
 import com.sphy141.probase.beans.Product;
 import com.sphy141.probase.beans.UserAccount;
 import com.sphy141.probase.utils.CryptoUtils;
@@ -17,7 +18,9 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -82,22 +85,25 @@ public class HomeServlet extends HttpServlet {
         if (categoriesList == null) {
             errorString = "There was a problem with products";
         }
-
-        //Load products to find keywords
-        List<Product> productList = null;
-        try {
-            productList = DBUtils.queryProduct(conn, userMailstr);
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-        }
-        if (categoriesList == null) {
-            errorString = "There was a problem with products";
-        }
-        //Check if the keywords exist
+        
+        //------------------CHECK FOR KEYWORDS FOR SEARCH------------------TEMPLATE START
         ServletContext context = req.getServletContext();
         List<String> keywordsList = (List<String>) context.getAttribute("keywordsList");
         if (keywordsList == null) {
-            // The keywordsList attribute is not set
+            // The keywordsList attribute is not set GET LISTS
+            //Load to find keywords
+            List<Product> productList = null;
+            List<Offer> offersList = null;
+            try {
+                productList = DBUtils.queryProduct(conn, userMailstr);
+                offersList = DBUtils.queryOffers(conn);
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+                errorString = "There was a problem with the database";
+            }
+            if (offersList == null || productList == null) {
+                errorString = "There was a problem with the database";
+            }
             // Process categories and products for keywords
             keywordsList = new ArrayList<>();
             for (Product product : productList) {
@@ -106,13 +112,20 @@ public class HomeServlet extends HttpServlet {
             for (Category category : categoriesList) {
                 keywordsList.add(category.getCategoryName());
             }
+            for (Offer offer : offersList) {
+                keywordsList.add(offer.getTitle());
+            }
+            // Remove duplicates
+            Set<String> set = new LinkedHashSet<String>(keywordsList); // Convert list to set
+            keywordsList = new ArrayList<>(set); // Convert set back to list
             // Set keywordsList attribute
             context.setAttribute("keywordsList", keywordsList);
         }
-
+        req.setAttribute("keywordsList", keywordsList);
+        //------------------CHECK FOR KEYWORDS FOR SEARCH------------------TEMPLATE END
+        
         req.setAttribute("errorString", errorString);
         req.setAttribute("categorylist", categoriesList);
-        req.setAttribute("keywordsList", keywordsList);
 
         RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher("/WEB-INF/views/homeView.jsp");
         dispatcher.forward(req, resp);

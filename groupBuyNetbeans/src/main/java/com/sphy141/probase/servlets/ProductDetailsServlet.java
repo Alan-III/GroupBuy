@@ -81,14 +81,14 @@ public class ProductDetailsServlet extends HttpServlet {
         
         List<Offer> productOffersList = null;
         try {
-            productOffersList = DBUtils.queryProductOffers(conn, productCodeParam);
+            productOffersList = DBUtils.queryOffersForProduct(conn, productCodeParam);
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
         if(product==null){
             errorString = "There was a problem with productOffersList";
         }
-            
+        System.out.println(productCodeParam);
         req.setAttribute("errorString", errorString);
         req.setAttribute("product", product);
         req.setAttribute("productOffersList", productOffersList);

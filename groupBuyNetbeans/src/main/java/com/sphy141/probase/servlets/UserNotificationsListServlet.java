@@ -52,21 +52,18 @@ public class UserNotificationsListServlet extends HttpServlet {
         }
         req.setAttribute("notificationsCount", notificationsCount);
         //------------------CHECK LOGINED USER - BUSINESS - GET NOTIFICATIONS------------------TEMPLATE END
-        List<Notification> notificationsListRead = new ArrayList<Notification>();
-        List<Notification> notificationsListNotRead = new ArrayList<Notification>();
+        List<Notification> notificationsList = new ArrayList<Notification>();
         try {
-            notificationsListRead = DBUtils.queryNotificationsReadBy(conn, user);
-            notificationsListNotRead = DBUtils.queryNotificationsNotReadBy(conn, user);
+            notificationsList = DBUtils.queryNotifications(conn, user);
                 
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
-        if(notificationsListRead==null || notificationsListNotRead==null){
+        if(notificationsList==null){
             errorString = "There was a problem with products";
         }
         req.setAttribute("logineduser", user);
-        req.setAttribute("notificationsListRead", notificationsListRead);
-        req.setAttribute("notificationsListNotRead", notificationsListNotRead);
+        req.setAttribute("notificationsList", notificationsList);
         RequestDispatcher dispatcher=this.getServletContext().getRequestDispatcher("/WEB-INF/views/userNotificationsView.jsp");
         dispatcher.forward(req, resp);
      }//doGet

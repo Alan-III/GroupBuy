@@ -5,6 +5,7 @@
  */
 package com.sphy141.probase.beans;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -23,9 +24,12 @@ public class Offer {
     private String offerExpire;
     private String couponExpire;
     private String path;
-    private List<String> productCode;
+    private int participants;
+    private String businessMail;
+    private List<Product> productsList;
 
     public Offer() {
+        this.productsList=new ArrayList<Product>();
     }
 
     public int getId() {
@@ -34,6 +38,36 @@ public class Offer {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public int getParticipants() {
+        return participants;
+    }
+
+    public void setParticipants(int participants) {
+        this.participants = participants;
+    }
+    public void addParticipants(int participants) {
+        this.participants += participants;
+    }
+
+    public List<Product> getProductsList() {
+        return productsList;
+    }
+
+    public void setProductsList(List<Product> productsList) {
+        this.productsList = productsList;
+    }
+    public void addProductInList(Product product) {
+        this.productsList.add(product);
+    }
+
+    public String getBusinessMail() {
+        return businessMail;
+    }
+
+    public void setBusinessMail(String businessMail) {
+        this.businessMail = businessMail;
     }
     
 
@@ -99,15 +133,6 @@ public class Offer {
 
     public void setCouponExpire(String couponExpire) {
         this.couponExpire = couponExpire;
-    }
-
-
-    public List<String> getProductCode() {
-        return productCode;
-    }
-
-    public void setProductCode(List<String> productCode) {
-        this.productCode = productCode;
     }
 
     public String getPath() {
