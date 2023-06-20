@@ -9,6 +9,8 @@ import com.paypal.api.payments.PayerInfo;
 import com.paypal.api.payments.Payment;
 import com.paypal.api.payments.Transaction;
 import com.paypal.base.rest.PayPalRESTException;
+import com.sphy141.probase.beans.Offer;
+import com.sphy141.probase.beans.OrderDetails;
 import com.sphy141.probase.beans.UserAccount;
 import com.sphy141.probase.utils.DBUtils;
 import com.sphy141.probase.utils.MyUtils;
@@ -62,17 +64,32 @@ public class ExecutePaymentServlet extends HttpServlet {
         
         String paymentId = req.getParameter("paymentId");
         String payerId = req.getParameter("payerId");
+        String token = req.getParameter("token");       //test
         
+        if(payerId==null || paymentId==null)
+            resp.sendRedirect(req.getContextPath() + "/paymentfailed");
+        
+        
+        
+        String orderIdstr = req.getParameter("orderId");
+        int orderId = Integer.parseInt(orderIdstr);
+
         try {
             Payment payment = PaymentUtils.executePayment(paymentId, payerId);
             PayerInfo payerInfo = payment.getPayer().getPayerInfo();
             Transaction transaction = payment.getTransactions().get(0);
+            System.out.println("payee: "+transaction.getPayee().getEmail());;
+            DBUtils.updatePayPalPayment(conn, orderId, "completed");
+            OrderDetails orderDetails = DBUtils.findPayment(conn, orderId);
+            DBUtils.insertUserInOffer(conn, orderDetails.getOfferId(), user);
             
             req.setAttribute("payerInfo", payerInfo);
             req.setAttribute("transaction", transaction);
             RequestDispatcher dispatcher=this.getServletContext().getRequestDispatcher("/WEB-INF/views/paymentReceiptView.jsp");
             dispatcher.forward(req, resp);
         } catch (PayPalRESTException ex) {
+            ex.printStackTrace();
+        } catch (SQLException ex) {
             ex.printStackTrace();
         }
     }

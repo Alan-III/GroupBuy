@@ -68,10 +68,25 @@
                             <p>${offer.getDetails()}</p>
                         </article>
                         <div class="product-footer mt-5">
-                            <button type="button" onclick="confirmJoinOffer(${offer.getId()}, ${offer.getCouponPrice()})">
-                                <img src="http://co0kie.github.io/codepen/nike-product-page/cart.png" alt="">
-                                <span>join offer</span>
-                            </button>
+                            <c:choose>
+                                <c:when test="${offer.getParticipants()>=offer.getGroupSize()}">
+                                    <span class="price text-uppercase" style="color: red;" >offer Full!</span>
+
+                                </c:when>
+                                <c:when test="${isParticipant}">
+                                    <button type="button" onclick="confirmLeaveOffer(${offer.getId()}, ${offer.getCouponPrice()})" class="leave-offer-btn">
+                                        <img src="http://co0kie.github.io/codepen/nike-product-page/cart.png" alt="">
+                                        <span>Leave offer</span>
+                                    </button>
+                                </c:when>
+                                <c:when test="true">
+                                    <button type="button" onclick="confirmJoinOffer(${offer.getId()}, ${offer.getCouponPrice()})">
+                                        <img src="http://co0kie.github.io/codepen/nike-product-page/cart.png" alt="">
+                                        <span>join offer</span>
+                                    </button>
+                                </c:when>
+                            </c:choose>
+
                             <div>
                                 <div class="price" style="color: #fe6168">Expires on:</div>
                                 <span style="color: #b3900e"> ${offer.getOfferExpire()}</span>
@@ -118,6 +133,97 @@
             <div id='image-track2' class="image-track" data-mouse-down-at='0' data-prev-percentage='0' hidden="hidden"></div>    
         </div>
         <script>
+            // Call the function on page load
+            window.onload = function () {
+                // Call the function if the first test condition succeeds
+            if (${offer.getParticipants() >= offer.getGroupSize()}) {
+                showNotification();
+            }
+            };
+            //OFFER FULL
+            function showNotification() {
+                Swal.fire({
+                    title: 'This offer is full',
+                    text: 'Check out other offers on your wishlisted product!',
+                    icon: 'info',
+                    showConfirmButton: true,
+                    timer: 5000,
+                    timerProgressBar: true,
+                    toast: true,
+                    position: 'top',
+                    showClass: {
+                        popup: 'animated fadeInDown'
+                    },
+                    hideClass: {
+                        popup: 'animated fadeOutUp'
+                    }
+                });
+            }
+            //LEAVE OFFER CONFIRM
+            function confirmJoinOffer(offerID, fee) {
+                // ALERT WITH FUNCTIONAL CONFIRM & CANCEL BUTTON
+                console.log("fire");
+                Swal.fire({
+                    title: 'Leave Offer?',
+                    text: "Your will be refunded" + fee + "$ fee you payed to join. You can join again later.",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, Leave!',
+                    customClass: {
+                        confirmButton: 'btn btn-primary me-1',
+                        cancelButton: 'btn btn-label-secondary'
+                    },
+                    buttonsStyling: false
+                }).then(function (result) {
+                    if (result.value) {
+                        // Send AJAX request to delete the joined user and pay back
+                        $.ajax({
+                            url: '${pageContext.request.contextPath}/authorizerefund',
+                            method: 'POST',
+                            data: {
+                                offerId: offerID,
+                                total: fee,
+                                subtotal: fee,
+                                shipping: "0",
+                                tax: "0"
+                            },
+                            success: function (response) {
+                                Swal.fire({
+                                    icon: 'info',
+                                    title: 'Pay with PayPal',
+                                    text: 'You will be redirected to PayPal',
+                                    customClass: {
+                                        confirmButton: 'btn btn-success'
+                                    }
+                                }).then(function () {
+                                    window.location.href = response.redirectUrl; // Redirect to PayPal approval link
+                                });
+                            },
+                            error: function (xhr, status, error) {
+                                Swal.fire({
+                                    title: 'Error',
+                                    text: 'An error occurred.',
+                                    icon: 'error',
+                                    customClass: {
+                                        confirmButton: 'btn btn-success'
+                                    }
+                                });
+                            }
+                        });
+                    } else if (result.dismiss === Swal.DismissReason.cancel) {
+                        Swal.fire({
+                            title: 'Cancelled',
+                            text: 'Wishlist the products to be notifified for new offers',
+                            icon: 'error',
+                            customClass: {
+                                confirmButton: 'btn btn-success'
+                            }
+                        });
+                    }
+                });
+            }
             //JOIN OFFER CONFIRM
             function confirmJoinOffer(offerID, fee) {
                 // ALERT WITH FUNCTIONAL CONFIRM & CANCEL BUTTON
@@ -137,22 +243,22 @@
                     buttonsStyling: false
                 }).then(function (result) {
                     if (result.value) {
-                        // Send AJAX request to delete the product
+                        // Send AJAX request to join offer and pay
                         $.ajax({
                             url: '${pageContext.request.contextPath}/authorizepayment',
                             method: 'POST',
                             data: {
                                 offerId: offerID,
                                 total: fee,
-                                subtotal: "40",
-                                shipping: "5",
-                                tax: "10"
+                                subtotal: fee,
+                                shipping: "0",
+                                tax: "0"
                             },
                             success: function (response) {
                                 Swal.fire({
-                                    icon: 'success',
-                                    title: 'Payment in progress!',
-                                    text: 'Joining offer.',
+                                    icon: 'info',
+                                    title: 'Pay with PayPal',
+                                    text: 'You will be redirected to PayPal',
                                     customClass: {
                                         confirmButton: 'btn btn-success'
                                     }
@@ -223,7 +329,6 @@
                 });
             }
         </script>
-        <div id="paypal-button-container"></div>
         <!-- Footer-->
         <jsp:include page="_footer.jsp"></jsp:include>
         <!-- Bootstrap core JS-->
@@ -233,9 +338,7 @@
         <!-- Core theme JS-->
         <script src="js/scripts.js"></script>
         <script src="js/listTrack.js"></script>
-        <!-- PayPal JS-->
 
-        <script src="js/paypal.js"></script>
     </body>
 
 </html>

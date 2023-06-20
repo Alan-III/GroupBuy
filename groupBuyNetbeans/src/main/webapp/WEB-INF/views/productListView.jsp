@@ -140,10 +140,10 @@
                                 <c:if test="${logineduser!=null}">
                                     <c:choose>
                                         <c:when test="${item.isWished()}">
-                                            <a class="fas fa-star" href="" onclick="confirmWish(${item.getCode()}, this)"></a>
+                                            <a class="fas fa-star" href="" onclick="confirmWish('${item.getCode()}', this)"></a>
                                         </c:when>
                                         <c:when test="true">
-                                            <a class="far fa-star" href="" onclick="confirmWish(${item.getCode()}, this)"></a>
+                                            <a class="far fa-star" href="" onclick="confirmWish('${item.getCode()}', this)"></a>
                                         </c:when>
                                     </c:choose>
                                 </c:if>

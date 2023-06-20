@@ -9,18 +9,16 @@ import com.sphy141.probase.beans.BusinessAccount;
 import com.sphy141.probase.beans.Category;
 import com.sphy141.probase.beans.Notification;
 import com.sphy141.probase.beans.Offer;
+import com.sphy141.probase.beans.OrderDetails;
 import com.sphy141.probase.beans.Product;
 import com.sphy141.probase.beans.ProductFilter;
 import com.sphy141.probase.beans.UserAccount;
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
+import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -233,10 +231,11 @@ public class DBUtils {
     }
 
     public static Offer findOffer(Connection conn, int offerID) throws SQLException {
-        String sql = "SELECT * FROM offers o INNER JOIN offerdetails od ON o.offerID=od.offerID "
+        String sql = "SELECT *,(SELECT count(*) FROM coupontokens WHERE offerID=?) as participants FROM offers o INNER JOIN offerdetails od ON o.offerID=od.offerID "
                 + "INNER JOIN products p ON od.productCode=p.productCode WHERE o.offerID = ? ";
         PreparedStatement pst = conn.prepareStatement(sql);
         pst.setInt(1, offerID);
+        pst.setInt(2, offerID);
         ResultSet rs = pst.executeQuery();
         Offer offer = null;
         List<Product> productlist = new ArrayList<Product>();
@@ -249,8 +248,10 @@ public class DBUtils {
                 offer.setDetails(rs.getString("details"));
                 offer.setCouponPrice(rs.getFloat("couponPrice"));
                 offer.setGroupSize(rs.getInt("groupSize"));
+                offer.setId(rs.getInt("offerID"));
                 offer.setOfferExpire(rs.getString("offerExpire"));
                 offer.setPath(rs.getString("path"));
+                offer.setParticipants(rs.getInt("participants"));
             }
             Product pro = findProduct(conn, rs.getString("productCode"), "");
             offer.addProductInList(pro);
@@ -305,13 +306,7 @@ public class DBUtils {
         ResultSet generatedKeys = pst.getGeneratedKeys();
         if (generatedKeys.next()) {
             int offerID = generatedKeys.getInt(1);
-            // Get the current date
-            Calendar calendar = Calendar.getInstance();
-            java.util.Date currentDate = calendar.getTime();
-
-            // Format the date as "YYYY-MM-DD"
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-            String formattedDate = dateFormat.format(currentDate);
+            offer.setId(offerID);
 
             for (String productCode : productCodes) {
                 //INSERT LIST OF PRODUCTS IN OFFERDETAILS
@@ -322,20 +317,23 @@ public class DBUtils {
                 pst.executeUpdate();
 
                 //INSERT NOTIFICATIONS FOR EACH PRODUCT
-                sql = "insert into notifications (title,details,offerID,productCode,notificationDate) values (?,?,?,?,?)";
-                pst = conn.prepareCall(sql);
-                pst.setString(1, "New Offer");
-                pst.setString(2, offer.getDetails());
-                pst.setInt(3, offerID);
-                pst.setString(4, productCode);
-                pst.setString(5, formattedDate);
-                pst.executeUpdate();
-
+                insertNotification(conn, offer, productCode, "New offer");
             }//for
         }
 
     }//findOffer
 
+    //INSERT NOTIFICATION
+    public static void insertNotification(Connection conn, Offer offer, String productCode, String title) throws SQLException {
+                String sql = "insert into notifications (title,details,offerID,productCode,notificationDate) values (?,?,?,?,NOW())";
+                PreparedStatement pst = conn.prepareCall(sql);
+                pst.setString(1, title);
+                pst.setString(2, offer.getDetails());
+                pst.setInt(3, offer.getId());
+                pst.setString(4, productCode);
+                pst.executeUpdate();
+    }
+    
     /*
 public static void UpdateOffer(Connection conn,Offer offer) throws SQLException {
         String sql = "INSERT INTO   FROM offers WHERE  offerID = ? ";
@@ -1192,4 +1190,87 @@ public static void UpdateOffer(Connection conn,Offer offer) throws SQLException 
         }//while
         return list;
     }//queryProduct
+    
+    //INSERT A NEW PAYMENT AS PENDING UNTIL THE USER PAYS
+    public static void insertPayPalPayment(Connection conn, OrderDetails orderDetails)throws SQLException {
+            // Insert the payment record
+            String sql = "INSERT INTO payments (accountEmail, amount, details, date, type, status, offerId) VALUES (?, ?, ?, ?, ?, ?, ?)";
+            PreparedStatement pst = conn.prepareStatement(sql ,Statement.RETURN_GENERATED_KEYS);
+            pst.setString(1, orderDetails.getAccountEmail());
+            pst.setString(2, orderDetails.getTotal());
+            pst.setString(3, orderDetails.getDetails());
+            pst.setString(4, orderDetails.getDate());
+            pst.setString(5, orderDetails.getType());
+            pst.setString(6, orderDetails.getStatus());
+            pst.setInt(7, orderDetails.getOfferId());
+            pst.executeUpdate();
+            
+            ResultSet generatedKeys = pst.getGeneratedKeys();
+        if (generatedKeys.next()) {
+            int paymentID = generatedKeys.getInt(1);
+            orderDetails.setId(paymentID);
+        }
+        
+            System.out.println("Payment record inserted! id="+orderDetails.getId());
+    }
+    
+    //UPDATE PAYMENT WITH NEW STATUS
+    public static void updatePayPalPayment(Connection conn, int orderId, String status)throws SQLException {
+            // Update the payment status based on the PayPal API response
+            String sql = "UPDATE payments SET status = ? WHERE paymentID = ?";
+            PreparedStatement pst = conn.prepareStatement(sql);
+            pst.setString(1, status);
+            pst.setInt(2, orderId);
+            pst.executeUpdate();
+            
+            System.out.println("Payment record updated!");
+    }
+    
+    //FIND PAYMENT AND GET DETAILS
+    public static OrderDetails findPayment(Connection conn, int orderId)throws SQLException {
+            // Insert the payment record
+            String sql = "SELECT * FROM payments WHERE paymentID = ?";
+            PreparedStatement pst = conn.prepareStatement(sql);
+            pst.setInt(1, orderId);
+            ResultSet rs = pst.executeQuery();
+            OrderDetails order=null;
+            while (rs.next()) {
+                order = new OrderDetails();
+                order.setId(rs.getInt("paymentID"));
+                order.setAccountEmail(rs.getString("accountEmail"));
+                order.setDate(rs.getString("date"));
+                order.setDetails(rs.getString("details"));
+                order.setOfferId(rs.getInt("offerId"));
+                order.setTotal(rs.getFloat("amount"));
+                order.setType(rs.getString("type"));
+                order.setStatus(rs.getString("status"));
+            }//while
+            return order;
+    }
+    
+    //INSERT USER AS PARTICIPANT IN AN OFFER
+    public static void insertUserInOffer(Connection conn, int offerId, UserAccount user)throws SQLException {
+            // Insert the payment record
+            String sql = "INSERT INTO coupontokens (email, offerID, date) VALUES (?, ?, NOW())";
+            PreparedStatement pst = conn.prepareStatement(sql);
+            pst.setString(1, user.getEmail());
+            pst.setInt(2, offerId);
+            pst.executeUpdate();
+
+            Offer offer = new Offer();
+            offer.setId(offerId);
+            insertNotification(conn, offer, null, "New User joined Offer");
+    }
+
+    public static boolean isParticipantInOffer(Connection conn, UserAccount user, Offer offer) throws SQLException {
+        String sql = "SELECT * FROM coupontokens WHERE offerID=? AND email=?";
+        PreparedStatement pst = conn.prepareStatement(sql);
+        pst.setInt(1, offer.getId());
+        pst.setString(2, user.getEmail());
+        ResultSet rs = pst.executeQuery();
+            while (rs.next()) {
+                return true;
+            }//while
+            return false;
+    }
 }

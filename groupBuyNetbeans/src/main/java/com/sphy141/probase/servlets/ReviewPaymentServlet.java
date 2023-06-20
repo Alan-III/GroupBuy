@@ -47,12 +47,14 @@ public class ReviewPaymentServlet extends HttpServlet {
             PayerInfo payerInfo = payment.getPayer().getPayerInfo();
             Transaction transaction = payment.getTransactions().get(0);
             ShippingAddress shippingAddress = transaction.getItemList().getShippingAddress();
+            String orderId = req.getParameter("orderId");
             
             req.setAttribute("payerInfo", payerInfo);
             req.setAttribute("transaction", transaction);
             req.setAttribute("shippingAddress", shippingAddress);
             req.setAttribute("paymentId", paymentId);
             req.setAttribute("payerId", payerId);
+            req.setAttribute("orderId", orderId);
             RequestDispatcher dispatcher=this.getServletContext().getRequestDispatcher("/WEB-INF/views/paymentReviewView.jsp");
             dispatcher.forward(req, resp);
         } catch (PayPalRESTException ex) {

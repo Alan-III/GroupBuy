@@ -36,7 +36,7 @@ public class PaymentUtils {
     
     public static String authorizePayment(OrderDetails orderDetails) throws PayPalRESTException{
         Payer payer = getPayerInformation();
-        RedirectUrls redirectUrls = getRedirectUrls();
+        RedirectUrls redirectUrls = getRedirectUrls(orderDetails.getId());
         List<Transaction> listTransaction = getTransactionInformation(orderDetails);
         
         Payment requestPayment = new Payment();
@@ -100,10 +100,10 @@ public class PaymentUtils {
         return listTransaction;
     }
     
-    private static RedirectUrls getRedirectUrls() {
+    private static RedirectUrls getRedirectUrls(int orderId) {
         RedirectUrls redirectUrls = new RedirectUrls();
         redirectUrls.setCancelUrl("http://localhost:8080/groupbuy/cancelurl");           //CHANGE
-        redirectUrls.setReturnUrl("http://localhost:8080/groupbuy/reviewpayment");           //CHANGE
+        redirectUrls.setReturnUrl("http://localhost:8080/groupbuy/reviewpayment?orderId="+orderId);           //CHANGE
         return redirectUrls;
     }
     
@@ -134,53 +134,5 @@ public class PaymentUtils {
         payer.setPayerInfo(payerInfo);
         
         return payer;
-    }
-    
-    
-    public static void processPayPalPayment(Connection conn, OrderDetails orderDetails) {
-        try {
-            // Disable auto-commit to start a orderDetails
-            conn.setAutoCommit(false);
-            
-            // Insert the payment record
-            String sql = "INSERT INTO payments (accountEmail, amount, details, date, type, status) VALUES (?, ?, ?, ?, ?, ?)";
-            PreparedStatement statement = conn.prepareStatement(sql);
-            statement.setString(1, orderDetails.getAccountEmail());
-            statement.setString(2, orderDetails.getTotal());
-            statement.setString(3, orderDetails.getDetails());
-            statement.setString(4, orderDetails.getDate());
-            statement.setString(5, orderDetails.getType());
-            statement.setString(6, orderDetails.getStatus());
-            statement.executeUpdate();
-
-            // Here, you would integrate with the PayPal API
-            // and handle the payment confirmation process
-            // If the payment is successful, update the status to "completed"
-            // If the payment fails or is canceled, update the status to "failed"
-
-            // Update the payment status based on the PayPal API response
-            String updateSql = "UPDATE payments SET status = ? WHERE accountEmail = ?";
-            PreparedStatement updateStatement = conn.prepareStatement(updateSql);
-            updateStatement.setString(1, "completed"); // or "failed" based on the PayPal response
-            updateStatement.setString(2, orderDetails.getAccountEmail());
-            updateStatement.executeUpdate();
-
-            // Commit the orderDetails
-            conn.commit();
-
-            System.out.println("Payment record inserted and status updated successfully!");
-
-        } catch (SQLException e) {
-            // Rollback the orderDetails if an error occurs
-            try {
-                if (conn != null) {
-                    conn.rollback();
-                }
-            } catch (SQLException rollbackException) {
-                rollbackException.printStackTrace();
-            }
-
-            e.printStackTrace();
-        }
     }
 }

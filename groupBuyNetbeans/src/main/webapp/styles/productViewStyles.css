@@ -231,9 +231,6 @@ a{
         transition: 200ms;
         &:hover{
             background: linear-gradient(to bottom, #1b1b19 0%, #23CE6B 50%, #1b1b19 100%);
-            >span{
-                color: #ffc800;
-            }
         }
         >img{
             width: 31px;
@@ -244,6 +241,11 @@ a{
             font-weight: 700;
             margin-left: 10px;
             color: white;
+        }
+    }
+    >button.leave-offer-btn{
+        &:hover{
+            background: linear-gradient(to bottom, #1b1b19 0%, red 50%, #1b1b19 100%);
         }
     }
     >a{

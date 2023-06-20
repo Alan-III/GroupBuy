@@ -54,10 +54,10 @@
                                     Wishlist:
                                     <c:choose>
                                     <c:when test="${product.isWished()}">
-                                        <a href="#!" class="fas fa-star" onclick="confirmWish(${product.getCode()},this)"></a>
+                                        <a href="#!" class="fas fa-star" onclick="confirmWish('${product.getCode()}',this)"></a>
                                     </c:when>
                                     <c:when test="true">
-                                        <a href="#!" class="far fa-star" onclick="confirmWish(${product.getCode()},this)"></a>
+                                        <a href="#!" class="far fa-star" onclick="confirmWish('${product.getCode()}',this)"></a>
                                     </c:when>
                                     </c:choose>
                                     (${product.getWishesCount()})

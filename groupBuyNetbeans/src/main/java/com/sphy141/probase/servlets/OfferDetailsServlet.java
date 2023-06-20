@@ -17,6 +17,8 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -67,9 +69,9 @@ public class OfferDetailsServlet extends HttpServlet {
         req.setAttribute("notificationsCount", notificationsCount);
         //------------------CHECK LOGINED USER - BUSINESS - GET NOTIFICATIONS------------------TEMPLATE END
         
+        //----------Find offer in DB
         String offerIdParam = req.getParameter("offerid");
         int offerId = Integer.parseInt(offerIdParam);
-        
         Offer offer = null;
         try {
             offer = DBUtils.findOffer(conn, offerId);
@@ -79,8 +81,20 @@ public class OfferDetailsServlet extends HttpServlet {
         if(offer==null){
             errorString = "There was a problem with product";
         }
+        
+        //----------See if user has already joined this offer
+        boolean isParticipant=false;
+        if(user!=null){
+            try {
+                isParticipant = DBUtils.isParticipantInOffer(conn, user, offer);
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+        }
+        
         req.setAttribute("errorString", errorString);
         req.setAttribute("offer", offer);
+        req.setAttribute("isParticipant", isParticipant);
         RequestDispatcher dispatcher=this.getServletContext().getRequestDispatcher("/WEB-INF/views/offerDetailsView.jsp");
         dispatcher.forward(req, resp);
     }//doGet

@@ -132,8 +132,13 @@
                 <p>Country Code: ${shippingAddress.countryCode}</p>
                 <p>Postal Code: ${shippingAddress.postalCode}</p>
                 
+                
+                
+                <p>orderId: ${orderId}</p>
+                
                 <input type="hidden" name="paymentId" value="${paymentId}"/>
                 <input type="hidden" name="payerId" value="${payerId}"/>
+                <input type="hidden" name="orderId" value="${orderId}"/>
                 <input type="submit" value="Pay Now" />
                 </form>
             </div>

@@ -82,13 +82,18 @@ public class AuthorizePaymentServlet extends HttpServlet {
         orderDetails.setType("Payout");
 
         try {
+            DBUtils.insertPayPalPayment(conn, orderDetails);
             String approvalLink = PaymentUtils.authorizePayment(orderDetails);
             // After the line `resp.sendRedirect(approvalLink)`
+            
             resp.setContentType("application/json");
             resp.setCharacterEncoding("UTF-8");
-            resp.getWriter().write("{\"redirectUrl\": \"" + approvalLink + "\"}");
+
+            resp.getWriter().write("{\"redirectUrl\": \"" + approvalLink +"\"}");
 
         } catch (PayPalRESTException ex) {
+            ex.printStackTrace();
+        } catch (SQLException ex) {
             ex.printStackTrace();
         }
     }
