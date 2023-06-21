@@ -64,7 +64,7 @@
                             </a>
                         </li>
                         <li>
-                            <a href="#">
+                            <a href="${pageContext.request.contextPath}/businessnotifications">
                                 <i class="fa fa-info fa-2x"></i>
                                 <span class="nav-text">
                                     Notifications
@@ -88,7 +88,7 @@
                             </a>
                         </li>
                         <li>
-                            <a href="/groupbuy/logout">
+                            <a href="${pageContext.request.contextPath}/logout">
                                 <i class="fa fa-power-off fa-2x"></i>
                                 <span class="nav-text">
                                     Logout
