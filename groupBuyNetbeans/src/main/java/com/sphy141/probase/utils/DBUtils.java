@@ -1297,4 +1297,55 @@ public static void UpdateOffer(Connection conn,Offer offer) throws SQLException 
             }//while
             return list;
     }
+
+    //GET OFFERS MADE BY BUSINESS
+    public static List<Offer> queryBusinessOffers(Connection conn, BusinessAccount business) throws SQLException {
+            String sql = "SELECT *,(SELECT count(*) FROM coupontokens) as participants FROM offers WHERE email=? ORDER BY offerExpire";
+            PreparedStatement pst = conn.prepareStatement(sql);
+            pst.setString(1, business.getEmail());
+            ResultSet rs = pst.executeQuery();
+            List<Offer> list= new ArrayList<Offer>();
+            while (rs.next()) {
+                Offer offer = new Offer();
+                offer.setTitle(rs.getString("title"));
+                offer.setFinalprice(rs.getFloat("finalPrice"));
+                offer.setDiscount(rs.getFloat("discount"));
+                offer.setDetails(rs.getString("details"));
+                offer.setCouponPrice(rs.getFloat("couponPrice"));
+                offer.setGroupSize(rs.getInt("groupSize"));
+                offer.setId(rs.getInt("offerID"));
+                offer.setOfferExpire(rs.getString("offerExpire"));
+                offer.setPath(rs.getString("path"));
+                offer.setParticipants(rs.getInt("participants"));
+                
+                list.add(offer);
+            }//while
+            return list;
+    }
+
+    //GET OFFERS JOINED BY USER
+    public static List<Offer> queryJoinedOffers(Connection conn, UserAccount user) throws SQLException {
+        String sql = "SELECT *,(SELECT count(*) FROM coupontokens) as participants FROM coupontokens ct "
+                + "INNER JOIN offers o ON o.offerID=ct.offerID WHERE ct.email=? ORDER BY ct.date DESC";
+            PreparedStatement pst = conn.prepareStatement(sql);
+            pst.setString(1, user.getEmail());
+            ResultSet rs = pst.executeQuery();
+            List<Offer> list= new ArrayList<Offer>();
+            while (rs.next()) {
+                Offer offer = new Offer();
+                offer.setTitle(rs.getString("title"));
+                offer.setFinalprice(rs.getFloat("finalPrice"));
+                offer.setDiscount(rs.getFloat("discount"));
+                offer.setDetails(rs.getString("details"));
+                offer.setCouponPrice(rs.getFloat("couponPrice"));
+                offer.setGroupSize(rs.getInt("groupSize"));
+                offer.setId(rs.getInt("offerID"));
+                offer.setOfferExpire(rs.getString("offerExpire"));
+                offer.setPath(rs.getString("path"));
+                offer.setParticipants(rs.getInt("participants"));
+                
+                list.add(offer);
+            }//while
+            return list;
+    }
 }

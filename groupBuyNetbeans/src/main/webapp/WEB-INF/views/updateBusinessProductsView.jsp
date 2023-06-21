@@ -37,7 +37,7 @@
 
                         </li>
                         <li class="has-subnav">
-                            <a href="${pageContext.request.contextPath}/productlist">
+                            <a href="${pageContext.request.contextPath}/myoffers">
                                 <i class="fa fa-shopping-cart fa-2x"></i>
                                 <span class="nav-text">
                                     My Offers

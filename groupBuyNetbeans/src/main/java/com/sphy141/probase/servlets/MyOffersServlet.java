@@ -6,6 +6,7 @@
 package com.sphy141.probase.servlets;
 
 import com.sphy141.probase.beans.BusinessAccount;
+import com.sphy141.probase.beans.Offer;
 import com.sphy141.probase.beans.OrderDetails;
 import com.sphy141.probase.beans.UserAccount;
 import com.sphy141.probase.utils.DBUtils;
@@ -27,8 +28,8 @@ import javax.servlet.http.HttpSession;
  *
  * @author Alan
  */
-@WebServlet(urlPatterns = {"/mypayments"})
-public class MyPaymentsServlet extends HttpServlet {
+@WebServlet(urlPatterns = {"/myoffers"})
+public class MyOffersServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -67,22 +68,22 @@ public class MyPaymentsServlet extends HttpServlet {
         req.setAttribute("notificationsCount", notificationsCount);
         //------------------CHECK LOGINED USER - BUSINESS - GET NOTIFICATIONS------------------TEMPLATE END
         
-        List<OrderDetails> paymentsList = new ArrayList<OrderDetails>();
+        List<Offer> offersList = new ArrayList<Offer>();
         try {
             if(business!=null)
-                paymentsList = DBUtils.queryPayments(conn, business.getEmail());
+                offersList = DBUtils.queryBusinessOffers(conn, business);
             else if(user!=null)
-                paymentsList = DBUtils.queryPayments(conn, user.getEmail());
+                offersList = DBUtils.queryJoinedOffers(conn, user);
                 
                 
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
-        if(paymentsList==null){
+        if(offersList==null){
             errorString = "There was a problem with products";
         }
-        req.setAttribute("paymentsList", paymentsList);
-        RequestDispatcher dispatcher=this.getServletContext().getRequestDispatcher("/WEB-INF/views/myPaymentsListView.jsp");
+        req.setAttribute("offersList", offersList);
+        RequestDispatcher dispatcher=this.getServletContext().getRequestDispatcher("/WEB-INF/views/myOffersListView.jsp");
         dispatcher.forward(req, resp);
     }
     
