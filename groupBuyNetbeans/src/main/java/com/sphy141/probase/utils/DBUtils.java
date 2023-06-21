@@ -60,7 +60,7 @@ public class DBUtils {
         String sql = "SELECT firstName, lastName, userID, phoneNum, balance, userName, bankAccount, u.email as email FROM users u INNER JOIN login l "
                 + "ON u.email=l.email WHERE u.email = ?  AND enabled = 1";
         PreparedStatement pst = conn.prepareStatement(sql);
-        pst.setString(1, loginEmail);
+        pst.setString(1, CryptoUtils.encrypt(loginEmail));
         ResultSet rs = pst.executeQuery();
         while (rs.next()) {
             UserAccount user = new UserAccount();
@@ -92,7 +92,7 @@ public class DBUtils {
         String sql1 = "INSERT INTO login (email, password) VALUES(?, ?)";
         PreparedStatement pst1 = conn.prepareCall(sql1);
         pst1 = conn.prepareCall(sql1);
-        pst1.setString(1, user.getEmail());
+        pst1.setString(1, CryptoUtils.encrypt(user.getEmail()));
         pst1.setString(2, user.getPassword());
         pst1.executeUpdate();
 
@@ -145,7 +145,7 @@ public class DBUtils {
                 + "LEFT JOIN (select productCode,count(email) as wishcount from mywish GROUP BY productCode) c ON c.productCode=p.productCode GROUP BY p.productID";
         List<Product> list = new ArrayList<Product>();
         PreparedStatement pst = conn.prepareStatement(sql);
-        pst.setString(1, userEmail);
+        pst.setString(1, CryptoUtils.encrypt(userEmail));
         ResultSet rs = pst.executeQuery();
         while (rs.next()) {
             Product prod = new Product();
@@ -302,7 +302,7 @@ public class DBUtils {
         pst.setFloat(4, offer.getCouponPrice());
         pst.setString(5, offer.getOfferExpire());
         pst.setString(6, offer.getDetails());
-        pst.setString(7, email);
+        pst.setString(7, CryptoUtils.encrypt(email));
         pst.setString(8, offer.getPath());
         pst.setInt(9, offer.getGroupSize());
         pst.executeUpdate();
@@ -643,6 +643,16 @@ public static void UpdateOffer(Connection conn,Offer offer) throws SQLException 
         pst.executeUpdate();
     }//deleteProduct
 
+    
+    public static void deleteOffer(Connection conn, int id) throws SQLException {
+        String sql = "DELETE FROM offers WHERE offerID=? ";
+        PreparedStatement pst = conn.prepareStatement(sql);
+        pst.setInt(1, id);
+        pst.executeUpdate();
+    }//deleteProduct
+
+    
+    
     //FIND SPECIFIC CATEGORY
     public static Category findCategory(Connection conn, int categoryID) throws SQLException {
         String sql = "SELECT * FROM categories WHERE categoryID = ?";
@@ -1064,8 +1074,8 @@ public static void UpdateOffer(Connection conn,Offer offer) throws SQLException 
                 + "WHERE mw.email=? AND (rn.email!=? OR rn.email IS NULL);";
         List<Notification> list = new ArrayList<Notification>();
         PreparedStatement pst = conn.prepareStatement(sql);
-        pst.setString(1, user.getEmail());
-        pst.setString(2, user.getEmail());
+        pst.setString(1, CryptoUtils.encrypt(user.getEmail()));
+        pst.setString(2, CryptoUtils.encrypt(user.getEmail()));
         ResultSet rs = pst.executeQuery();
         Product pro = new Product();
         Offer of = new Offer();
@@ -1095,8 +1105,8 @@ public static void UpdateOffer(Connection conn,Offer offer) throws SQLException 
                 + "WHERE mw.email=? AND (rn.email!=? OR rn.email IS NULL);";
         List<Notification> list = new ArrayList<Notification>();
         PreparedStatement pst = conn.prepareStatement(sql);
-        pst.setString(1, business.getEmail());
-        pst.setString(2, business.getEmail());
+        pst.setString(1, CryptoUtils.encrypt(business.getEmail()));
+        pst.setString(2, CryptoUtils.encrypt(business.getEmail()));
         ResultSet rs = pst.executeQuery();
         Product pro = new Product();
         Offer of = new Offer();
