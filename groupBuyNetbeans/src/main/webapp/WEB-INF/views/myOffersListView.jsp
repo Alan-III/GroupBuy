@@ -31,7 +31,7 @@
                         <c:choose>
                             <c:when test="${loginedbusiness!=null}">
                                 <li>
-                                    <a href="https://jbfarrow.com">
+                                    <a href="${pageContext.request.contextPath}/businessInfo">
                                         <i class="fa fa-home fa-2x"></i>
                                         <span class="nav-text">
                                             Business Details
@@ -98,7 +98,7 @@
                             </c:when>
                             <c:when test="${logineduser!=null}">
                                 <li>
-                                    <a href="https://jbfarrow.com">
+                                    <a href="${pageContext.request.contextPath}/userInfo">
                                         <i class="fa fa-home fa-2x"></i>
                                         <span class="nav-text">
                                             User Details

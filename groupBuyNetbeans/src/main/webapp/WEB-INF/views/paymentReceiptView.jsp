@@ -29,7 +29,7 @@
                 <nav class="main-menu">
                     <ul>
                         <li>
-                            <a href="https://jbfarrow.com">
+                            <a href="${pageContext.request.contextPath}/userInfo">
                                 <i class="fa fa-home fa-2x"></i>
                                 <span class="nav-text">
                                     User Details
