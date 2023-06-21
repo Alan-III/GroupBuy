@@ -19,6 +19,7 @@ public class OrderDetails {
     private String status;
     private int offerId;
     
+    //paypal
     private float shipping;
     private float tax;
     private float subtotal;

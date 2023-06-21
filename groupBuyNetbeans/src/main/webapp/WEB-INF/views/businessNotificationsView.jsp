@@ -25,90 +25,79 @@
         <jsp:include page="_menu.jsp"></jsp:include>
 
             <div class="main_box">
-<div class="sidebar">
-                <nav class="main-menu">
-                    <ul>
+                    <div class="sidebar">
+                    <nav class="main-menu">
+                        <ul>
                         <li>
                             <a href="https://jbfarrow.com">
                                 <i class="fa fa-home fa-2x"></i>
                                 <span class="nav-text">
-                                    User Details
+                                    Business Details
                                 </span>
                             </a>
 
                         </li>
                         <li class="has-subnav">
-                            <a href="#">
+                            <a href="${pageContext.request.contextPath}/productlist">
                                 <i class="fa fa-shopping-cart fa-2x"></i>
                                 <span class="nav-text">
                                     My Offers
                                 </span>
                             </a>
-
+                        </li>
+                        <li class="has-subnav">
+                            <a href="${pageContext.request.contextPath}/updatebusinessproducts">
+                                <i class="fa fa-barcode fa-2x"></i>
+                                <span class="nav-text">
+                                    My Products
+                                </span>
+                            </a>
                         </li>
                         <li class="has-subnav">
                             <a href="#">
-                                <i class="fa fa-gift fa-2x"></i>
+                                <i class="fa fa-book fa-2x"></i>
                                 <span class="nav-text">
-                                    My Coupons
+                                    My Payments
                                 </span>
                             </a>
-
-                        </li>
-                        <li class="has-subnav">
-                            <a href="#">
-                                <i class="fa fa-star fa-2x"></i>
-                                <span class="nav-text">
-                                    My Wishlist
-                                </span>
-                            </a>
-
                         </li>
                         <li>
-                            <a href="${pageContext.request.contextPath}/usernotifications">
-                            <i class="fa fa-info fa-2x"></i>
-                            <span class="nav-text">
-                                Notifications
-                            </span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#">
-                            <i class="fa fa-book fa-2x"></i>
-                            <span class="nav-text">
-                                My Payments
-                            </span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#">
-                            <i class="fa fa-cogs fa-2x"></i>
-                            <span class="nav-text">
-                                Account Settings
-                            </span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#">
-                            <i class="fa fa-map-marker fa-2x"></i>
-                            <span class="nav-text">
-                                Member Map
-                            </span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="${pageContext.request.contextPath}/logout">
-                            <i class="fa fa-power-off fa-2x"></i>
-                            <span class="nav-text">
-                                Logout
-                            </span>
-                        </a>
-                    </li> 
+                            <a href="#">
+                                <i class="fa fa-info fa-2x"></i>
+                                <span class="nav-text">
+                                    Notifications
+                                </span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#">
+                                <i class="fa fa-cogs fa-2x"></i>
+                                <span class="nav-text">
+                                    Account Settings
+                                </span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#">
+                                <i class="fa fa-map-marker fa-2x"></i>
+                                <span class="nav-text">
+                                    Member Map
+                                </span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/groupbuy/logout">
+                                <i class="fa fa-power-off fa-2x"></i>
+                                <span class="nav-text">
+                                    Logout
+                                </span>
+                            </a>
+                        </li>
                 </ul>
-            </nav>
+                </nav>
             </div>
             <div id="userinfo" class="px-4 layout">
-                <h3 class="text-center text-white pt-5 mb-4">User Notifications</h3>
+                <h3 class="text-center text-white pt-5 mb-4">Business Notifications</h3>
                 <div class="container">
                     <div class="layout">
 

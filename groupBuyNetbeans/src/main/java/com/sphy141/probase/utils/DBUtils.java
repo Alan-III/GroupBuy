@@ -959,12 +959,11 @@ public static void UpdateOffer(Connection conn,Offer offer) throws SQLException 
     }
 
     public static List<Notification> queryNotifications(Connection conn, BusinessAccount business) throws SQLException {
-        String sql = "SELECT *,rn.email as seen FROM notifications n INNER JOIN mywish mw ON n.productCode=mw.productCode \n"
-                + "LEFT JOIN readnotifications rn ON n.notificationID=rn.notificationID \n"
-                + "LEFT JOIN (SELECT productName,productCode FROM products) p ON n.productCode=p.productCode\n"
-                + "LEFT JOIN (SELECT title as offerTitle,offerID FROM offers) o ON n.offerID=o.offerID\n"
-                + "WHERE mw.email=? AND (rn.email=? OR rn.email IS NULL) \n"
-                + "ORDER BY notificationDate desc;";
+        String sql = "SELECT o.title as offerTitle, n.notificationID, notificationDate,n.title, n.details,o.offerID,rn.email as seen FROM offers o "
+                + "LEFT JOIN notifications n ON o.offerID=n.offerID\n" +
+                "LEFT JOIN readnotifications rn ON n.notificationID=rn.notificationID AND rn.email=?\n" +
+                " WHERE o.email=?\n" +
+                " ORDER BY notificationDate desc;";
         List<Notification> list = new ArrayList<Notification>();
         PreparedStatement pst = conn.prepareStatement(sql);
         pst.setString(1, business.getEmail());
@@ -980,8 +979,6 @@ public static void UpdateOffer(Connection conn,Offer offer) throws SQLException 
             notif.setDate(rs.getString("notificationDate"));
             of.setTitle(rs.getString("offerTitle"));
             of.setId(rs.getInt("offerID"));
-            pro.setName(rs.getString("productName"));
-            pro.setCode(rs.getString("productCode"));
             notif.setOffer(of);
             notif.setProduct(pro);
             if (rs.getString("seen") != null) {
@@ -1133,8 +1130,8 @@ public static void UpdateOffer(Connection conn,Offer offer) throws SQLException 
 
     //GET NUMBER OF UNREAD NOTIFICATIONS
     public static int countNotificationsNotReadBy(Connection conn, BusinessAccount business) throws SQLException {
-        String sql = "SELECT count(*) as notcount FROM notifications n INNER JOIN mywish mw ON n.productCode=mw.productCode "
-                + "LEFT JOIN readnotifications rn ON n.notificationID=rn.notificationID AND rn.email=? WHERE mw.email=? AND rn.email IS NULL;";
+        String sql = "SELECT count(*) as notcount FROM notifications n INNER JOIN offers o ON n.offerID=o.offerID "
+                + "LEFT JOIN readnotifications rn ON n.notificationID=rn.notificationID AND rn.email=? WHERE o.email=? AND rn.email IS NULL;";
         List<Notification> list = new ArrayList<Notification>();
         PreparedStatement pst = conn.prepareStatement(sql);
         pst.setString(1, business.getEmail());
