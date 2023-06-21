@@ -73,7 +73,7 @@
                                     <span class="price text-uppercase" style="color: red;" >offer Full!</span>
 
                                 </c:when>
-                                <c:when test="${isParticipant}">
+                                <c:when test="${isParticipant&&offer.getStatus()=='active'}">
                                     <button type="button" onclick="confirmLeaveOffer(${offer.getId()}, ${offer.getCouponPrice()})" class="leave-offer-btn">
                                         <img src="http://co0kie.github.io/codepen/nike-product-page/cart.png" alt="">
                                         <span>Leave offer</span>

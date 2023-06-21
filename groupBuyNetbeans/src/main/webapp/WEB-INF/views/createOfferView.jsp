@@ -31,7 +31,7 @@
                     <nav class="main-menu">
                         <ul>
                             <li>
-                                <a href="https://jbfarrow.com">
+                                <a href="${pageContext.request.contextPath}/businessInfo">
                                     <i class="fa fa-home fa-2x"></i>
                                     <span class="nav-text">
                                         Business Details
@@ -40,7 +40,7 @@
 
                             </li>
                             <li class="has-subnav">
-                                <a href="${pageContext.request.contextPath}/productlist">
+                                <a href="${pageContext.request.contextPath}/myoffers">
                                 <i class="fa fa-shopping-cart fa-2x"></i>
                                 <span class="nav-text">
                                     My Offers
@@ -163,7 +163,7 @@
                                 </a>
                                 <c:if test="${loginedbusiness.getBusinessName()=='c'}">
                                     <p class="image-left">
-                                        <a href="#image-track" class="small-icon icon-plus" onclick="moveProduct(${item.getCode()})">
+                                        <a href="#image-track" class="small-icon icon-plus" onclick="moveProduct('${item.getCode()}')">
                                         </a>
                                     </p>
                                     <p class="image-right">

@@ -252,6 +252,7 @@ public class DBUtils {
                 offer.setOfferExpire(rs.getString("offerExpire"));
                 offer.setPath(rs.getString("path"));
                 offer.setParticipants(rs.getInt("participants"));
+                offer.setStatus(rs.getString("status"));
             }
             Product pro = findProduct(conn, rs.getString("productCode"), "");
             offer.addProductInList(pro);
@@ -290,7 +291,7 @@ public class DBUtils {
 
     //INSERT NEW OFFER TO DB
     public static void insertOffer(Connection conn, Offer offer, String email, List<String> productCodes) throws SQLException {
-        String sql = "insert into offers (title,finalPrice,discount,couponPrice,offerExpire,details,email,path,groupSize) values (?,?,?,?,?,?,?,?,?)";
+        String sql = "insert into offers (title,finalPrice,discount,couponPrice,offerExpire,details,email,path,groupSize,status) values (?,?,?,?,?,?,?,?,?,?)";
         PreparedStatement pst = conn.prepareCall(sql);
         pst.setString(1, offer.getTitle());
         pst.setFloat(2, offer.getFinalprice());
@@ -301,6 +302,7 @@ public class DBUtils {
         pst.setString(7, email);
         pst.setString(8, offer.getPath());
         pst.setInt(9, offer.getGroupSize());
+        pst.setString(10, offer.getStatus());
         pst.executeUpdate();
 
         ResultSet generatedKeys = pst.getGeneratedKeys();
@@ -909,6 +911,7 @@ public static void UpdateOffer(Connection conn,Offer offer) throws SQLException 
                 of.setTitle(rs.getString("title"));
                 of.setPath(rs.getString("path"));
                 of.setBusinessMail(rs.getString("email"));
+                of.setStatus(rs.getString("status"));
                 list.add(of);
             }
         }//while
@@ -1182,6 +1185,7 @@ public static void UpdateOffer(Connection conn,Offer offer) throws SQLException 
                 offer.setGroupSize(rs.getInt("groupSize"));
                 offer.setOfferExpire(rs.getString("offerExpire"));
                 offer.setPath(rs.getString("path"));
+                offer.setStatus(rs.getString("status"));
                 offer.setParticipants(rs.getInt("participants"));
                 list.add(offer);
         }//while
@@ -1211,10 +1215,22 @@ public static void UpdateOffer(Connection conn,Offer offer) throws SQLException 
             System.out.println("Payment record inserted! id="+orderDetails.getId());
     }
     
-    //UPDATE PAYMENT WITH NEW STATUS
-    public static void updatePayPalPayment(Connection conn, int orderId, String status)throws SQLException {
+    //UPDATE PAYMENT WITH NEW STATUS AND SALEID
+    public static void updatePayPalPayment(Connection conn, int orderId, String status, String saleId) throws SQLException {
             // Update the payment status based on the PayPal API response
-            String sql = "UPDATE payments SET status = ? WHERE paymentID = ?";
+            String sql = "UPDATE payments SET status = ?,saleId=?  WHERE paymentID = ?";
+            PreparedStatement pst = conn.prepareStatement(sql);
+            pst.setString(1, status);
+            pst.setString(2, saleId);   //ADD THIS COLUMN TO THE DATABASE AND THE TO THE ORDERDETAILS
+            pst.setInt(3, orderId);
+            pst.executeUpdate();
+            
+            System.out.println("Payment record updated!");
+    }
+    //UPDATE PAYMENT WITH NEW STATUS
+    public static void updatePayPalPayment(Connection conn, int orderId, String status) throws SQLException {
+            // Update the payment status based on the PayPal API response
+            String sql = "UPDATE payments SET status = ?,saleId=?  WHERE paymentID = ?";
             PreparedStatement pst = conn.prepareStatement(sql);
             pst.setString(1, status);
             pst.setInt(2, orderId);
@@ -1260,6 +1276,14 @@ public static void UpdateOffer(Connection conn,Offer offer) throws SQLException 
             Offer offer = new Offer();
             offer.setId(offerId);
             insertNotification(conn, offer, null, "New User joined Offer");
+            
+            if(offer.getParticipants()==offer.getGroupSize()){
+                insertNotification(conn, offer, null, "Offer group Filled!");
+                offer = findOffer(conn, offerId);
+                offer.setStatus("filled");
+                //updateOffer(conn, offer);
+                //SEND EMAIL TO BUSINESS
+            }
     }
 
     public static boolean isParticipantInOffer(Connection conn, UserAccount user, Offer offer) throws SQLException {
@@ -1294,6 +1318,64 @@ public static void UpdateOffer(Connection conn,Offer offer) throws SQLException 
                 offer = findOffer(conn, rs.getInt("offerId"));
                 order.setOffer(offer);
                 list.add(order);
+            }//while
+            return list;
+    }
+
+    //GET OFFERS MADE BY BUSINESS
+    public static List<Offer> queryBusinessOffers(Connection conn, BusinessAccount business) throws SQLException {
+            String sql = "SELECT *,CASE "
+                    + "WHEN res IS NULL THEN 0 "
+                    + "ELSE res "
+                    + "END AS participants FROM offers o "
+                    + "LEFT JOIN (SELECT offerId, count(*) as res FROM coupontokens GROUP BY offerID) t "
+                    + "ON o.offerID=t.offerID WHERE email=? ORDER BY offerExpire";
+            PreparedStatement pst = conn.prepareStatement(sql);
+            pst.setString(1, business.getEmail());
+            ResultSet rs = pst.executeQuery();
+            List<Offer> list= new ArrayList<Offer>();
+            while (rs.next()) {
+                Offer offer = new Offer();
+                offer.setTitle(rs.getString("title"));
+                offer.setFinalprice(rs.getFloat("finalPrice"));
+                offer.setDiscount(rs.getFloat("discount"));
+                offer.setDetails(rs.getString("details"));
+                offer.setCouponPrice(rs.getFloat("couponPrice"));
+                offer.setGroupSize(rs.getInt("groupSize"));
+                offer.setId(rs.getInt("offerID"));
+                offer.setOfferExpire(rs.getString("offerExpire"));
+                offer.setPath(rs.getString("path"));
+                offer.setStatus(rs.getString("status"));
+                offer.setParticipants(rs.getInt("participants"));
+                
+                list.add(offer);
+            }//while
+            return list;
+    }
+
+    //GET OFFERS JOINED BY USER
+    public static List<Offer> queryJoinedOffers(Connection conn, UserAccount user) throws SQLException {
+        String sql = "SELECT *,(SELECT count(*) FROM coupontokens) as participants FROM coupontokens ct "
+                + "INNER JOIN offers o ON o.offerID=ct.offerID WHERE ct.email=? ORDER BY ct.date DESC";
+            PreparedStatement pst = conn.prepareStatement(sql);
+            pst.setString(1, user.getEmail());
+            ResultSet rs = pst.executeQuery();
+            List<Offer> list= new ArrayList<Offer>();
+            while (rs.next()) {
+                Offer offer = new Offer();
+                offer.setTitle(rs.getString("title"));
+                offer.setFinalprice(rs.getFloat("finalPrice"));
+                offer.setDiscount(rs.getFloat("discount"));
+                offer.setDetails(rs.getString("details"));
+                offer.setCouponPrice(rs.getFloat("couponPrice"));
+                offer.setGroupSize(rs.getInt("groupSize"));
+                offer.setId(rs.getInt("offerID"));
+                offer.setOfferExpire(rs.getString("offerExpire"));
+                offer.setPath(rs.getString("path"));
+                offer.setStatus(rs.getString("status"));
+                offer.setParticipants(rs.getInt("participants"));
+                
+                list.add(offer);
             }//while
             return list;
     }
