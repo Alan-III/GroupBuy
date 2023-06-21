@@ -252,6 +252,7 @@ public class DBUtils {
                 offer.setOfferExpire(rs.getString("offerExpire"));
                 offer.setPath(rs.getString("path"));
                 offer.setParticipants(rs.getInt("participants"));
+                offer.setStatus(rs.getString("status"));
             }
             Product pro = findProduct(conn, rs.getString("productCode"), "");
             offer.addProductInList(pro);
@@ -290,7 +291,7 @@ public class DBUtils {
 
     //INSERT NEW OFFER TO DB
     public static void insertOffer(Connection conn, Offer offer, String email, List<String> productCodes) throws SQLException {
-        String sql = "insert into offers (title,finalPrice,discount,couponPrice,offerExpire,details,email,path,groupSize) values (?,?,?,?,?,?,?,?,?)";
+        String sql = "insert into offers (title,finalPrice,discount,couponPrice,offerExpire,details,email,path,groupSize,status) values (?,?,?,?,?,?,?,?,?,?)";
         PreparedStatement pst = conn.prepareCall(sql);
         pst.setString(1, offer.getTitle());
         pst.setFloat(2, offer.getFinalprice());
@@ -301,6 +302,7 @@ public class DBUtils {
         pst.setString(7, email);
         pst.setString(8, offer.getPath());
         pst.setInt(9, offer.getGroupSize());
+        pst.setString(10, offer.getStatus());
         pst.executeUpdate();
 
         ResultSet generatedKeys = pst.getGeneratedKeys();
@@ -909,6 +911,7 @@ public static void UpdateOffer(Connection conn,Offer offer) throws SQLException 
                 of.setTitle(rs.getString("title"));
                 of.setPath(rs.getString("path"));
                 of.setBusinessMail(rs.getString("email"));
+                of.setStatus(rs.getString("status"));
                 list.add(of);
             }
         }//while
@@ -1182,6 +1185,7 @@ public static void UpdateOffer(Connection conn,Offer offer) throws SQLException 
                 offer.setGroupSize(rs.getInt("groupSize"));
                 offer.setOfferExpire(rs.getString("offerExpire"));
                 offer.setPath(rs.getString("path"));
+                offer.setStatus(rs.getString("status"));
                 offer.setParticipants(rs.getInt("participants"));
                 list.add(offer);
         }//while
@@ -1260,6 +1264,12 @@ public static void UpdateOffer(Connection conn,Offer offer) throws SQLException 
             Offer offer = new Offer();
             offer.setId(offerId);
             insertNotification(conn, offer, null, "New User joined Offer");
+            
+            if(offer.getParticipants()==offer.getGroupSize()){
+                insertNotification(conn, offer, null, "Offer group Filled!");
+                findOffer(conn, offerId).setStatus("filled");
+                //SEND EMAIL TO BUSINESS
+            }
     }
 
     public static boolean isParticipantInOffer(Connection conn, UserAccount user, Offer offer) throws SQLException {
@@ -1321,6 +1331,7 @@ public static void UpdateOffer(Connection conn,Offer offer) throws SQLException 
                 offer.setId(rs.getInt("offerID"));
                 offer.setOfferExpire(rs.getString("offerExpire"));
                 offer.setPath(rs.getString("path"));
+                offer.setStatus(rs.getString("status"));
                 offer.setParticipants(rs.getInt("participants"));
                 
                 list.add(offer);
@@ -1347,6 +1358,7 @@ public static void UpdateOffer(Connection conn,Offer offer) throws SQLException 
                 offer.setId(rs.getInt("offerID"));
                 offer.setOfferExpire(rs.getString("offerExpire"));
                 offer.setPath(rs.getString("path"));
+                offer.setStatus(rs.getString("status"));
                 offer.setParticipants(rs.getInt("participants"));
                 
                 list.add(offer);

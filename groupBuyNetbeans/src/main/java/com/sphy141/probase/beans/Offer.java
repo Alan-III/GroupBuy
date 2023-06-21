@@ -26,6 +26,7 @@ public class Offer {
     private String path;
     private int participants;
     private String businessMail;
+    private String status;
     private List<Product> productsList;
 
     public Offer() {
@@ -142,4 +143,13 @@ public class Offer {
     public void setPath(String path) {
         this.path = path;
     }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+    
 }

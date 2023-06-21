@@ -193,6 +193,7 @@
                                     <th>Fee</th>
                                     <th>Participants</th>
                                     <th>Expiration Date</th>
+                                    <th>Status</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -206,6 +207,7 @@
                                         <td>${offer.getCouponPrice()}</td>
                                         <td>${offer.getParticipants()}/${offer.getGroupSize()}</td>
                                         <td>${offer.getOfferExpire()}</td>
+                                        <td>${offer.getStatus()}</td>
                                     </tr>
                                 </c:forEach>
                             </tbody>
@@ -215,28 +217,7 @@
             </div>
         </div>
         <script>
-            // i don't know
-            window.addEventListener('load', function () {
-                var mainNavHeight = document.getElementById('mainNav').offsetHeight;
-                var mainBox = document.getElementById('mainBox');
-                mainBox.style.marginTop = mainNavHeight + 'px';
-            });
-            //Click Notification
-            $(document).ready(function () {
-                $(".notification-row").click(function () {
-                    // Open modal code here
-                    if ($(this).attr('style')) {
-                        $(this).removeAttr('style');
-                        // Retrieve notification ID and send Ajax request
-                        var notificationId = $(this).data("notification-id");
-                        // Send AJAX request with the notificationID
-                        $.post('${pageContext.request.contextPath}/readnotification', {notificationID: notificationId}, function (data) {
-                            // Handle the AJAX response
-                            // ...
-                        });
-                    }
-                });
-            });
+          
         </script>
         <!-- Footer-->
         <jsp:include page="_footer.jsp"></jsp:include>
