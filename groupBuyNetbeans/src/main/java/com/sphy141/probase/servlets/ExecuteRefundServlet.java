@@ -66,22 +66,26 @@ public class ExecuteRefundServlet extends HttpServlet {
         try {
             OrderDetails orderDetails = DBUtils.findPayment(conn, orderId);
             
-            Refund refund = PaymentUtils.refundPayment(orderDetails.getPaymentId, orderDetails.getSaleId, orderDetails.getTotal());
+            Refund refund = PaymentUtils.refundPayment(orderDetails.getPaypalPaymentId(), orderDetails.getPaypalSaleId(), Double.parseDouble(orderDetails.getTotal()));
             
-            if(refund==null)
+            if(refund==null){
                 resp.sendRedirect(req.getContextPath() + "/paymentfailed");
+                return;
+            }
+            //########### TODO ##########  get transaction info to show in JSP
+            
             // Save the sale ID in your database for future reference
             DBUtils.updatePayPalPayment(conn, orderId, "refunded");
-            DBUtils.insertUserInOffer(conn, orderDetails.getOffer().getId(), user);
+            DBUtils.deleteUserFromOffer(conn, orderDetails.getOffer().getId(), user);
             
-            req.setAttribute("payerInfo", payerInfo);
-            req.setAttribute("transaction", transaction);
-            RequestDispatcher dispatcher=this.getServletContext().getRequestDispatcher("/WEB-INF/views/paymentReceiptView.jsp");
+            //req.setAttribute("payerInfo", payerInfo);
+            //req.setAttribute("transaction", transaction);
+            RequestDispatcher dispatcher=this.getServletContext().getRequestDispatcher("/WEB-INF/views/homeView.jsp");
             dispatcher.forward(req, resp);
         } catch (PayPalRESTException ex) {
-            ex.printStackTrace();
+            ex.printStackTrace();           //########### TODO ########## SEND TO ERROR PAGE
         } catch (SQLException ex) {
-            ex.printStackTrace();
+            ex.printStackTrace();           //########### TODO ########## SEND TO ERROR PAGE
         }
     }
 }

@@ -100,7 +100,7 @@ public class RegisterCompanyServlet extends HttpServlet{
                 business.setPassword(CryptoUtils.hashString(password));
                 String verificationCode = UUID.randomUUID().toString().substring(0, 20);
                 business.setVerificationCode(verificationCode);
-                DBUtils.insertBusiness(conn, business);
+                business.setBusinessID(DBUtils.insertBusiness(conn, business));
             } catch (SQLException ex) {
                 ex.printStackTrace();
                 errorString = ex.getMessage();
