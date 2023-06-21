@@ -192,7 +192,7 @@
                                     <th>Total Price</th>
                                     <th>Fee</th>
                                     <th>Participants</th>
-                                    <th>Expire Date</th>
+                                    <th>Expiration Date</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -204,7 +204,7 @@
                                         <td><a href="${pageContext.request.contextPath}/offerdetails?offerid=${offer.getId()}">${offer.getTitle()}</a></td>
                                         <td>${offer.getFinalprice()}</td>
                                         <td>${offer.getCouponPrice()}</td>
-                                        <td>${offer.getGroupSize()}/${offer.getParticipants()}</td>
+                                        <td>${offer.getParticipants()}/${offer.getGroupSize()}</td>
                                         <td>${offer.getOfferExpire()}</td>
                                     </tr>
                                 </c:forEach>

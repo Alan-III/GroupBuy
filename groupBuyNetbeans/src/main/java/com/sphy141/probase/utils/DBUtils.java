@@ -1300,7 +1300,12 @@ public static void UpdateOffer(Connection conn,Offer offer) throws SQLException 
 
     //GET OFFERS MADE BY BUSINESS
     public static List<Offer> queryBusinessOffers(Connection conn, BusinessAccount business) throws SQLException {
-            String sql = "SELECT *,(SELECT count(*) FROM coupontokens) as participants FROM offers WHERE email=? ORDER BY offerExpire";
+            String sql = "SELECT *,CASE "
+                    + "WHEN res IS NULL THEN 0 "
+                    + "ELSE res "
+                    + "END AS participants FROM offers o "
+                    + "LEFT JOIN (SELECT offerId, count(*) as res FROM coupontokens GROUP BY offerID) t "
+                    + "ON o.offerID=t.offerID WHERE email=? ORDER BY offerExpire";
             PreparedStatement pst = conn.prepareStatement(sql);
             pst.setString(1, business.getEmail());
             ResultSet rs = pst.executeQuery();
