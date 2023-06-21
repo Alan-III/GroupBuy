@@ -109,7 +109,7 @@ public class RegisterUserServlet extends HttpServlet {
             } catch (MessagingException ex) {
                 Logger.getLogger(LoginServlet.class.getName()).log(Level.SEVERE, null, ex);
             }
-            resp.sendRedirect(req.getContextPath()+"/home");
+            resp.sendRedirect(req.getContextPath()+"/home?verification=1");
         }
     }//doPost
 }

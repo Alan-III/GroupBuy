@@ -76,6 +76,12 @@ public class HomeServlet extends HttpServlet {
         }
         req.setAttribute("notificationsCount", notificationsCount);
         //------------------CHECK LOGINED USER - BUSINESS - GET NOTIFICATIONS------------------TEMPLATE END
+        
+        //FOR VERIFICATION SWEET ALERT
+        String verifAlert = req.getParameter("verification");
+        if(verifAlert!=null)
+            req.setAttribute("verifAlert", verifAlert);
+        
         List<Category> categoriesList = null;
         try {
             categoriesList = DBUtils.queryCategories(conn);
