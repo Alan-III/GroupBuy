@@ -79,9 +79,10 @@ public class ExecutePaymentServlet extends HttpServlet {
             PayerInfo payerInfo = payment.getPayer().getPayerInfo();
             Transaction transaction = payment.getTransactions().get(0);
             System.out.println("payee: "+transaction.getPayee().getEmail());;
+            
             DBUtils.updatePayPalPayment(conn, orderId, "completed");
             OrderDetails orderDetails = DBUtils.findPayment(conn, orderId);
-            DBUtils.insertUserInOffer(conn, orderDetails.getOfferId(), user);
+            DBUtils.insertUserInOffer(conn, orderDetails.getOffer().getId(), user);
             
             req.setAttribute("payerInfo", payerInfo);
             req.setAttribute("transaction", transaction);

@@ -930,7 +930,7 @@ public static void UpdateOffer(Connection conn,Offer offer) throws SQLException 
                 + "LEFT JOIN (SELECT productName,productCode FROM products) p ON n.productCode=p.productCode\n"
                 + "LEFT JOIN (SELECT title as offerTitle,offerID FROM offers) o ON n.offerID=o.offerID\n"
                 + "WHERE mw.email=? AND (rn.email=? OR rn.email IS NULL) \n"
-                + "ORDER BY notificationDate desc;";
+                + "ORDER BY notificationDate DESC;";
         List<Notification> list = new ArrayList<Notification>();
         PreparedStatement pst = conn.prepareStatement(sql);
         pst.setString(1, user.getEmail());
@@ -963,7 +963,7 @@ public static void UpdateOffer(Connection conn,Offer offer) throws SQLException 
                 + "LEFT JOIN notifications n ON o.offerID=n.offerID\n" +
                 "LEFT JOIN readnotifications rn ON n.notificationID=rn.notificationID AND rn.email=?\n" +
                 " WHERE o.email=?\n" +
-                " ORDER BY notificationDate desc;";
+                " ORDER BY notificationDate DESC;";
         List<Notification> list = new ArrayList<Notification>();
         PreparedStatement pst = conn.prepareStatement(sql);
         pst.setString(1, business.getEmail());
@@ -1199,7 +1199,7 @@ public static void UpdateOffer(Connection conn,Offer offer) throws SQLException 
             pst.setString(4, orderDetails.getDate());
             pst.setString(5, orderDetails.getType());
             pst.setString(6, orderDetails.getStatus());
-            pst.setInt(7, orderDetails.getOfferId());
+            pst.setInt(7, orderDetails.getOffer().getId());
             pst.executeUpdate();
             
             ResultSet generatedKeys = pst.getGeneratedKeys();
@@ -1226,21 +1226,24 @@ public static void UpdateOffer(Connection conn,Offer offer) throws SQLException 
     //FIND PAYMENT AND GET DETAILS
     public static OrderDetails findPayment(Connection conn, int orderId)throws SQLException {
             // Find the payment record
-            String sql = "SELECT * FROM payments WHERE paymentID = ?";
+            String sql = "SELECT * FROM payments p INNER JOIN offers o ON p.offerID=o.offerID WHERE paymentID = ?";
             PreparedStatement pst = conn.prepareStatement(sql);
             pst.setInt(1, orderId);
             ResultSet rs = pst.executeQuery();
             OrderDetails order=null;
+            Offer offer = null;
             while (rs.next()) {
                 order = new OrderDetails();
                 order.setId(rs.getInt("paymentID"));
                 order.setAccountEmail(rs.getString("accountEmail"));
                 order.setDate(rs.getString("date"));
                 order.setDetails(rs.getString("details"));
-                order.setOfferId(rs.getInt("offerId"));
                 order.setTotal(rs.getFloat("amount"));
                 order.setType(rs.getString("type"));
                 order.setStatus(rs.getString("status"));
+                
+                offer = findOffer(conn, rs.getInt("offerId"));
+                order.setOffer(offer);
             }//while
             return order;
     }
@@ -1273,22 +1276,23 @@ public static void UpdateOffer(Connection conn,Offer offer) throws SQLException 
 
     public static List<OrderDetails> queryPayments(Connection conn, String accountEmail) throws SQLException {
         
-            String sql = "SELECT * FROM payments WHERE accountEmail=?";
+            String sql = "SELECT * FROM payments WHERE accountEmail=? ORDER BY date DESC";
             PreparedStatement pst = conn.prepareStatement(sql);
             pst.setString(1, accountEmail);
             ResultSet rs = pst.executeQuery();
             List<OrderDetails> list= new ArrayList<OrderDetails>();
+            Offer offer = null;
             while (rs.next()) {
                 OrderDetails order = new OrderDetails();
                 order.setId(rs.getInt("paymentID"));
                 order.setAccountEmail(rs.getString("accountEmail"));
                 order.setDate(rs.getString("date"));
                 order.setDetails(rs.getString("details"));
-                order.setOfferId(rs.getInt("offerId"));
                 order.setTotal(rs.getFloat("amount"));
                 order.setType(rs.getString("type"));
                 order.setStatus(rs.getString("status"));
-                
+                offer = findOffer(conn, rs.getInt("offerId"));
+                order.setOffer(offer);
                 list.add(order);
             }//while
             return list;

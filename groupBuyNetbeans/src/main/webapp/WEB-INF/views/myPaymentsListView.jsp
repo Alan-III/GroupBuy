@@ -56,7 +56,7 @@
                                     </a>
                                 </li>
                                 <li class="has-subnav">
-                                    <a href="#">
+                                    <a href="${pageContext.request.contextPath}/mypayments">
                                         <i class="fa fa-book fa-2x"></i>
                                         <span class="nav-text">
                                             My Payments
@@ -142,7 +142,7 @@
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="#">
+                                    <a href="${pageContext.request.contextPath}/mypayments">
                                         <i class="fa fa-book fa-2x"></i>
                                         <span class="nav-text">
                                             My Payments
@@ -206,7 +206,7 @@
                                         <td>${payment.getDate()}</td>
                                         <td>${payment.getType()}</td>
                                         <td>${payment.getStatus()}</td>
-                                        <td>${payment.getOfferId()}</td>   <!--  get offer whole and show name and link with id-->
+                                        <td><a href="${pageContext.request.contextPath}/offerdetails?offerid=${payment.getOffer().getId()}">${payment.getOffer().getTitle()}</a></td>
                                     </tr>
                                 </c:forEach>
                             </tbody>

@@ -60,7 +60,8 @@ public class MyPaymentsServlet extends HttpServlet {
                 ex.printStackTrace();
             }
             } else {
-                req.setAttribute("loginedbusiness", null);
+                resp.sendRedirect(req.getContextPath()+"/login");
+                return;
             }
         }
         req.setAttribute("notificationsCount", notificationsCount);

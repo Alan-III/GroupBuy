@@ -73,7 +73,7 @@
                         </a>
                     </li>
                     <li>
-                        <a href="#">
+                        <a href="${pageContext.request.contextPath}/mypayments">
                             <i class="fa fa-book fa-2x"></i>
                             <span class="nav-text">
                                 My Payments

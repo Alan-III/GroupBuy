@@ -6,6 +6,7 @@
 package com.sphy141.probase.servlets;
 
 import com.paypal.base.rest.PayPalRESTException;
+import com.sphy141.probase.beans.Offer;
 import com.sphy141.probase.beans.OrderDetails;
 import com.sphy141.probase.beans.UserAccount;
 import com.sphy141.probase.utils.DBUtils;
@@ -70,7 +71,13 @@ public class AuthorizePaymentServlet extends HttpServlet {
         String formattedDateTime = currentDateTime.format(formatter);
 
         OrderDetails orderDetails = new OrderDetails();
-        orderDetails.setOfferId(offerId);
+         Offer offer = null;
+        try {
+            offer = DBUtils.findOffer(conn, offerId);
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        orderDetails.setOffer(offer);
         orderDetails.setAccountEmail(user.getEmail());
         orderDetails.setTotal(total);
         orderDetails.setDate(formattedDateTime);

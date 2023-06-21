@@ -17,7 +17,7 @@ public class OrderDetails {
     private String date;
     private String type;
     private String status;
-    private int offerId;
+    private Offer offer;
     
     //paypal
     private float shipping;
@@ -117,12 +117,12 @@ public class OrderDetails {
         this.status = status;
     }
 
-    public int getOfferId() {
-        return offerId;
+    public Offer getOffer() {
+        return offer;
     }
 
-    public void setOfferId(int offerId) {
-        this.offerId = offerId;
+    public void setOffer(Offer offer) {
+        this.offer = offer;
     }
-    
+
 }
