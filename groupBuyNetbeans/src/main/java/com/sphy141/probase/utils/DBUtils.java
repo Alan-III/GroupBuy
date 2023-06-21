@@ -13,15 +13,19 @@ import com.sphy141.probase.beans.OrderDetails;
 import com.sphy141.probase.beans.Product;
 import com.sphy141.probase.beans.ProductFilter;
 import com.sphy141.probase.beans.UserAccount;
+import com.sphy141.probase.utils.CryptoUtils;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.crypto.Cipher;
+import javax.crypto.spec.SecretKeySpec;
 
 /**
  *
@@ -61,13 +65,13 @@ public class DBUtils {
         while (rs.next()) {
             UserAccount user = new UserAccount();
             user.setUserID(Integer.parseInt(rs.getString("userID")));
-            user.setFirstName(rs.getString("firstName"));
-            user.setLastName(rs.getString("lastName"));
-            user.setEmail(rs.getString("email"));
+            user.setFirstName(CryptoUtils.decrypt(rs.getString("firstName"))); //decrtypt
+            user.setLastName(CryptoUtils.decrypt(rs.getString("lastName")));
+            user.setEmail(CryptoUtils.decrypt(rs.getString("email")));
             user.setPhoneNum(rs.getString("phoneNum"));
             user.setBalance(Double.parseDouble(rs.getString("balance")));
-            user.setUserName(rs.getString("userName"));
-            user.setBankAccount(rs.getString("bankAccount"));
+            user.setUserName(CryptoUtils.decrypt(rs.getString("userName")));
+            user.setBankAccount(CryptoUtils.encrypt(rs.getString("bankAccount")));
             user.setPassword(rs.getString("password"));
             return user;
         }
@@ -78,9 +82,9 @@ public class DBUtils {
         //insertDetails
         String sql = "INSERT INTO users (firstName, lastName, email, userName, verificationCode) VALUES(?,?,?,?,?)";
         PreparedStatement pst = conn.prepareCall(sql);
-        pst.setString(1, user.getFirstName());
-        pst.setString(2, user.getLastName());
-        pst.setString(3, user.getEmail());
+        pst.setString(1, CryptoUtils.encrypt(user.getFirstName()));
+        pst.setString(2, CryptoUtils.encrypt(user.getLastName()));
+        pst.setString(3, CryptoUtils.encrypt(user.getEmail()));
         pst.setString(4, user.getUserName());
         pst.setString(5, user.getVerificationCode());
         pst.executeUpdate();
@@ -105,13 +109,13 @@ public class DBUtils {
     public static void updateUser(Connection conn, UserAccount user) throws SQLException {
         String sql = "UPDATE Product SET firstName=?, lastName=?, phoneNum=?, balance=?, userName=?, bankAccount=? WHERE email=?";
         PreparedStatement pst = conn.prepareCall(sql);
-        pst.setString(1, user.getFirstName());
-        pst.setString(2, user.getLastName());
+        pst.setString(1, CryptoUtils.encrypt(user.getFirstName()));
+        pst.setString(2, CryptoUtils.encrypt(user.getLastName()));
         pst.setString(3, user.getPhoneNum());
         pst.setDouble(4, user.getBalance());
-        pst.setString(5, user.getUserName());
-        pst.setString(6, user.getBankAccount());
-        pst.setString(7, user.getEmail());
+        pst.setString(5, CryptoUtils.encrypt(user.getUserName()));
+        pst.setString(6, CryptoUtils.encrypt(user.getBankAccount()));
+        pst.setString(7, CryptoUtils.encrypt(user.getEmail()));
         pst.executeUpdate();
     }//updateUser
 
@@ -166,7 +170,7 @@ public class DBUtils {
                 + "LEFT JOIN mywish mw ON mw.productCode=p.productCode AND (email = ? OR email IS NULL) "
                 + "INNER JOIN (select count(email) as wishcount from mywish a where productCode=?) c WHERE  p.productCode = ? ";
         PreparedStatement pst = conn.prepareStatement(sql);
-        pst.setString(1, userEmail);
+        pst.setString(1, CryptoUtils.encrypt(userEmail));
         pst.setString(2, code);
         pst.setString(3, code);
         ResultSet rs = pst.executeQuery();
@@ -431,19 +435,19 @@ public static void UpdateOffer(Connection conn,Offer offer) throws SQLException 
         String sql = "SELECT businessID, supervisorFirstName, supervisorLastName, balance, businessName,"
                 + " IBAN,AFM, b.email as email, password FROM business b INNER JOIN login l ON b.email=l.email WHERE b.email = ? AND password = ?  AND enabled = 1";
         PreparedStatement pst = conn.prepareStatement(sql);
-        pst.setString(1, loginEmail);
+        pst.setString(1, CryptoUtils.encrypt(loginEmail));
         pst.setString(2, password);
         ResultSet rs = pst.executeQuery();
         while (rs.next()) {
             BusinessAccount business = new BusinessAccount();
             business.setBusinessID(Integer.parseInt(rs.getString("businessID")));
-            business.setSupervisorFirstName(rs.getString("supervisorFirstName"));
-            business.setSupervisorLastName(rs.getString("supervisorLastName"));
-            business.setEmail(rs.getString("email"));
+            business.setSupervisorFirstName(CryptoUtils.decrypt(rs.getString("supervisorFirstName")));
+            business.setSupervisorLastName(CryptoUtils.decrypt(rs.getString("supervisorLastName")));
+            business.setEmail( CryptoUtils.decrypt(rs.getString("email")));
             business.setBalance(Double.parseDouble(rs.getString("balance")));
             business.setBusinessName(rs.getString("businessName"));
-            business.setIBAN(rs.getString("IBAN"));
-            business.setAfm(rs.getString("AFM"));
+            business.setIBAN(CryptoUtils.decrypt(rs.getString("IBAN")));
+            business.setAfm(CryptoUtils.decrypt(rs.getString("AFM")));
             business.setPassword(rs.getString("password"));
             return business;
         }
@@ -454,18 +458,18 @@ public static void UpdateOffer(Connection conn,Offer offer) throws SQLException 
         String sql = "SELECT businessID, supervisorFirstName, supervisorLastName, balance, businessName,"
                 + " IBAN,AFM, b.email as email, password FROM business b INNER JOIN login l ON b.email=l.email WHERE b.email = ?  AND enabled = 1";
         PreparedStatement pst = conn.prepareStatement(sql);
-        pst.setString(1, loginEmail);
+        pst.setString(1, CryptoUtils.encrypt(loginEmail));
         ResultSet rs = pst.executeQuery();
         while (rs.next()) {
             BusinessAccount business = new BusinessAccount();
             business.setBusinessID(Integer.parseInt(rs.getString("businessID")));
-            business.setSupervisorFirstName(rs.getString("supervisorFirstName"));
-            business.setSupervisorLastName(rs.getString("supervisorLastName"));
-            business.setEmail(rs.getString("email"));
+            business.setSupervisorFirstName(CryptoUtils.decrypt(rs.getString("supervisorFirstName")));
+            business.setSupervisorLastName(CryptoUtils.decrypt(rs.getString("supervisorLastName")));
+            business.setEmail( CryptoUtils.decrypt(rs.getString("email")));
             business.setBalance(Double.parseDouble(rs.getString("balance")));
             business.setBusinessName(rs.getString("businessName"));
-            business.setIBAN(rs.getString("IBAN"));
-            business.setAfm(rs.getString("AFM"));
+            business.setIBAN(CryptoUtils.decrypt(rs.getString("IBAN")));
+            business.setAfm(CryptoUtils.decrypt(rs.getString("AFM")));
             business.setPassword(rs.getString("password"));
             return business;
         }
@@ -476,20 +480,20 @@ public static void UpdateOffer(Connection conn,Offer offer) throws SQLException 
         //insertDetails
         String sql = "INSERT INTO business (supervisorFirstName, supervisorLastName, email, businessName, verificationCode, AFM, IBAN) VALUES(?,?,?,?,?,?,?)";
         PreparedStatement pst = conn.prepareCall(sql);
-        pst.setString(1, business.getSupervisorFirstName());
-        pst.setString(2, business.getSupervisorLastName());
-        pst.setString(3, business.getEmail());
+        pst.setString(1, CryptoUtils.encrypt(business.getSupervisorFirstName()));
+        pst.setString(2, CryptoUtils.encrypt(business.getSupervisorLastName()));
+        pst.setString(3, CryptoUtils.encrypt(business.getEmail()));
         pst.setString(4, business.getBusinessName());
         pst.setString(5, business.getVerificationCode());
-        pst.setString(6, business.getAfm());
-        pst.setString(7, business.getIBAN());
+        pst.setString(6, CryptoUtils.encrypt(business.getAfm()));
+        pst.setString(7, CryptoUtils.encrypt(business.getIBAN()));
         pst.executeUpdate();
 
         //insertPassword
         String sql1 = "INSERT INTO login (email, password) VALUES(?, ?)";
         PreparedStatement pst1 = conn.prepareCall(sql1);
         pst1 = conn.prepareCall(sql1);
-        pst1.setString(1, business.getEmail());
+        pst1.setString(1, CryptoUtils.encrypt(business.getEmail()));
         pst1.setString(2, business.getPassword());
         pst1.executeUpdate();
     }//insertBusiness
@@ -610,7 +614,7 @@ public static void UpdateOffer(Connection conn,Offer offer) throws SQLException 
                 + " WHERE productName like ? or details like ? GROUP BY p.productID;";
         List<Product> list = new ArrayList<Product>();
         PreparedStatement pst = conn.prepareStatement(sql);
-        pst.setString(1, useremail);
+        pst.setString(1, CryptoUtils.encrypt(useremail));
         pst.setString(2, "%" + keyword + "%");
         pst.setString(3, "%" + keyword + "%");
         ResultSet rs = pst.executeQuery();
@@ -754,7 +758,7 @@ public static void UpdateOffer(Connection conn,Offer offer) throws SQLException 
                 + "LEFT JOIN (select productCode,count(email) as wishcount from mywish GROUP BY productCode) c ON c.productCode=p.productCode"
                 + " WHERE " + searchQuerry + "GROUP BY pp.productID";
         PreparedStatement pst = conn.prepareStatement(sql);
-        pst.setString(1, useremail);
+        pst.setString(1, CryptoUtils.encrypt(useremail));
         ResultSet rs = pst.executeQuery();
         List<Product> list = new ArrayList<Product>();
         while (rs.next()) {
@@ -883,7 +887,7 @@ public static void UpdateOffer(Connection conn,Offer offer) throws SQLException 
                 of.setGroupSize(rs.getInt("groupSize"));
                 of.setTitle(rs.getString("title"));
                 of.setPath(rs.getString("path"));
-                of.setBusinessMail(rs.getString("email"));
+                of.setBusinessMail(CryptoUtils.decrypt(rs.getString("email")));
                 list.add(of);
             }
         }//while
@@ -908,7 +912,7 @@ public static void UpdateOffer(Connection conn,Offer offer) throws SQLException 
                 of.setGroupSize(rs.getInt("groupSize"));
                 of.setTitle(rs.getString("title"));
                 of.setPath(rs.getString("path"));
-                of.setBusinessMail(rs.getString("email"));
+                of.setBusinessMail(CryptoUtils.decrypt(rs.getString("email")));
                 list.add(of);
             }
         }//while
@@ -920,7 +924,7 @@ public static void UpdateOffer(Connection conn,Offer offer) throws SQLException 
         String sql = "CALL ToggleProductWishForUser(?, ?)";
         PreparedStatement pst = conn.prepareCall(sql);
         pst.setString(1, productCode);
-        pst.setString(2, userMailstr);
+        pst.setString(2, CryptoUtils.encrypt(userMailstr));
         pst.executeUpdate();
     }
 
@@ -933,8 +937,8 @@ public static void UpdateOffer(Connection conn,Offer offer) throws SQLException 
                 + "ORDER BY notificationDate DESC;";
         List<Notification> list = new ArrayList<Notification>();
         PreparedStatement pst = conn.prepareStatement(sql);
-        pst.setString(1, user.getEmail());
-        pst.setString(2, user.getEmail());
+        pst.setString(1, CryptoUtils.encrypt(user.getEmail()));
+        pst.setString(2, CryptoUtils.encrypt(user.getEmail()));
         ResultSet rs = pst.executeQuery();
         while (rs.next()) {
             Product pro = new Product();
@@ -966,8 +970,8 @@ public static void UpdateOffer(Connection conn,Offer offer) throws SQLException 
                 " ORDER BY notificationDate DESC;";
         List<Notification> list = new ArrayList<Notification>();
         PreparedStatement pst = conn.prepareStatement(sql);
-        pst.setString(1, business.getEmail());
-        pst.setString(2, business.getEmail());
+        pst.setString(1, CryptoUtils.encrypt(business.getEmail()));
+        pst.setString(2, CryptoUtils.encrypt(business.getEmail()));
         ResultSet rs = pst.executeQuery();
         while (rs.next()) {
             Product pro = new Product();
@@ -998,8 +1002,8 @@ public static void UpdateOffer(Connection conn,Offer offer) throws SQLException 
                 + "WHERE mw.email=? AND rn.email=?";
         List<Notification> list = new ArrayList<Notification>();
         PreparedStatement pst = conn.prepareStatement(sql);
-        pst.setString(1, user.getEmail());
-        pst.setString(2, user.getEmail());
+        pst.setString(1, CryptoUtils.encrypt(user.getEmail()));
+        pst.setString(2, CryptoUtils.encrypt(user.getEmail()));
         ResultSet rs = pst.executeQuery();
         Product pro = new Product();
         Offer of = new Offer();
@@ -1029,8 +1033,8 @@ public static void UpdateOffer(Connection conn,Offer offer) throws SQLException 
                 + "WHERE mw.email=? AND rn.email=?";
         List<Notification> list = new ArrayList<Notification>();
         PreparedStatement pst = conn.prepareStatement(sql);
-        pst.setString(1, business.getEmail());
-        pst.setString(2, business.getEmail());
+        pst.setString(1, CryptoUtils.encrypt(business.getEmail()));
+        pst.setString(2, CryptoUtils.encrypt(business.getEmail()));
         ResultSet rs = pst.executeQuery();
         Product pro = new Product();
         Offer of = new Offer();
@@ -1119,8 +1123,8 @@ public static void UpdateOffer(Connection conn,Offer offer) throws SQLException 
                 + "LEFT JOIN readnotifications rn ON n.notificationID=rn.notificationID AND rn.email=? WHERE mw.email=? AND rn.email IS NULL;";
         List<Notification> list = new ArrayList<Notification>();
         PreparedStatement pst = conn.prepareStatement(sql);
-        pst.setString(1, user.getEmail());
-        pst.setString(2, user.getEmail());
+        pst.setString(1, CryptoUtils.encrypt(user.getEmail()));
+        pst.setString(2, CryptoUtils.encrypt(user.getEmail()));
         ResultSet rs = pst.executeQuery();
         while (rs.next()) {
             return rs.getInt("notcount");
@@ -1134,8 +1138,8 @@ public static void UpdateOffer(Connection conn,Offer offer) throws SQLException 
                 + "LEFT JOIN readnotifications rn ON n.notificationID=rn.notificationID AND rn.email=? WHERE o.email=? AND rn.email IS NULL;";
         List<Notification> list = new ArrayList<Notification>();
         PreparedStatement pst = conn.prepareStatement(sql);
-        pst.setString(1, business.getEmail());
-        pst.setString(2, business.getEmail());
+        pst.setString(1, CryptoUtils.encrypt(business.getEmail()));
+        pst.setString(2, CryptoUtils.encrypt(business.getEmail()));
         ResultSet rs = pst.executeQuery();
         while (rs.next()) {
             return rs.getInt("notcount");
@@ -1148,7 +1152,7 @@ public static void UpdateOffer(Connection conn,Offer offer) throws SQLException 
         String sql = "INSERT INTO readnotifications (notificationID,email) VALUES (?,?)";
         PreparedStatement pst = conn.prepareStatement(sql);
         pst.setInt(1, notificationID);
-        pst.setString(2, user.getEmail());
+        pst.setString(2, CryptoUtils.encrypt(user.getEmail()));
         pst.executeUpdate();
     }
 
@@ -1157,7 +1161,7 @@ public static void UpdateOffer(Connection conn,Offer offer) throws SQLException 
         String sql = "INSERT INTO readnotifications (notificationID,email) VALUES (?,?)";
         PreparedStatement pst = conn.prepareStatement(sql);
         pst.setInt(1, notificationID);
-        pst.setString(2, business.getEmail());
+        pst.setString(2, CryptoUtils.encrypt(business.getEmail()));
         pst.executeUpdate();
     }
 
@@ -1193,7 +1197,7 @@ public static void UpdateOffer(Connection conn,Offer offer) throws SQLException 
             // Insert the payment record
             String sql = "INSERT INTO payments (accountEmail, amount, details, date, type, status, offerId) VALUES (?, ?, ?, ?, ?, ?, ?)";
             PreparedStatement pst = conn.prepareStatement(sql ,Statement.RETURN_GENERATED_KEYS);
-            pst.setString(1, orderDetails.getAccountEmail());
+            pst.setString(1, CryptoUtils.encrypt(orderDetails.getAccountEmail()));//encrypt
             pst.setString(2, orderDetails.getTotal());
             pst.setString(3, orderDetails.getDetails());
             pst.setString(4, orderDetails.getDate());
@@ -1235,7 +1239,7 @@ public static void UpdateOffer(Connection conn,Offer offer) throws SQLException 
             while (rs.next()) {
                 order = new OrderDetails();
                 order.setId(rs.getInt("paymentID"));
-                order.setAccountEmail(rs.getString("accountEmail"));
+                order.setAccountEmail(CryptoUtils.decrypt(rs.getString("accountEmail")));//decrypt
                 order.setDate(rs.getString("date"));
                 order.setDetails(rs.getString("details"));
                 order.setTotal(rs.getFloat("amount"));
@@ -1253,7 +1257,7 @@ public static void UpdateOffer(Connection conn,Offer offer) throws SQLException 
             // Insert the payment record
             String sql = "INSERT INTO coupontokens (email, offerID, date) VALUES (?, ?, NOW())";
             PreparedStatement pst = conn.prepareStatement(sql);
-            pst.setString(1, user.getEmail());
+            pst.setString(1, CryptoUtils.encrypt(user.getEmail()));//encrypt
             pst.setInt(2, offerId);
             pst.executeUpdate();
 
@@ -1266,7 +1270,7 @@ public static void UpdateOffer(Connection conn,Offer offer) throws SQLException 
         String sql = "SELECT * FROM coupontokens WHERE offerID=? AND email=?";
         PreparedStatement pst = conn.prepareStatement(sql);
         pst.setInt(1, offer.getId());
-        pst.setString(2, user.getEmail());
+        pst.setString(2, CryptoUtils.encrypt(user.getEmail()));//encrypt
         ResultSet rs = pst.executeQuery();
             while (rs.next()) {
                 return true;
@@ -1278,14 +1282,14 @@ public static void UpdateOffer(Connection conn,Offer offer) throws SQLException 
         
             String sql = "SELECT * FROM payments WHERE accountEmail=? ORDER BY date DESC";
             PreparedStatement pst = conn.prepareStatement(sql);
-            pst.setString(1, accountEmail);
+            pst.setString(1, CryptoUtils.encrypt(accountEmail));//encrypt
             ResultSet rs = pst.executeQuery();
             List<OrderDetails> list= new ArrayList<OrderDetails>();
             Offer offer = null;
             while (rs.next()) {
                 OrderDetails order = new OrderDetails();
                 order.setId(rs.getInt("paymentID"));
-                order.setAccountEmail(rs.getString("accountEmail"));
+                order.setAccountEmail(CryptoUtils.decrypt(rs.getString("accountEmail")));//decrypt
                 order.setDate(rs.getString("date"));
                 order.setDetails(rs.getString("details"));
                 order.setTotal(rs.getFloat("amount"));

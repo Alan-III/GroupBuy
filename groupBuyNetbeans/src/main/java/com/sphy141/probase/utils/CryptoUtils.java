@@ -18,6 +18,8 @@ import javax.crypto.spec.SecretKeySpec;
 
 public class CryptoUtils {
     
+    private static final String key = "141";
+    
     public static String hashString(String password) {
         try {
             // Create an instance of the SHA-256 algorithm
@@ -46,7 +48,7 @@ public class CryptoUtils {
 /*επειδή ο hash-256 είναι μονόδρομος αλγόριθμος κρυπρογάφισης 
 χρησιμοποιώ τον αλγόριθμο AES προκειμένου να δημιουργήσω μία κρυπτογράφιση για τα δεδομένα της βάσης που είνια ευαίσθητα πχ χρήστη και επιχειρήσεων*/
     
-       public static String encrypt(String plainText, String key) {
+       public static String encrypt(String plainText) {
         try {
             SecretKeySpec secretKey = new SecretKeySpec(key.getBytes(), "AES");
             Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
@@ -59,7 +61,7 @@ public class CryptoUtils {
         return null;
     }//hashAESString
 
-    public static String decrypt(String encryptedText, String key) {
+    public static String decrypt(String encryptedText) {
         try {
             SecretKeySpec secretKey = new SecretKeySpec(key.getBytes(), "AES");
             Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
@@ -72,7 +74,7 @@ public class CryptoUtils {
         return null;
     }//hashAESString
     
-      public static String encryptDouble(double number, String key) {
+      public static String encryptDouble(double number) {
         try {
             String plainText = Double.toString(number);
             SecretKeySpec secretKey = new SecretKeySpec(key.getBytes(), "AES");
@@ -86,7 +88,7 @@ public class CryptoUtils {
         return null;
     }
 
-    public static double decryptDouble(String encryptedText, String key) {
+    public static double decryptDouble(String encryptedText) {
         try {
             SecretKeySpec secretKey = new SecretKeySpec(key.getBytes(), "AES");
             Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
