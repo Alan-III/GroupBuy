@@ -1225,7 +1225,7 @@ public static void UpdateOffer(Connection conn,Offer offer) throws SQLException 
     
     //FIND PAYMENT AND GET DETAILS
     public static OrderDetails findPayment(Connection conn, int orderId)throws SQLException {
-            // Insert the payment record
+            // Find the payment record
             String sql = "SELECT * FROM payments WHERE paymentID = ?";
             PreparedStatement pst = conn.prepareStatement(sql);
             pst.setInt(1, orderId);
@@ -1269,5 +1269,28 @@ public static void UpdateOffer(Connection conn,Offer offer) throws SQLException 
                 return true;
             }//while
             return false;
+    }
+
+    public static List<OrderDetails> queryPayments(Connection conn, String accountEmail) throws SQLException {
+        
+            String sql = "SELECT * FROM payments WHERE accountEmail=?";
+            PreparedStatement pst = conn.prepareStatement(sql);
+            pst.setString(1, accountEmail);
+            ResultSet rs = pst.executeQuery();
+            List<OrderDetails> list= new ArrayList<OrderDetails>();
+            while (rs.next()) {
+                OrderDetails order = new OrderDetails();
+                order.setId(rs.getInt("paymentID"));
+                order.setAccountEmail(rs.getString("accountEmail"));
+                order.setDate(rs.getString("date"));
+                order.setDetails(rs.getString("details"));
+                order.setOfferId(rs.getInt("offerId"));
+                order.setTotal(rs.getFloat("amount"));
+                order.setType(rs.getString("type"));
+                order.setStatus(rs.getString("status"));
+                
+                list.add(order);
+            }//while
+            return list;
     }
 }
