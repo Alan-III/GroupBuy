@@ -28,7 +28,7 @@
                     <nav class="main-menu">
                         <ul>
                         <li>
-                            <a href="https://jbfarrow.com">
+                            <a href="${pageContext.request.contextPath}/businessInfo">
                                 <i class="fa fa-home fa-2x"></i>
                                 <span class="nav-text">
                                     Business Details
@@ -37,7 +37,7 @@
 
                         </li>
                         <li class="has-subnav">
-                            <a href="${pageContext.request.contextPath}/productlist">
+                            <a href="${pageContext.request.contextPath}/myoffers">
                                 <i class="fa fa-shopping-cart fa-2x"></i>
                                 <span class="nav-text">
                                     My Offers
@@ -53,7 +53,7 @@
                             </a>
                         </li>
                         <li class="has-subnav">
-                            <a href="#">
+                            <a href="${pageContext.request.contextPath}/mypayments">
                                 <i class="fa fa-book fa-2x"></i>
                                 <span class="nav-text">
                                     My Payments
@@ -61,7 +61,7 @@
                             </a>
                         </li>
                         <li>
-                            <a href="#">
+                            <a href="${pageContext.request.contextPath}/businessnotifications">
                                 <i class="fa fa-info fa-2x"></i>
                                 <span class="nav-text">
                                     Notifications
@@ -85,7 +85,7 @@
                             </a>
                         </li>
                         <li>
-                            <a href="/groupbuy/logout">
+                            <a href="${pageContext.request.contextPath}/logout">
                                 <i class="fa fa-power-off fa-2x"></i>
                                 <span class="nav-text">
                                     Logout

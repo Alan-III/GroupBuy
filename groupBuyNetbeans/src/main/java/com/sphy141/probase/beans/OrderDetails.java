@@ -17,12 +17,15 @@ public class OrderDetails {
     private String date;
     private String type;
     private String status;
-    private int offerId;
+    private Offer offer;
     
+    //paypal
     private float shipping;
     private float tax;
     private float subtotal;
     private float total;
+    private String paypalPaymentId;
+    private String paypalSaleId;
     
     
     public OrderDetails(){
@@ -116,12 +119,28 @@ public class OrderDetails {
         this.status = status;
     }
 
-    public int getOfferId() {
-        return offerId;
+    public Offer getOffer() {
+        return offer;
     }
 
-    public void setOfferId(int offerId) {
-        this.offerId = offerId;
+    public void setOffer(Offer offer) {
+        this.offer = offer;
     }
-    
+
+    public String getPaypalPaymentId() {
+        return paypalPaymentId;
+    }
+
+    public void setPaypalPaymentId(String paypalPaymentId) {
+        this.paypalPaymentId = paypalPaymentId;
+    }
+
+    public String getPaypalSaleId() {
+        return paypalSaleId;
+    }
+
+    public void setPaypalSaleId(String paypalSaleId) {
+        this.paypalSaleId = paypalSaleId;
+    }
+
 }
