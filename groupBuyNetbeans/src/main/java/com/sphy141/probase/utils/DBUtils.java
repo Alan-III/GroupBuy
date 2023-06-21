@@ -1215,10 +1215,22 @@ public static void UpdateOffer(Connection conn,Offer offer) throws SQLException 
             System.out.println("Payment record inserted! id="+orderDetails.getId());
     }
     
-    //UPDATE PAYMENT WITH NEW STATUS
-    public static void updatePayPalPayment(Connection conn, int orderId, String status)throws SQLException {
+    //UPDATE PAYMENT WITH NEW STATUS AND SALEID
+    public static void updatePayPalPayment(Connection conn, int orderId, String status, String saleId) throws SQLException {
             // Update the payment status based on the PayPal API response
-            String sql = "UPDATE payments SET status = ? WHERE paymentID = ?";
+            String sql = "UPDATE payments SET status = ?,saleId=?  WHERE paymentID = ?";
+            PreparedStatement pst = conn.prepareStatement(sql);
+            pst.setString(1, status);
+            pst.setString(2, saleId);   //ADD THIS COLUMN TO THE DATABASE AND THE TO THE ORDERDETAILS
+            pst.setInt(3, orderId);
+            pst.executeUpdate();
+            
+            System.out.println("Payment record updated!");
+    }
+    //UPDATE PAYMENT WITH NEW STATUS
+    public static void updatePayPalPayment(Connection conn, int orderId, String status) throws SQLException {
+            // Update the payment status based on the PayPal API response
+            String sql = "UPDATE payments SET status = ?,saleId=?  WHERE paymentID = ?";
             PreparedStatement pst = conn.prepareStatement(sql);
             pst.setString(1, status);
             pst.setInt(2, orderId);
@@ -1267,7 +1279,9 @@ public static void UpdateOffer(Connection conn,Offer offer) throws SQLException 
             
             if(offer.getParticipants()==offer.getGroupSize()){
                 insertNotification(conn, offer, null, "Offer group Filled!");
-                findOffer(conn, offerId).setStatus("filled");
+                offer = findOffer(conn, offerId);
+                offer.setStatus("filled");
+                //updateOffer(conn, offer);
                 //SEND EMAIL TO BUSINESS
             }
     }
