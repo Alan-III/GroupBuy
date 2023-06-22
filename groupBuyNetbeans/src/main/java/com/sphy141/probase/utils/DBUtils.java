@@ -323,18 +323,21 @@ public class DBUtils {
                 pst.executeUpdate();
 
                 //INSERT NOTIFICATIONS FOR EACH PRODUCT
-                insertNotification(conn, offer, productCode, "New offer");
+                Notification notif = new Notification();
+                notif.setNotificationTitle("New Offer");
+                notif.setDetails(productCode.length()+" products for "+offer.getGroupSize()+" people.");
+                insertNotification(conn, offer, productCode, notif);
             }//for
         }
 
     }//findOffer
 
     //INSERT NOTIFICATION
-    public static void insertNotification(Connection conn, Offer offer, String productCode, String title) throws SQLException {
+    public static void insertNotification(Connection conn, Offer offer, String productCode, Notification notification) throws SQLException {
         String sql = "insert into notifications (title,details,offerID,productCode,notificationDate) values (?,?,?,?,NOW())";
         PreparedStatement pst = conn.prepareCall(sql);
-        pst.setString(1, title);
-        pst.setString(2, offer.getDetails());
+        pst.setString(1, notification.getNotificationTitle());
+        pst.setString(2, notification.getDetails());
         pst.setInt(3, offer.getId());
         pst.setString(4, productCode);
         pst.executeUpdate();
@@ -1329,10 +1332,19 @@ public static void UpdateOffer(Connection conn,Offer offer) throws SQLException 
 
         Offer offer = new Offer();
         offer.setId(offerId);
-        insertNotification(conn, offer, null, "New User joined Offer");
+        
+        Notification notif = new Notification();
+        notif.setNotificationTitle("New User Joined Offer");
+        notif.setDetails("notification details...");
+     
+        insertNotification(conn, offer, null, notif);
 
         if (offer.getParticipants() == offer.getGroupSize()) {
-            insertNotification(conn, offer, null, "Offer group Filled!");
+            Notification notif2 = new Notification();
+            notif2.setNotificationTitle("Offer group Filled!"); //title used to check usernotifications. Carefull if you change it
+            notif2.setDetails("Wait for acceptance or cancelation by business");
+        
+            insertNotification(conn, offer, null, notif2);
             offer = findOffer(conn, offerId);
             offer.setStatus("filled");
             //updateOffer(conn, offer);
@@ -1444,6 +1456,10 @@ public static void UpdateOffer(Connection conn,Offer offer) throws SQLException 
 
         Offer offer = new Offer();
         offer.setId(offerId);
-        insertNotification(conn, offer, null, "User left Offer");
+        
+        Notification notif = new Notification();
+        notif.setNotificationTitle("User left Offer");
+        notif.setDetails("notification details...");
+        insertNotification(conn, offer, null, notif);
     }
 }
