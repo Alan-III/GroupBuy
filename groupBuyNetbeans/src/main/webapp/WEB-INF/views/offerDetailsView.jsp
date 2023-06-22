@@ -73,7 +73,7 @@
                                     <span class="price text-uppercase" style="color: red;" >offer Full!</span>
 
                                 </c:when>
-                                <c:when test="${isParticipant&&offer.getStatus()=='active'}">
+                                <c:when test="${isParticipant && offer.getStatus()=='active'}">
                                     <button type="button" onclick="confirmLeaveOffer(${offer.getId()}, ${offer.getCouponPrice()})" class="leave-offer-btn">
                                         <img src="http://co0kie.github.io/codepen/nike-product-page/cart.png" alt="">
                                         <span>Leave offer</span>
@@ -139,9 +139,9 @@
             // Call the function on page load
             window.onload = function () {
                 // Call the function if the first test condition succeeds
-            if (${offer.getParticipants() >= offer.getGroupSize()}) {
-                showNotification();
-            }
+                if (${offer.getParticipants() >= offer.getGroupSize()}) {
+                    showNotification();
+                }
             };
             //OFFER FULL
             function showNotification() {
@@ -163,12 +163,12 @@
                 });
             }
             //LEAVE OFFER CONFIRM
-            function confirmJoinOffer(offerID, fee) {
+            function confirmLeaveOffer(offerID, fee) {
                 // ALERT WITH FUNCTIONAL CONFIRM & CANCEL BUTTON
                 console.log("fire");
                 Swal.fire({
                     title: 'Leave Offer?',
-                    text: "Your will be refunded" + fee + "$ fee you payed to join. You can join again later.",
+                    text: "Your will be refunded " + fee + "$ fee you payed to join. You can join again later.",
                     icon: 'warning',
                     showCancelButton: true,
                     confirmButtonColor: '#3085d6',
@@ -183,26 +183,24 @@
                     if (result.value) {
                         // Send AJAX request to delete the joined user and pay back
                         $.ajax({
-                            url: '${pageContext.request.contextPath}/authorizerefund',
+                            url: '${pageContext.request.contextPath}/executerefund',
                             method: 'POST',
                             data: {
                                 offerId: offerID,
-                                total: fee,
-                                subtotal: fee,
-                                shipping: "0",
-                                tax: "0"
                             },
                             success: function (response) {
                                 Swal.fire({
-                                    icon: 'info',
-                                    title: 'Pay with PayPal',
-                                    text: 'You will be redirected to PayPal',
+                                    icon: 'success',
+                                    title: 'Fee refunded',
+                                    text: 'You have left the offer',
                                     customClass: {
                                         confirmButton: 'btn btn-success'
                                     }
                                 }).then(function () {
-                                    window.location.href = response.redirectUrl; // Redirect to PayPal approval link
-                                });
+                                    if (response.redirectUrl) {
+                                        window.location.href = ${pageContext.request.contextPath}+response.redirectUrl;
+                                    }
+                                })
                             },
                             error: function (xhr, status, error) {
                                 Swal.fire({
@@ -218,7 +216,7 @@
                     } else if (result.dismiss === Swal.DismissReason.cancel) {
                         Swal.fire({
                             title: 'Cancelled',
-                            text: 'Wishlist the products to be notifified for new offers',
+                            text: 'You will be notified when the offer is completed to pay the Full Price',
                             icon: 'error',
                             customClass: {
                                 confirmButton: 'btn btn-success'

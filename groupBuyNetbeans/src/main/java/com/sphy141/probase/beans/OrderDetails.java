@@ -24,8 +24,8 @@ public class OrderDetails {
     private float tax;
     private float subtotal;
     private float total;
-    private String paypalPaymentId;
-    private String paypalSaleId;
+    private String authorizationId;
+    private String captureId;
     
     
     public OrderDetails(){
@@ -127,20 +127,20 @@ public class OrderDetails {
         this.offer = offer;
     }
 
-    public String getPaypalPaymentId() {
-        return paypalPaymentId;
+    public String getAuthorizationId() {
+        return authorizationId;
     }
 
-    public void setPaypalPaymentId(String paypalPaymentId) {
-        this.paypalPaymentId = paypalPaymentId;
+    public void setAuthorizationId(String authorizationId) {
+        this.authorizationId = authorizationId;
     }
 
-    public String getPaypalSaleId() {
-        return paypalSaleId;
+    public String getCaptureId() {
+        return captureId;
     }
 
-    public void setPaypalSaleId(String paypalSaleId) {
-        this.paypalSaleId = paypalSaleId;
+    public void setCaptureId(String captureId) {
+        this.captureId = captureId;
     }
 
 }

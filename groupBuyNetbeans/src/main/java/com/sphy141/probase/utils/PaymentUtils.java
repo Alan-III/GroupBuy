@@ -6,6 +6,8 @@
 package com.sphy141.probase.utils;
 
 import com.paypal.api.payments.Amount;
+import com.paypal.api.payments.Authorization;
+import com.paypal.api.payments.Capture;
 import com.paypal.api.payments.Details;
 import com.paypal.api.payments.ItemList;
 import com.paypal.api.payments.Item;
@@ -17,6 +19,7 @@ import com.paypal.api.payments.PaymentExecution;
 import com.paypal.api.payments.RedirectUrls;
 import com.paypal.api.payments.Refund;
 import com.paypal.api.payments.RefundRequest;
+import com.paypal.api.payments.RelatedResources;
 import com.paypal.api.payments.Sale;
 import com.paypal.api.payments.Transaction;
 import com.paypal.base.rest.APIContext;
@@ -98,6 +101,16 @@ public class PaymentUtils {
         itemList.setItems(items);
         transaction.setItemList(itemList);
 
+        Sale sale = new Sale();
+        sale.setId("" + orderDetails.getId()); // Initialize with an ID
+
+        List<RelatedResources> relatedResources = new ArrayList<>();
+        RelatedResources resources = new RelatedResources();
+        resources.setSale(sale);
+        relatedResources.add(resources);
+
+        transaction.setRelatedResources(relatedResources);
+
         List<Transaction> listTransaction = new ArrayList<Transaction>();
         listTransaction.add(transaction);
 
@@ -140,7 +153,7 @@ public class PaymentUtils {
         return payer;
     }
 
-    public static Refund refundPayment(String paymentId, String saleId, double amount) throws PayPalRESTException {
+    public static Refund refundPayment(String saleId, double amount) throws PayPalRESTException {
         Amount refundAmount = new Amount();
         refundAmount.setCurrency("USD");
         refundAmount.setTotal(String.valueOf(amount));
@@ -156,6 +169,24 @@ public class PaymentUtils {
         Refund refund = sale.refund(apiContext, refundRequest);
 
         return refund;
+    }
+
+    public static Capture capturePayment(String authorizationId, String total) throws PayPalRESTException {
+        APIContext apiContext = new APIContext(CLIENT_ID, CLIENT_SECRET, MODE);
+
+        Authorization authorization = new Authorization();
+        authorization.setId(authorizationId);
+
+        Amount amount = new Amount();
+        amount.setCurrency("USD");
+        amount.setTotal(total);
+
+        Capture capture = new Capture();
+        capture.setAmount(amount);
+
+        Capture responseCapture = authorization.capture(apiContext, capture);
+
+        return responseCapture;
     }
 
 }

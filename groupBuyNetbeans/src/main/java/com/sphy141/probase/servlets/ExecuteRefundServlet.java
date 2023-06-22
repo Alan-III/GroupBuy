@@ -5,6 +5,7 @@
  */
 package com.sphy141.probase.servlets;
 
+import com.paypal.api.payments.Capture;
 import com.paypal.api.payments.PayerInfo;
 import com.paypal.api.payments.Payment;
 import com.paypal.api.payments.Refund;
@@ -32,11 +33,12 @@ import javax.servlet.http.HttpSession;
  */
 @WebServlet(urlPatterns = {"/executerefund"})
 public class ExecuteRefundServlet extends HttpServlet {
+
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        
+
     }
-    
+
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         //------------------CHECK LOGINED USER - BUSINESS - GET NOTIFICATIONS------------------TEMPLATE START
@@ -59,33 +61,40 @@ public class ExecuteRefundServlet extends HttpServlet {
         }
         req.setAttribute("notificationsCount", notificationsCount);
         //------------------CHECK LOGINED USER - BUSINESS - GET NOTIFICATIONS------------------TEMPLATE END
-        
-        String orderIdstr = req.getParameter("orderId");
-        int orderId = Integer.parseInt(orderIdstr);
+
+        String offerIdstr = req.getParameter("offerId");
+        int offerId = Integer.parseInt(offerIdstr);
 
         try {
-            OrderDetails orderDetails = DBUtils.findPayment(conn, orderId);
-            
-            Refund refund = PaymentUtils.refundPayment(orderDetails.getPaypalPaymentId(), orderDetails.getPaypalSaleId(), Double.parseDouble(orderDetails.getTotal()));
-            
-            if(refund==null){
+            OrderDetails orderDetails = DBUtils.findPayment(conn, offerId, user);
+
+            Refund refund = PaymentUtils.refundPayment(orderDetails.getCaptureId(), Double.parseDouble(orderDetails.getTotal()));
+
+            if (refund == null) {
                 resp.sendRedirect(req.getContextPath() + "/paymentfailed");
                 return;
             }
             //########### TODO ##########  get transaction info to show in JSP
-            
+
             // Save the sale ID in your database for future reference
-            DBUtils.updatePayPalPayment(conn, orderId, "refunded");
+            DBUtils.updatePayPalPayment(conn, orderDetails.getId(), "refunded");
             DBUtils.deleteUserFromOffer(conn, orderDetails.getOffer().getId(), user);
-            
+
             //req.setAttribute("payerInfo", payerInfo);
             //req.setAttribute("transaction", transaction);
-            RequestDispatcher dispatcher=this.getServletContext().getRequestDispatcher("/WEB-INF/views/homeView.jsp");
-            dispatcher.forward(req, resp);
+            String redirectUrl = "/offerdetails?offerid=" + orderDetails.getOffer().getId();
+            resp.setContentType("application/json");
+            resp.setCharacterEncoding("UTF-8");
+            resp.getWriter().write("{\"redirectUrl\": \"" + redirectUrl + "\"}");
+
         } catch (PayPalRESTException ex) {
             ex.printStackTrace();           //########### TODO ########## SEND TO ERROR PAGE
+            resp.sendRedirect(req.getContextPath() + "/paymentfailed");
+                return;
         } catch (SQLException ex) {
             ex.printStackTrace();           //########### TODO ########## SEND TO ERROR PAGE
+            resp.sendRedirect(req.getContextPath() + "/paymentfailed");
+                return;
         }
     }
 }

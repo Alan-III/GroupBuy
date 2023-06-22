@@ -5,6 +5,7 @@
  */
 package com.sphy141.probase.servlets;
 
+import com.paypal.api.payments.Capture;
 import com.paypal.api.payments.PayerInfo;
 import com.paypal.api.payments.Payment;
 import com.paypal.api.payments.Transaction;
@@ -64,8 +65,6 @@ public class ExecutePaymentServlet extends HttpServlet {
         
         String paymentId = req.getParameter("paymentId");
         String payerId = req.getParameter("payerId");
-        String token = req.getParameter("token");       //CHANGE token to saleId in DB
-        System.out.println(token);
         
         if(payerId==null || paymentId==null)
             resp.sendRedirect(req.getContextPath() + "/paymentfailed");
@@ -74,15 +73,23 @@ public class ExecutePaymentServlet extends HttpServlet {
         int orderId = Integer.parseInt(orderIdstr);
 
         try {
+            //Authorize payment and reserve customers funds
             Payment payment = PaymentUtils.executePayment(paymentId, payerId);
             PayerInfo payerInfo = payment.getPayer().getPayerInfo();
             Transaction transaction = payment.getTransactions().get(0);
-            String saleId = transaction.getRelatedResources().get(0).getSale().getId();
-    
-            // Save the sale ID in your database for future reference
-            DBUtils.updatePayPalPayment(conn, orderId, "completed", saleId);
+            
+            // Retrieve the authorization ID from the payment response
+            String authorizationId = payment.getTransactions().get(0).getRelatedResources().get(0).getAuthorization().getId();
+            //Capture funds
+            Capture capturePayment = PaymentUtils.capturePayment(authorizationId, transaction.getAmount().getTotal());
+            String captureId = capturePayment.getId();
+            
+            
+            //Save the sale ID in your database for future reference
+            DBUtils.updatePayPalPayment(conn, orderId, "completed", authorizationId, captureId);
             OrderDetails orderDetails = DBUtils.findPayment(conn, orderId);     //INSERT BEFORE PAYING. ROLLBACK IF CANT PAY
             DBUtils.insertUserInOffer(conn, orderDetails.getOffer().getId(), user);
+            
             
             req.setAttribute("payerInfo", payerInfo);
             req.setAttribute("transaction", transaction);

@@ -145,7 +145,7 @@ public class DBUtils {
                 + "LEFT JOIN (select productCode,count(email) as wishcount from mywish GROUP BY productCode) c ON c.productCode=p.productCode GROUP BY p.productID";
         List<Product> list = new ArrayList<Product>();
         PreparedStatement pst = conn.prepareStatement(sql);
-        pst.setString(1, userEmail);
+        pst.setString(1, CryptoUtils.encrypt(userEmail));
         ResultSet rs = pst.executeQuery();
         while (rs.next()) {
             Product prod = new Product();
@@ -941,12 +941,13 @@ public static void UpdateOffer(Connection conn,Offer offer) throws SQLException 
     }
 
     public static List<Notification> queryNotifications(Connection conn, UserAccount user) throws SQLException {
-        String sql = "SELECT *,rn.email as seen FROM notifications n INNER JOIN mywish mw ON n.productCode=mw.productCode \n"
-                + "LEFT JOIN readnotifications rn ON n.notificationID=rn.notificationID \n"
-                + "LEFT JOIN (SELECT productName,productCode FROM products) p ON n.productCode=p.productCode\n"
-                + "LEFT JOIN (SELECT title as offerTitle,offerID FROM offers) o ON n.offerID=o.offerID\n"
-                + "WHERE mw.email=? AND (rn.email=? OR rn.email IS NULL) \n"
-                + "ORDER BY notificationDate DESC;";
+        String sql = "SELECT *,CASE WHEN rn.email !=?  THEN NULL ELSE rn.email END as seen\n"
+                    + " FROM notifications n INNER JOIN mywish mw ON n.productCode=mw.productCode\n"
+                    + " LEFT JOIN readnotifications rn ON n.notificationID=rn.notificationID\n"
+                    + " LEFT JOIN (SELECT productName,productCode FROM products) p ON n.productCode=p.productCode\n"
+                    + " LEFT JOIN (SELECT title as offerTitle,offerID FROM offers) o ON n.offerID=o.offerID\n"
+                    + " WHERE mw.email=? GROUP BY n.notificationID\n"
+                    + " ORDER BY notificationDate DESC";
         List<Notification> list = new ArrayList<Notification>();
         PreparedStatement pst = conn.prepareStatement(sql);
         pst.setString(1, CryptoUtils.encrypt(user.getEmail()));
@@ -1076,8 +1077,8 @@ public static void UpdateOffer(Connection conn,Offer offer) throws SQLException 
                 + "WHERE mw.email=? AND (rn.email!=? OR rn.email IS NULL);";
         List<Notification> list = new ArrayList<Notification>();
         PreparedStatement pst = conn.prepareStatement(sql);
-        pst.setString(1, user.getEmail());
-        pst.setString(2, user.getEmail());
+        pst.setString(1, CryptoUtils.encrypt(user.getEmail()));
+        pst.setString(2, CryptoUtils.encrypt(user.getEmail()));
         ResultSet rs = pst.executeQuery();
         Product pro = new Product();
         Offer of = new Offer();
@@ -1107,8 +1108,8 @@ public static void UpdateOffer(Connection conn,Offer offer) throws SQLException 
                 + "WHERE mw.email=? AND (rn.email!=? OR rn.email IS NULL);";
         List<Notification> list = new ArrayList<Notification>();
         PreparedStatement pst = conn.prepareStatement(sql);
-        pst.setString(1, business.getEmail());
-        pst.setString(2, business.getEmail());
+        pst.setString(1, CryptoUtils.encrypt(business.getEmail()));
+        pst.setString(2, CryptoUtils.encrypt(business.getEmail()));
         ResultSet rs = pst.executeQuery();
         Product pro = new Product();
         Offer of = new Offer();
@@ -1228,14 +1229,15 @@ public static void UpdateOffer(Connection conn,Offer offer) throws SQLException 
             System.out.println("Payment record inserted! id="+orderDetails.getId());
     }
     
-    //UPDATE PAYMENT WITH NEW STATUS AND SALEID
-    public static void updatePayPalPayment(Connection conn, int orderId, String status, String saleId) throws SQLException {
+    //UPDATE PAYMENT WITH NEW STATUS AND SALEID AND PAYMENTID
+    public static void updatePayPalPayment(Connection conn, int orderId, String status, String paymentId, String saleId) throws SQLException {
             // Update the payment status based on the PayPal API response
-            String sql = "UPDATE payments SET status = ?,saleId=?  WHERE paymentID = ?";
+            String sql = "UPDATE payments SET status = ?, authorizationId = ?, captureId = ?  WHERE paymentID = ?";
             PreparedStatement pst = conn.prepareStatement(sql);
             pst.setString(1, status);
-            pst.setString(2, saleId);   //ADD THIS COLUMN TO THE DATABASE AND THE TO THE ORDERDETAILS
-            pst.setInt(3, orderId);
+            pst.setString(2, paymentId);
+            pst.setString(3, saleId);
+            pst.setInt(4, orderId);
             pst.executeUpdate();
             
             System.out.println("Payment record updated!");
@@ -1243,7 +1245,7 @@ public static void UpdateOffer(Connection conn,Offer offer) throws SQLException 
     //UPDATE PAYMENT WITH NEW STATUS
     public static void updatePayPalPayment(Connection conn, int orderId, String status) throws SQLException {
             // Update the payment status based on the PayPal API response
-            String sql = "UPDATE payments SET status = ?,saleId=?  WHERE paymentID = ?";
+            String sql = "UPDATE payments SET status = ?  WHERE paymentID = ?";
             PreparedStatement pst = conn.prepareStatement(sql);
             pst.setString(1, status);
             pst.setInt(2, orderId);
@@ -1270,6 +1272,38 @@ public static void UpdateOffer(Connection conn,Offer offer) throws SQLException 
                 order.setTotal(rs.getFloat("amount"));
                 order.setType(rs.getString("type"));
                 order.setStatus(rs.getString("status"));
+                order.setAuthorizationId(rs.getString("authorizationId"));
+                order.setCaptureId(rs.getString("captureId"));
+                
+                offer = findOffer(conn, rs.getInt("offerId"));
+                order.setOffer(offer);
+            }//while
+            return order;
+    }
+    
+    //FIND PAYMENT AND GET DETAILS
+    public static OrderDetails findPayment(Connection conn, int offerId, UserAccount user)throws SQLException {
+            // Find the payment record
+            String sql = "SELECT * FROM payments p INNER JOIN offers o ON p.offerID=o.offerID "
+                    + "WHERE p.accountEmail = ? AND p.offerId = ? AND p.status = ?";
+            PreparedStatement pst = conn.prepareStatement(sql);
+            pst.setString(1, CryptoUtils.encrypt(user.getEmail()));
+            pst.setInt(2, offerId);
+            pst.setString(3, "completed");
+            ResultSet rs = pst.executeQuery();
+            OrderDetails order=null;
+            Offer offer = null;
+            while (rs.next()) {
+                order = new OrderDetails();
+                order.setId(rs.getInt("paymentID"));
+                order.setAccountEmail(CryptoUtils.decrypt(rs.getString("accountEmail")));//decrypt
+                order.setDate(rs.getString("date"));
+                order.setDetails(rs.getString("details"));
+                order.setTotal(rs.getFloat("amount"));
+                order.setType(rs.getString("type"));
+                order.setStatus(rs.getString("status"));
+                order.setAuthorizationId(rs.getString("authorizationId"));
+                order.setCaptureId(rs.getString("captureId"));
                 
                 offer = findOffer(conn, rs.getInt("offerId"));
                 order.setOffer(offer);
@@ -1344,7 +1378,7 @@ public static void UpdateOffer(Connection conn,Offer offer) throws SQLException 
                     + "LEFT JOIN (SELECT offerId, count(*) as res FROM coupontokens GROUP BY offerID) t "
                     + "ON o.offerID=t.offerID WHERE email=? ORDER BY offerExpire";
             PreparedStatement pst = conn.prepareStatement(sql);
-            pst.setString(1, business.getEmail());
+            pst.setString(1, CryptoUtils.encrypt(business.getEmail()));
             ResultSet rs = pst.executeQuery();
             List<Offer> list= new ArrayList<Offer>();
             while (rs.next()) {
@@ -1371,7 +1405,7 @@ public static void UpdateOffer(Connection conn,Offer offer) throws SQLException 
         String sql = "SELECT *,(SELECT count(*) FROM coupontokens) as participants FROM coupontokens ct "
                 + "INNER JOIN offers o ON o.offerID=ct.offerID WHERE ct.email=? ORDER BY ct.date DESC";
             PreparedStatement pst = conn.prepareStatement(sql);
-            pst.setString(1, user.getEmail());
+            pst.setString(1, CryptoUtils.encrypt(user.getEmail()));
             ResultSet rs = pst.executeQuery();
             List<Offer> list= new ArrayList<Offer>();
             while (rs.next()) {
