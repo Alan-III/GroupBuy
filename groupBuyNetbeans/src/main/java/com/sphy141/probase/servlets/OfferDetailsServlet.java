@@ -15,7 +15,9 @@ import com.sphy141.probase.utils.MyUtils;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -91,7 +93,17 @@ public class OfferDetailsServlet extends HttpServlet {
                 ex.printStackTrace();
             }
         }
+        // Get the current datetime
+        Date currentDate = new Date();
+
+        // Convert the Date object to a Timestamp object
+        Timestamp currentTimestamp = new Timestamp(currentDate.getTime());
+
+        // Print the current datetime
+        System.out.println("Current Datetime: " + currentTimestamp);
         
+        // You can also pass the current datetime to your JSP page or set it as a request attribute
+        req.setAttribute("currentDatetime", currentTimestamp);
         req.setAttribute("errorString", errorString);
         req.setAttribute("offer", offer);
         req.setAttribute("isParticipant", isParticipant);

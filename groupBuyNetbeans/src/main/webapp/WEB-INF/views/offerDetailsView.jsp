@@ -70,8 +70,26 @@
                         <div class="product-footer mt-5">
                             <c:choose>
                                 <c:when test="${offer.getParticipants()>=offer.getGroupSize()}">
-                                    <span class="price text-uppercase" style="color: red;" >offer Full!</span>
-
+                                    <span class="price text-uppercase" style="color: red;" >offer full!</span>
+                                    <c:if test="${loginedbusiness!=null}">
+                                        <button type="button" onclick="confirmAcceptOffer(${offer.getId()})" class="p-2 m-2">
+                                            <span>Accept Offer</span>
+                                        </button>
+                                        <button type="button" onclick="confirmCancelOffer(${offer.getId()})" class="leave-offer-btn p-2 m-2">
+                                            <span>Cancel Offer</span>
+                                        </button>
+                                    </c:if>
+                                </c:when>
+                                <c:when test="${offer.getOfferExpire()<=currentDatetime}">
+                                    <span class="price text-uppercase" style="color: red;" >offer expired!</span>
+                                    <c:if test="${loginedbusiness!=null}">
+                                        <button type="button" onclick="confirmAcceptOffer(${offer.getId()})" class="p-2 m-2">
+                                            <span>Accept Offer</span>
+                                        </button>
+                                        <button type="button" onclick="confirmCancelOffer(${offer.getId()})" class="leave-offer-btn p-2 m-2">
+                                            <span>Cancel Offer</span>
+                                        </button>
+                                    </c:if>
                                 </c:when>
                                 <c:when test="${isParticipant && offer.getStatus()=='active'}">
                                     <button type="button" onclick="confirmLeaveOffer(${offer.getId()}, ${offer.getCouponPrice()})" class="leave-offer-btn">
@@ -162,6 +180,14 @@
                     }
                 });
             }
+            // BUSINESS ACCEPT OFFER
+            function confirmAcceptOffer(offerID) {
+                
+            };
+            // BUSINESS CANCEL OFFER
+            function confirmCancelOffer(offerID) {
+                
+            };
             //LEAVE OFFER CONFIRM
             function confirmLeaveOffer(offerID, fee) {
                 // ALERT WITH FUNCTIONAL CONFIRM & CANCEL BUTTON
