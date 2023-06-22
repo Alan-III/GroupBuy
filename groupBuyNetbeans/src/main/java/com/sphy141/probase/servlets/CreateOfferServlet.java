@@ -288,7 +288,7 @@ public class CreateOfferServlet extends HttpServlet {
                 offer.setPath(path);
                 offer.setStatus("active");
                 DBUtils.insertOffer(conn, offer, business.getEmail(), productCodes);
-                resp.sendRedirect(req.getContextPath() + "/offerlist");
+                resp.sendRedirect(req.getContextPath() + "/productlist");
 
             } catch (SQLException ex) {
                 ex.printStackTrace();
