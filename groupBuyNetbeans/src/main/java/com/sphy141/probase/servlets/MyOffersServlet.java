@@ -74,7 +74,7 @@ public class MyOffersServlet extends HttpServlet {
                 offersList = DBUtils.queryBusinessOffers(conn, business);
             else if(user!=null)
                 offersList = DBUtils.queryJoinedOffers(conn, user);
-                
+                System.out.println("offersList");
                 
         } catch (SQLException ex) {
             ex.printStackTrace();

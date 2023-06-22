@@ -94,7 +94,7 @@
                                 <div class="price" style="color: #fe6168">Expires on:</div>
                                 <span style="color: #b3900e"> ${offer.getOfferExpire()}</span>
                             </div>
-                            <a href="#!"><img src="http://co0kie.github.io/codepen/nike-product-page/share.png" alt=""></a>
+                            <a href="#" onClick="showCurrentPageURL()"><img src="http://co0kie.github.io/codepen/nike-product-page/share.png" alt=""></a>
                         </div>
                     </div>
                 </div> 
@@ -136,14 +136,14 @@
             <div id='image-track2' class="image-track" data-mouse-down-at='0' data-prev-percentage='0' hidden="hidden"></div>    
         </div>
         <script>
-            // Call the function on page load
+            // ON PAGE LOAD
             window.onload = function () {
-                // Call the function if the first test condition succeeds
+                // CHECK IF OFFER FULL
                 if (${offer.getParticipants() >= offer.getGroupSize()}) {
                     showNotification();
                 }
             };
-            //OFFER FULL
+            //OFFER FULL POPUP
             function showNotification() {
                 Swal.fire({
                     title: 'This offer is full',
@@ -198,7 +198,8 @@
                                     }
                                 }).then(function () {
                                     if (response.redirectUrl) {
-                                        window.location.href = ${pageContext.request.contextPath}+response.redirectUrl;
+                                        var url = "${pageContext.request.contextPath}/" + response.redirectUrl;
+                                        window.location.href = url;
                                     }
                                 })
                             },
@@ -308,27 +309,42 @@
                 }
             }
 
-            //Toggle wishes in DB and in div class
-            function confirmWish(productCode, element) {
-                if ($(element).hasClass("far")) {
-                    $(element).removeClass("far").addClass("fas");
-                } else {
-                    $(element).removeClass("fas").addClass("far");
-                }
-                $.ajax({
-                    type: "POST",
-                    url: "${pageContext.request.contextPath}/toggleproductwish",
-                    data: {productCode: productCode},
-                    success: function (response) {
-                        // Check the response and update the element's class accordingly
-                        if (response == "true") {
+            //SHARE OFFER URL
+            function showCurrentPageURL() {
+                // Get the current page's URL
+                var currentPageURL = window.location.href;
 
-                        } else {
-                            var alert = alert("something went wrong");
-                        }
+                // Create a SweetAlert2 modal with the URL
+                Swal.fire({
+                    title: 'OFFER URL',
+                    html: 'Copy the URL below:',
+                    input: 'text',
+                    inputValue: currentPageURL,
+                    showCancelButton: true,
+                    confirmButtonText: 'Copy URL',
+                    cancelButtonText: 'Close',
+                    preConfirm: function (url) {
+                        // Copy the URL to the clipboard
+                        var tempInput = document.createElement('input');
+                        document.body.appendChild(tempInput);
+                        tempInput.value = url;
+                        tempInput.select();
+                        document.execCommand('copy');
+                        document.body.removeChild(tempInput);
+
+                        // Show a success message
+                        Swal.fire({
+                            title: 'URL Copied!',
+                            text: 'The URL has been copied to the clipboard.',
+                            icon: 'success',
+                            timer: 1500,
+                            timerProgressBar: true,
+                            showConfirmButton: false
+                        });
                     }
                 });
             }
+
         </script>
         <!-- Footer-->
         <jsp:include page="_footer.jsp"></jsp:include>

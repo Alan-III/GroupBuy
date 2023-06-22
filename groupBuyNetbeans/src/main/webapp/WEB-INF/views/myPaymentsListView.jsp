@@ -98,7 +98,7 @@
                             </c:when>
                             <c:when test="${logineduser!=null}">
                                 <li>
-                                    <a href="{pageContext.request.contextPath}/userInfo">
+                                    <a href="${pageContext.request.contextPath}/userInfo">
                                         <i class="fa fa-home fa-2x"></i>
                                         <span class="nav-text">
                                             User Details
