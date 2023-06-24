@@ -71,34 +71,109 @@
                             <c:choose>
                                 <c:when test="${offer.getParticipants()>=offer.getGroupSize()}">
                                     <span class="price text-uppercase" style="color: red;" >offer full!</span>
-                                    <c:if test="${loginedbusiness!=null}">
-                                        <button type="button" onclick="confirmAcceptOffer(${offer.getId()})" class="p-2 m-2">
-                                            <span>Accept Offer</span>
-                                        </button>
-                                        <button type="button" onclick="confirmCancelOffer(${offer.getId()})" class="leave-offer-btn p-2 m-2">
-                                            <span>Cancel Offer</span>
-                                        </button>
-                                    </c:if>
+                                    <c:choose>
+                                        <c:when test="${loginedbusiness!=null}">
+                                            <c:choose>
+                                                <c:when test="${offer.getStatus()=='active'}">
+                                                    <button type="button" onclick="confirmAcceptOffer(${offer.getId()})" class="p-2 m-2">
+                                                        <span>Accept Offer</span>
+                                                    </button>
+                                                    <button type="button" onclick="confirmCancelOffer(${offer.getId()})" class="leave-offer-btn p-2 m-2">
+                                                        <span>Cancel Offer</span>
+                                                    </button>
+                                                </c:when>
+                                                <c:when test="${offer.getStatus()=='accepted'}">
+                                                    <span class="price text-uppercase p-2 m-2" style="color: green;" >offer accepted!</span>
+                                                </c:when>
+                                                <c:when test="${offer.getStatus()=='canceled'}">
+                                                    <span class="price text-uppercase p-2 m-2" style="color: red;" >offer canceled!</span>
+                                                </c:when>
+                                            </c:choose>
+                                        </c:when>
+                                        <c:when test="${logineduser!=null}">
+                                            <c:choose>
+                                                <c:when test="${offer.getStatus()=='active'}">
+                                                    <span class="price text-uppercase p-2 m-2" style="color: #ffc800;" >Waiting for <br>Business response</span>
+                                                </c:when>
+                                                <c:when test="${offer.getStatus()=='accepted'}">
+                                                    <span class="price text-uppercase p-2 m-2" style="color: green;" >offer accepted!</span>
+                                                    <button type="button" onclick="payFullOffer(${offer.getId()})" class="p-2 m-2">
+                                                        <span>Pay Offer</span>
+                                                    </button>
+                                                    <button type="button" onclick="declineOffer(${offer.getId()})" class="leave-offer-btn p-2 m-2">
+                                                        <span>Decline Offer</span>
+                                                    </button>
+                                                </c:when>
+                                                <c:when test="${offer.getStatus()=='canceled'}">
+                                                    <span class="price text-uppercase p-2 m-2" style="color: red;" >offer canceled!</span>
+                                                </c:when>
+                                            </c:choose>
+                                        </c:when>
+                                    </c:choose>
                                 </c:when>
                                 <c:when test="${offer.getOfferExpire()<=currentDatetime}">
                                     <span class="price text-uppercase" style="color: red;" >offer expired!</span>
-                                    <c:if test="${loginedbusiness!=null}">
-                                        <button type="button" onclick="confirmAcceptOffer(${offer.getId()})" class="p-2 m-2">
-                                            <span>Accept Offer</span>
-                                        </button>
-                                        <button type="button" onclick="confirmCancelOffer(${offer.getId()})" class="leave-offer-btn p-2 m-2">
-                                            <span>Cancel Offer</span>
-                                        </button>
-                                    </c:if>
+                                    <c:choose>
+                                        <c:when test="${loginedbusiness!=null}">
+                                            <c:choose>
+                                                <c:when test="${offer.getStatus()=='active'}">
+                                                    <button type="button" onclick="confirmAcceptOffer(${offer.getId()})" class="p-2 m-2">
+                                                        <span>Accept Offer</span>
+                                                    </button>
+                                                    <button type="button" onclick="confirmCancelOffer(${offer.getId()})" class="leave-offer-btn p-2 m-2">
+                                                        <span>Cancel Offer</span>
+                                                    </button>
+                                                </c:when>
+                                                <c:when test="${offer.getStatus()=='accepted'}">
+                                                    <span class="price text-uppercase p-2 m-2" style="color: green;" >offer accepted!</span>
+                                                </c:when>
+                                                <c:when test="${offer.getStatus()=='canceled'}">
+                                                    <span class="price text-uppercase p-2 m-2" style="color: red;" >offer canceled!</span>
+                                                </c:when>
+                                            </c:choose>
+                                        </c:when>
+                                        <c:when test="${logineduser!=null}">
+                                            <c:choose>
+                                                <c:when test="${offer.getStatus()=='active'}">
+                                                    <span class="price text-uppercase p-2 m-2" style="color: #ffc800;" >Waiting for <br>Business response</span>
+                                                </c:when>
+                                                <c:when test="${offer.getStatus()=='accepted'}">
+                                                    <span class="price text-uppercase p-2 m-2" style="color: green;" >offer accepted!</span>
+                                                    <button type="button" onclick="payFullOffer(${offer.getId()})" class="p-2 m-2">
+                                                        <span>Pay Offer</span>
+                                                    </button>
+                                                    <button type="button" onclick="declineOffer(${offer.getId()})" class="leave-offer-btn p-2 m-2">
+                                                        <span>Decline Offer</span>
+                                                    </button>
+                                                </c:when>
+                                                <c:when test="${offer.getStatus()=='canceled'}">
+                                                    <span class="price text-uppercase p-2 m-2" style="color: red;" >offer canceled!</span>
+                                                </c:when>
+                                            </c:choose>
+                                        </c:when>
+                                    </c:choose>
                                 </c:when>
-                                <c:when test="${isParticipant && offer.getStatus()=='active'}">
-                                    <button type="button" onclick="confirmLeaveOffer(${offer.getId()}, ${offer.getCouponPrice()})" class="leave-offer-btn">
-                                        <img src="http://co0kie.github.io/codepen/nike-product-page/cart.png" alt="">
-                                        <span>Leave offer</span>
-                                    </button>
+                                <c:when test="${isParticipant}">
+                                    <c:choose>
+                                        <c:when test="${offer.getStatus()=='active'}">
+                                            <button type="button" onclick="confirmLeaveOffer(${offer.getId()}, ${offer.getCouponPrice()})" class="leave-offer-btn">
+                                                <img src="http://co0kie.github.io/codepen/nike-product-page/cart.png" alt="">
+                                                <span>Leave offer</span>
+                                            </button>
+                                        </c:when>
+                                        <c:when test="${offer.getStatus()=='accepted'}">
+                                            <button type="button" onclick="payOffer(${offer.getId()}, ${offer.getCouponPrice()})" class="leave-offer-btn">
+                                                <img src="http://co0kie.github.io/codepen/nike-product-page/cart.png" alt="">
+                                                <span>Pay <br>Full price</span>
+                                            </button>
+                                        </c:when>
+                                        <c:when test="${offer.getStatus()=='canceled'}">
+                                            <span class="price text-uppercase p-2 m-2" style="color: red;" >offer canceled!</span>
+                                        </c:when>
+                                    </c:choose>
                                 </c:when>
                                 <c:when test="${logineduser==null}">
-                                    <span class="price text-uppercase" style="color: red;" ></span>
+                                    <span class="price text-uppercase">Login as user<br>to join</span>
                                 </c:when>
                                 <c:when test="true">
                                     <button type="button" onclick="confirmJoinOffer(${offer.getId()}, ${offer.getCouponPrice()})">
@@ -182,12 +257,134 @@
             }
             // BUSINESS ACCEPT OFFER
             function confirmAcceptOffer(offerID) {
-                
-            };
+                // ALERT WITH FUNCTIONAL CONFIRM & CANCEL BUTTON
+                console.log("fire");
+                Swal.fire({
+                    title: 'Accept Offer?',
+                    text: "The fees will be sent to your account and your customers will be notified to pay the full price.",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, Accept Offer!',
+                    customClass: {
+                        confirmButton: 'btn btn-primary me-1',
+                        cancelButton: 'btn btn-label-secondary',
+                        cancelButtonText: 'No, i\'ll think about it.',
+                    },
+                    buttonsStyling: false
+                }).then(function (result) {
+                    if (result.value) {
+                        // Send AJAX request to delete the joined user and pay back
+                        $.ajax({
+                            url: '${pageContext.request.contextPath}/acceptoffer',
+                            method: 'POST',
+                            data: {
+                                offerId: offerID,
+                            },
+                            success: function (response) {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Offer Accepted',
+                                    text: response.fees+'$ fees sent to you. Customers have 5 days to pay full price.',
+                                    customClass: {
+                                        confirmButton: 'btn btn-success'
+                                    }
+                                }).then(function () {
+//                                    if (response.redirectUrl) {
+//                                        var url = "${pageContext.request.contextPath}/" + response.redirectUrl;
+//                                        window.location.href = url;
+//                                    }
+                                })
+                            },
+                            error: function (xhr, status, error) {
+                                Swal.fire({
+                                    title: 'Error',
+                                    text: 'An error occurred.',
+                                    icon: 'error',
+                                    customClass: {
+                                        confirmButton: 'btn btn-success'
+                                    }
+                                });
+                            }
+                        });
+                    } else if (result.dismiss === Swal.DismissReason.cancel) {
+                        Swal.fire({
+                            title: 'Not Accepted',
+                            text: 'Don\'t left your customers wait. Accept or Cancel your offer.',
+                            icon: 'error',
+                            customClass: {
+                                confirmButton: 'btn btn-success'
+                            }
+                        });
+                    }
+                });
+            }
             // BUSINESS CANCEL OFFER
             function confirmCancelOffer(offerID) {
-                
-            };
+                // ALERT WITH FUNCTIONAL CONFIRM & CANCEL BUTTON
+                console.log("fire");
+                Swal.fire({
+                    title: 'Cancel Offer?',
+                    text: "Your customers will be refunded their fees.",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, Cancel Offer!',
+                    customClass: {
+                        confirmButton: 'btn btn-primary me-1',
+                        cancelButton: 'btn btn-label-secondary',
+                        cancelButtonText: 'No, i\'ll think about it.',
+                    },
+                    buttonsStyling: false
+                }).then(function (result) {
+                    if (result.value) {
+                        // Send AJAX request to delete the joined user and pay back
+                        $.ajax({
+                            url: '${pageContext.request.contextPath}/canceloffer',
+                            method: 'POST',
+                            data: {
+                                offerId: offerID,
+                            },
+                            success: function (response) {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Offer Canceled',
+                                    text: 'Your offer is no longer active.',
+                                    customClass: {
+                                        confirmButton: 'btn btn-success'
+                                    }
+                                }).then(function () {
+//                                    if (response.redirectUrl) {
+//                                        var url = "${pageContext.request.contextPath}/" + response.redirectUrl;
+//                                        window.location.href = url;
+//                                    }
+                                })
+                            },
+                            error: function (xhr, status, error) {
+                                Swal.fire({
+                                    title: 'Error',
+                                    text: 'An error occurred.',
+                                    icon: 'error',
+                                    customClass: {
+                                        confirmButton: 'btn btn-success'
+                                    }
+                                });
+                            }
+                        });
+                    } else if (result.dismiss === Swal.DismissReason.cancel) {
+                        Swal.fire({
+                            title: 'Safe',
+                            text: 'Don\'t left your customers wait. Accept or Cancel your offer.',
+                            icon: 'error',
+                            customClass: {
+                                confirmButton: 'btn btn-success'
+                            }
+                        });
+                    }
+                });
+            }
             //LEAVE OFFER CONFIRM
             function confirmLeaveOffer(offerID, fee) {
                 // ALERT WITH FUNCTIONAL CONFIRM & CANCEL BUTTON

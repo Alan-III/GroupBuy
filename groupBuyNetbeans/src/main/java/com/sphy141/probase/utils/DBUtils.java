@@ -955,7 +955,7 @@ public static void UpdateOffer(Connection conn,Offer offer) throws SQLException 
                 + "LEFT JOIN (SELECT productName,productCode FROM products) p ON n.productCode=p.productCode\n"
                 + "LEFT JOIN (SELECT title as offerTitle,offerID FROM offers) o ON n.offerID=o.offerID\n"
                 + "WHERE mw.email=? OR \n"
-                + "(mw.email IS NULL AND n.offerID IN (SELECT offerID FROM coupontokens WHERE email=?) AND title='Offer group Filled!')  \n"
+                + "(mw.email IS NULL AND n.offerID IN (SELECT offerID FROM coupontokens WHERE email=?) AND title like 'Offer%')  \n"
                 + "GROUP BY n.notificationID\n"
                 + "ORDER BY n.notificationDate DESC;";
         List<Notification> list = new ArrayList<Notification>();
@@ -1421,8 +1421,10 @@ public static void UpdateOffer(Connection conn,Offer offer) throws SQLException 
 
     //GET OFFERS JOINED BY USER
     public static List<Offer> queryJoinedOffers(Connection conn, UserAccount user) throws SQLException {
-        String sql = "SELECT *,(SELECT count(*) FROM coupontokens) as participants FROM coupontokens ct "
-                + "INNER JOIN offers o ON o.offerID=ct.offerID WHERE ct.email=? ORDER BY ct.date DESC";
+        String sql = "SELECT * FROM coupontokens ct "
+                + "INNER JOIN offers o ON o.offerID=ct.offerID "
+                + "LEFT JOIN (SELECT offerID, count(offerID) AS participants FROM coupontokens GROUP BY offerID) c ON c.offerID=ct.offerID "
+                + "WHERE ct.email=? ORDER BY ct.date DESC";
         PreparedStatement pst = conn.prepareStatement(sql);
         pst.setString(1, CryptoUtils.encrypt(user.getEmail()));
         ResultSet rs = pst.executeQuery();
@@ -1460,6 +1462,26 @@ public static void UpdateOffer(Connection conn,Offer offer) throws SQLException 
         Notification notif = new Notification();
         notif.setNotificationTitle("User left Offer");
         notif.setDetails("notification details...");
+        insertNotification(conn, offer, null, notif);
+    }
+    
+    public static void updateOffer(Connection conn, Offer offer, String newstatus) throws SQLException {
+        // Insert the payment record
+        String sql = "UPDATE offers SET status = ? WHERE offerID = ?";
+        PreparedStatement pst = conn.prepareStatement(sql);
+        pst.setString(1, newstatus);
+        pst.setInt(2, offer.getId());
+        pst.executeUpdate();
+
+        offer.setStatus(newstatus);
+        
+        Notification notif = new Notification();
+        notif.setNotificationTitle("Offer "+newstatus);
+        if("canceled".equals(newstatus))
+            notif.setDetails("User fees will be returned");
+        else if("accepted".equals(newstatus))
+            notif.setDetails("Go to offer to pay full price");
+            
         insertNotification(conn, offer, null, notif);
     }
 }
