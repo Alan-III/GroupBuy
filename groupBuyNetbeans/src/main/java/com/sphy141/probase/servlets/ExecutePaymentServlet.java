@@ -10,6 +10,7 @@ import com.paypal.api.payments.PayerInfo;
 import com.paypal.api.payments.Payment;
 import com.paypal.api.payments.Transaction;
 import com.paypal.base.rest.PayPalRESTException;
+import com.sphy141.probase.beans.CouponToken;
 import com.sphy141.probase.beans.Offer;
 import com.sphy141.probase.beans.OrderDetails;
 import com.sphy141.probase.beans.UserAccount;
@@ -85,10 +86,19 @@ public class ExecutePaymentServlet extends HttpServlet {
             String captureId = capturePayment.getId();
             
             
-            //Save the sale ID in your database for future reference
+            //Save the capture ID in your database for future reference
             DBUtils.updatePayPalPayment(conn, orderId, "completed", authorizationId, captureId);
             OrderDetails orderDetails = DBUtils.findPayment(conn, orderId);     //INSERT BEFORE PAYING. ROLLBACK IF CANT PAY
-            DBUtils.insertUserInOffer(conn, orderDetails.getOffer().getId(), user);
+            
+            Offer offer = DBUtils.findOffer(conn, orderDetails.getOffer().getId());
+            //if user was already in offer then he is paying full price
+            CouponToken ct = DBUtils.findCouponToken(conn, offer, user);
+            if("participant".equals(ct.getState())){
+                DBUtils.updateCouponToken(conn, ct, "buyer");   
+            } else{
+                DBUtils.insertUserInOffer(conn, offer.getId(), user);
+            }
+            
             
             
             req.setAttribute("payerInfo", payerInfo);

@@ -7,6 +7,7 @@ package com.sphy141.probase.utils;
 
 import com.sphy141.probase.beans.BusinessAccount;
 import com.sphy141.probase.beans.Category;
+import com.sphy141.probase.beans.CouponToken;
 import com.sphy141.probase.beans.Notification;
 import com.sphy141.probase.beans.Offer;
 import com.sphy141.probase.beans.OrderDetails;
@@ -1321,7 +1322,7 @@ public static void UpdateOffer(Connection conn,Offer offer) throws SQLException 
         return order;
     }
 
-    //INSERT USER AS PARTICIPANT IN AN OFFER
+    //INSERT USER AS PARTICIPANT IN AN OFFER. (COUPON TOKEN)
     public static void insertUserInOffer(Connection conn, int offerId, UserAccount user) throws SQLException {
         // Insert the payment record
         String sql = "INSERT INTO coupontokens (email, offerID, date) VALUES (?, ?, NOW())";
@@ -1449,7 +1450,7 @@ public static void UpdateOffer(Connection conn,Offer offer) throws SQLException 
     }
 
     public static void deleteUserFromOffer(Connection conn, int offerId, UserAccount user) throws SQLException {
-        // Insert the payment record
+        // 
         String sql = "DELETE FROM coupontokens WHERE email=? AND offerID=?";
         PreparedStatement pst = conn.prepareStatement(sql);
         pst.setString(1, CryptoUtils.encrypt(user.getEmail()));//encrypt
@@ -1466,7 +1467,7 @@ public static void UpdateOffer(Connection conn,Offer offer) throws SQLException 
     }
     
     public static void updateOffer(Connection conn, Offer offer, String newstatus) throws SQLException {
-        // Insert the payment record
+        // 
         String sql = "UPDATE offers SET status = ? WHERE offerID = ?";
         PreparedStatement pst = conn.prepareStatement(sql);
         pst.setString(1, newstatus);
@@ -1483,5 +1484,44 @@ public static void UpdateOffer(Connection conn,Offer offer) throws SQLException 
             notif.setDetails("Go to offer to pay full price");
             
         insertNotification(conn, offer, null, notif);
+    }
+    
+    public static void updateCouponToken(Connection conn, CouponToken ct, String newState) throws SQLException {
+        // 
+        String sql = "UPDATE coupontokens SET state = ? WHERE token = ?";
+        PreparedStatement pst = conn.prepareStatement(sql);
+        pst.setString(1, newState);
+        pst.setInt(2, ct.getId());
+        pst.executeUpdate();
+
+        ct.setState(newState);
+        
+//        Notification notif = new Notification();
+//        notif.setNotificationTitle("Offer "+newState);
+//        if("canceled".equals(newstatus))
+//            notif.setDetails("User fees will be returned");
+//        else if("accepted".equals(newstatus))
+//            notif.setDetails("Go to offer to pay full price");
+//            
+//        insertNotification(conn, offer, null, notif);
+    }
+    
+    public static CouponToken findCouponToken(Connection conn, Offer offer, UserAccount user) throws SQLException {
+        // 
+        String sql = "SELECT * FROM coupontokens WHERE offerID = ? AND email = ?";
+        PreparedStatement pst = conn.prepareStatement(sql);
+        pst.setInt(1, offer.getId());
+        pst.setString(2, CryptoUtils.encrypt(user.getEmail()));
+        ResultSet rs = pst.executeQuery();
+        CouponToken ct = null;
+        while (rs.next()) {
+            ct = new CouponToken();
+            ct.setId(rs.getInt("token"));
+            ct.setDate(rs.getString("date"));
+            ct.setState(rs.getString("state"));
+            ct.setUser(DBUtils.findUser(conn, rs.getString("email")));
+            ct.setOffer(DBUtils.findOffer(conn, rs.getInt("offerID")));
+        }//while
+        return ct;
     }
 }

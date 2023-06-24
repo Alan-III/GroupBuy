@@ -7,6 +7,7 @@ package com.sphy141.probase.servlets;
 
 import com.sphy141.probase.beans.BusinessAccount;
 import com.sphy141.probase.beans.Category;
+import com.sphy141.probase.beans.CouponToken;
 import com.sphy141.probase.beans.Offer;
 import com.sphy141.probase.beans.Product;
 import com.sphy141.probase.beans.UserAccount;
@@ -86,9 +87,11 @@ public class OfferDetailsServlet extends HttpServlet {
         
         //----------See if user has already joined this offer
         boolean isParticipant=false;
+        CouponToken ct=null;
         if(user!=null){
             try {
-                isParticipant = DBUtils.isParticipantInOffer(conn, user, offer);
+                ct = DBUtils.findCouponToken(conn, offer, user);
+                isParticipant = (ct==null);
             } catch (SQLException ex) {
                 ex.printStackTrace();
             }
@@ -107,6 +110,7 @@ public class OfferDetailsServlet extends HttpServlet {
         req.setAttribute("errorString", errorString);
         req.setAttribute("offer", offer);
         req.setAttribute("isParticipant", isParticipant);
+        req.setAttribute("couponToken", ct);
         RequestDispatcher dispatcher=this.getServletContext().getRequestDispatcher("/WEB-INF/views/offerDetailsView.jsp");
         dispatcher.forward(req, resp);
     }//doGet
