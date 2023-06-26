@@ -22,6 +22,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.mail.MessagingException;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -70,6 +71,8 @@ public class AcceptOfferServlet extends HttpServlet {
             Offer offer = DBUtils.findOffer(conn, offerId);
             DBUtils.updateOffer(conn, offer, "accepted");
         } catch (SQLException ex) {
+            ex.printStackTrace();
+        } catch (MessagingException ex) {
             ex.printStackTrace();
         }
         

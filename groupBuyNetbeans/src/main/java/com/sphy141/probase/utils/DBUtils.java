@@ -1600,8 +1600,6 @@ public static void UpdateOffer(Connection conn,Offer offer) throws SQLException 
             }//while
             return list;
     }//queryHotWishes
- 
-}//DBUtils
 
     static List<String> queryNotificationListeners(Connection conn, Notification notif)  throws SQLException{
         String sql = "SELECT *\n" +

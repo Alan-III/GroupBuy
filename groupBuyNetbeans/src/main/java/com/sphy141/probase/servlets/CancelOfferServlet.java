@@ -12,6 +12,9 @@ import com.sphy141.probase.utils.MyUtils;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.mail.MessagingException;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -59,6 +62,8 @@ public class CancelOfferServlet extends HttpServlet {
             Offer offer = DBUtils.findOffer(conn, offerId);
             DBUtils.updateOffer(conn, offer, "canceled");
         } catch (SQLException ex) {
+            ex.printStackTrace();
+        } catch (MessagingException ex) {
             ex.printStackTrace();
         }
 //        String paymentId = req.getParameter("paymentId");
