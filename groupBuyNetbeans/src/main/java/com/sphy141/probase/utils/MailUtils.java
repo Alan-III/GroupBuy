@@ -10,7 +10,11 @@ package com.sphy141.probase.utils;
  * @author Alan
  */
 import com.sphy141.probase.beans.BusinessAccount;
+import com.sphy141.probase.beans.Notification;
 import com.sphy141.probase.beans.UserAccount;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.List;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -118,5 +122,46 @@ public class MailUtils {
         String emailContent = "Email: "+email+"\nName: "+name+"\nPhone: "+phone+"\nMessage: "+context;
         msg.setText(emailContent);
         Transport.send(msg);
+    }
+    
+    public static void sendMailNotifications(Connection conn, Notification notif) throws AddressException, MessagingException {
+         List<String> emailsList = null;
+        try {
+            emailsList = DBUtils.queryNotificationListeners(conn, notif);
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        
+        String fromEmail = "mygroupbuy8@gmail.com";
+        String password = "ohbmbkantkphspho";
+        
+        Properties props = new Properties();
+        props.put("mail.smtp.host", "smtp.gmail.com");
+        props.put("mail.smtp.port", "587");
+        props.put("mail.smtp.auth", "true");
+        props.put("mail.smtp.ssl.protocols", "TLSv1.2");
+        props.put("mail.smtp.starttls.enable", "true");
+        //paaqixermthcsqsc
+        
+        Session session = Session.getInstance(props, new Authenticator() {
+            @Override
+            protected PasswordAuthentication getPasswordAuthentication(){
+                return new PasswordAuthentication(fromEmail,password);
+            }
+        }); // gives the authentication to send email
+        
+        for(String email : emailsList){
+        Message msg = new MimeMessage(session);
+        
+        msg.setFrom(new InternetAddress(fromEmail));
+        msg.setRecipient(Message.RecipientType.TO, new InternetAddress(email));
+        
+        msg.setSubject(notif.getNotificationTitle());
+        String link = "http://localhost:8080/groupbuy/offerdetails?offerid="+notif.getOffer().getId();
+        String emailContent = "The "+notif.getOffer().getTitle()+" offer you participated has been "+notif.getOffer().getStatus()+".<br>"+notif.getDetails()+"<br>"
+        + "<a href=\"" + link + "\">Check Offer</a>";
+        msg.setContent(emailContent, "text/html; charset=utf-8");
+        Transport.send(msg);
+        }
     }
 }
