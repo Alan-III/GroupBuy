@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
+import javax.mail.MessagingException;
 
 /**
  *
@@ -1466,7 +1467,7 @@ public static void UpdateOffer(Connection conn,Offer offer) throws SQLException 
         insertNotification(conn, offer, null, notif);
     }
     
-    public static void updateOffer(Connection conn, Offer offer, String newstatus) throws SQLException {
+    public static void updateOffer(Connection conn, Offer offer, String newstatus) throws SQLException, MessagingException {
         // 
         String sql = "UPDATE offers SET status = ? WHERE offerID = ?";
         PreparedStatement pst = conn.prepareStatement(sql);
@@ -1484,6 +1485,7 @@ public static void UpdateOffer(Connection conn,Offer offer) throws SQLException 
             notif.setDetails("Go to offer to pay full price");
             
         insertNotification(conn, offer, null, notif);
+        MailUtils.sendMailNotifications(conn,notif);
     }
     
     public static void updateCouponToken(Connection conn, CouponToken ct, String newState) throws SQLException {
@@ -1523,5 +1525,23 @@ public static void UpdateOffer(Connection conn,Offer offer) throws SQLException 
             ct.setOffer(DBUtils.findOffer(conn, rs.getInt("offerID")));
         }//while
         return ct;
+    }
+
+    static List<String> queryNotificationListeners(Connection conn, Notification notif)  throws SQLException{
+        String sql = "SELECT *\n" +
+"FROM notifications n \n" +
+"LEFT JOIN coupontokens ct ON ct.offerID=n.offerID\n" +
+"LEFT JOIN (SELECT productName,productCode FROM products) p ON n.productCode=p.productCode\n" +
+"LEFT JOIN (SELECT title as offerTitle,offerID FROM offers) o ON n.offerID=o.offerID\n" +
+"WHERE n.notificationID=?\n" +
+"ORDER BY n.notificationDate DESC;";
+        List<String> list = new ArrayList<String>();
+        PreparedStatement pst = conn.prepareStatement(sql);
+        pst.setInt(1, notif.getId());
+        ResultSet rs = pst.executeQuery();
+        while (rs.next()) {
+            list.add(CryptoUtils.decrypt(rs.getString("email")));
+        }//while
+        return list;
     }
 }
