@@ -85,6 +85,8 @@ public class MyOffersServlet extends HttpServlet {
         req.setAttribute("offersList", offersList);
         RequestDispatcher dispatcher=this.getServletContext().getRequestDispatcher("/WEB-INF/views/myOffersListView.jsp");
         dispatcher.forward(req, resp);
+        
+        
     }
     
     @Override

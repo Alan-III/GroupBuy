@@ -23,6 +23,7 @@ public class Product {
     private List<String> imagePaths;
     private boolean isWished;
     private int wishesCount;
+    private int dailyCounterSearches;
 
     public Product() {
         this.imagePaths = new ArrayList<String>();
@@ -111,5 +112,14 @@ public class Product {
 
     public void setPrice(float price) {
         this.price = price;
-    }    
+    }  
+
+    public int getDailyCounterSearches() {
+        return dailyCounterSearches;
+    }
+
+    public void setDailyCounterSearches(int dailyCounterSearches) {
+        this.dailyCounterSearches = dailyCounterSearches;
+    }
+    
 }

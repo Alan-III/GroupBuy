@@ -1524,4 +1524,79 @@ public static void UpdateOffer(Connection conn,Offer offer) throws SQLException 
         }//while
         return ct;
     }
-}
+    
+ public static List<Product> queryHotDailySearches(Connection conn, int categoryID) throws SQLException {
+            String sql = "select sd.productCode, p.productName,count(sd.productCode) from searches s inner join searchdetails sd on s.searchID=sd.searchID \n" +
+                         "inner join products p on p.productCode=sd.productCode \n" +
+                         " inner join categories c on p.belong=categoryID where categoryID=? group by productCode order by count(sd.productCode) desc ; ";
+            PreparedStatement pst = conn.prepareStatement(sql);
+            pst.setInt(1, categoryID);
+            ResultSet rs = pst.executeQuery();
+            List<Product> list= new ArrayList<Product>();
+            while (rs.next()) {
+                Product product = new Product();
+                product.setName(rs.getString("productName"));
+                product.setCode(rs.getString("productCode"));
+                product.setDailyCounterSearches(rs.getInt("count(sd.productCode)"));
+                list.add(product);
+            }//while
+            return list;
+    }//queryHotDailySearches
+ 
+ public static List<Product> queryHotSearchesOnPeriod (Connection conn,String genCategory, String category,String subcategory, String date1, String date2) throws SQLException {
+            String sql = "SELECT d.productCode, p.productName, SUM(d.count) as totalcount\n" +
+                "FROM dailyresults d\n" +
+                "INNER JOIN products p ON p.productCode = d.productCode\n" +
+                "INNER JOIN categories c ON p.belong = c.categoryID\n" +
+                "WHERE genCategory=? and category =? and subCategory=? AND d.date >= ? AND d.date <= ?\n" +
+                "GROUP BY d.productCode\n" +
+                "ORDER BY COUNT(d.productCode) DESC\n" +
+                "LIMIT 10;";
+            
+            PreparedStatement pst = conn.prepareStatement(sql);
+            pst.setString(1, genCategory);
+            pst.setString(2, category);
+            pst.setString(3, subcategory);
+            pst.setString(4, date1);
+            pst.setString(5, date2);
+
+            ResultSet rs = pst.executeQuery();
+            List<Product> list= new ArrayList<Product>();
+            while (rs.next()) {
+                Product product = new Product();
+                product.setName(rs.getString("productName"));
+                product.setCode(rs.getString("productCode"));
+                product.setDailyCounterSearches(rs.getInt("totalcount"));
+                list.add(product);
+            }//while
+            return list;
+    }//queryHotSearchesOnPeriod
+ 
+ public static List<Product> queryHotWishes (Connection conn, Category category) throws SQLException {
+            String sql = "SELECT mw.productCode, p.productName, COUNT(mw.productCode)\n" +
+                        "FROM mywish mw\n" +
+                        "INNER JOIN products p ON p.productCode = mw.productCode\n" +
+                        "INNER JOIN categories c ON p.belong = c.categoryID\n" +
+                        "WHERE genCategory=? and category =? and subCategory=?\n" +
+                        "GROUP BY mw.productCode, p.productName\n" +
+                        "ORDER BY COUNT(mw.productCode) DESC\n" +
+                        "LIMIT 10;";
+            
+            PreparedStatement pst = conn.prepareStatement(sql);
+            pst.setString(1, category.getGenCategory());
+            pst.setString(2, category.getMidCategory());
+            pst.setString(3, category.getSubCategory());
+
+            ResultSet rs = pst.executeQuery();
+            List<Product> list= new ArrayList<Product>();
+            while (rs.next()) {
+                Product product = new Product();
+                product.setName(rs.getString("productName"));
+                product.setCode(rs.getString("productCode"));
+                product.setDailyCounterSearches(rs.getInt("count(sd.productCode)"));
+                list.add(product);
+            }//while
+            return list;
+    }//queryHotWishes
+ 
+}//DBUtils
