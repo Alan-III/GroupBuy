@@ -13,7 +13,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
         <meta name="description" content="" />
         <meta name="author" content="" />
-        <title>GroupBuy - My Payments</title>
+        <title>GroupBuy - My Offers</title>
         <link rel="stylesheet" href="styles/userInfoStyles.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css"/>
         <link href="styles/BootstrapStyles.css" rel="stylesheet" />
@@ -180,7 +180,7 @@
                 </nav>
             </div>
             <div id="userinfo" class="px-4 layout">
-                <h3 class="text-center text-white pt-5 mb-4">My payments</h3>
+                <h3 class="text-center text-white pt-5 mb-4">My Offers</h3>
                 <div class="container">
                     <div class="layout">
 
@@ -188,25 +188,26 @@
                             <thead class="border-red mb-2">
                                 <tr>
                                     <th>A/A</th>
-                                    <th>Details</th>
-                                    <th>Total</th>
-                                    <th>Type</th>
+                                    <th>Offer</th>
+                                    <th>Total Price</th>
+                                    <th>Fee</th>
+                                    <th>Participants</th>
+                                    <th>Expiration Date</th>
                                     <th>Status</th>
-                                    <th>Date</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <c:forEach items="${paymentsList}" var="payment" varStatus="status">
+                                <c:forEach items="${offersList}" var="offer" varStatus="status">
                                         <!--chose when pending, completed, cancel etc-->
-                                        <tr data-notification-id="${payment.getId()}" class="notification-row mb-2">
+                                        <tr data-notification-id="${offer.getId()}" class="notification-row mb-2">
                                             
                                         <td>${status.index + 1}</td>
-                                        <td>${payment.getDetails()}</td>
-                                        <td>${payment.getTotal()}</td>
-                                        <td>${payment.getDate()}</td>
-                                        <td>${payment.getType()}</td>
-                                        <td>${payment.getStatus()}</td>
-                                        <td><a href="${pageContext.request.contextPath}/offerdetails?offerid=${payment.getOffer().getId()}">${payment.getOffer().getTitle()}</a></td>
+                                        <td><a href="${pageContext.request.contextPath}/offerdetails?offerid=${offer.getId()}">${offer.getTitle()}</a></td>
+                                        <td>${offer.getFinalprice()}</td>
+                                        <td>${offer.getCouponPrice()}</td>
+                                        <td>${offer.getParticipants()}/${offer.getGroupSize()}</td>
+                                        <td>${offer.getOfferExpire()}</td>
+                                        <td>${offer.getStatus()}</td>
                                     </tr>
                                 </c:forEach>
                             </tbody>
@@ -216,7 +217,7 @@
             </div>
         </div>
         <script>
-            
+          
         </script>
         <!-- Footer-->
         <jsp:include page="_footer.jsp"></jsp:include>

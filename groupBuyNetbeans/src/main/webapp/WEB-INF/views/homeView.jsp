@@ -15,6 +15,9 @@
         <meta name="author" content="" />
         <title>GroupBuy - Home</title>
         <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
+        <!--Sweet Alert-->
+        <link rel="stylesheet" href="styles/animate.css" />
+        <link rel="stylesheet" href="styles/sweetalert2.css" />
         <!-- Font Awesome icons (free version)-->
         <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
         <!-- Google fonts-->
@@ -297,17 +300,42 @@
                 searchBox.value = list.innerHTML;
                 recommendsBox.innerHTML = '';
             }
+            //VERIFY EMAIL ALERT
+            function showNotification() {
+                Swal.fire({
+                    title: 'REGISTRATION SUCCESS!',
+                    text: 'Check out your email to verify your account',
+                    icon: 'success',
+                    timer: 5000,
+                    timerProgressBar: true,
+                    position: 'top',
+                    customClass: {
+                        confirmButton: 'btn btn-primary'
+                      },
+                    showClass: {
+                        popup: 'animated fadeInDown'
+                    },
+                    hideClass: {
+                        popup: 'animated fadeOutUp'
+                    }
+                });
+            }
+            // ON WINDOW LOAD
+            window.onload = function () {
+                // VERIFICATION ALERT
+                if (${verifAlert != null}) {
+                    showNotification();
+                }
+            };
         </script>
         <!-- Footer-->
         <jsp:include page="_footer.jsp"></jsp:include>
         <!-- Bootstrap core JS-->
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="https://cdn.startbootstrap.com/sb-forms-latest.js"></script>
         <!-- Core theme JS-->
         <script src="js/scripts.js"></script>
-        <!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *-->
-        <!-- * *                               SB Forms JS                               * *-->
-        <!-- * * Activate your form at https://startbootstrap.com/solution/contact-forms * *-->
-        <!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *-->
-        <script src="https://cdn.startbootstrap.com/sb-forms-latest.js"></script>
+        <!-- Sweet Alert JS-->
+        <script src="js/sweetalert2.js"></script>
     </body>
 </html>

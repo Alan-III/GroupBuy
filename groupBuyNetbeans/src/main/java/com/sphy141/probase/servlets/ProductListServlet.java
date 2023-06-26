@@ -87,6 +87,7 @@ public class ProductListServlet extends HttpServlet {
             else{
                 productList = DBUtils.searchProduct(conn, searchParam, userMailstr);
                 offersList = DBUtils.searchOffer(conn,searchParam);
+                //insert searches (5 prod 5 offers)
             }
                 
         } catch (SQLException ex) {

@@ -24,6 +24,8 @@ public class OrderDetails {
     private float tax;
     private float subtotal;
     private float total;
+    private String authorizationId;
+    private String captureId;
     
     
     public OrderDetails(){
@@ -123,6 +125,22 @@ public class OrderDetails {
 
     public void setOffer(Offer offer) {
         this.offer = offer;
+    }
+
+    public String getAuthorizationId() {
+        return authorizationId;
+    }
+
+    public void setAuthorizationId(String authorizationId) {
+        this.authorizationId = authorizationId;
+    }
+
+    public String getCaptureId() {
+        return captureId;
+    }
+
+    public void setCaptureId(String captureId) {
+        this.captureId = captureId;
     }
 
 }

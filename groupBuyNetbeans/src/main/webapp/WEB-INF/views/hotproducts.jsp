@@ -13,12 +13,13 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
         <meta name="description" content="" />
         <meta name="author" content="" />
-        <title>GroupBuy - Update Business Products</title>
+        <title>GroupBuy - Business charts</title>
         <link rel="stylesheet" href="styles/userInfoStyles.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css"/>
         <link href="styles/BootstrapStyles.css" rel="stylesheet" />
         <!--<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">-->
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     </head>
     <body>
         <!-- Navigation-->
@@ -96,8 +97,10 @@
                 </nav>
             </div>
             <div id="userinfo" class="business-products layout">
-                <h3 class="text-center text-white pt-5">Update Business Products</h3>
+                <h3 class="text-center text-white pt-5">Update Business</h3>
                 <br>
+                                <form method="post" action="${pageContext.request.contextPath}/chartdetails">
+
                 <h6 class="text-center">Filter Products</h6>
                 <div class="categories-flex mb-4">
                     <div class="input-field">
@@ -124,73 +127,103 @@
                         </select>
                         <label class="form-label" for="subcategory">Sub Category</label>
                     </div>
-                    </form>
                 </div>
 
                 <div class="layout mb-2">
-                    <h4 class="text-center">Your Business Products</h4>
+                    <h4 class="text-center">Customer wishes </h4>
                 </div>
-                <div class="layout track-container" id="trackcontainer">
-                    <!-- Item slider-->
-                    <div id='image-track' class="image-track" data-mouse-down-at='0' data-prev-percentage='0'>
-                        <c:forEach items="${businessProductList}" var="item">
-                            <div class='product' data-product-code="${item.getCode()}">
-                                <a class="product-image" href='${pageContext.request.contextPath}/productdetails?productCode=${item.getCode()}'>
-                                    <img src='${item.getFirstImagePath()}' draggable='false' />
-                                </a>
-                                <c:if test="${loginedbusiness.getBusinessName()=='c'}">
-                                    <p class="image-left">
-                                        <a href="#image-track" class="small-icon icon-minus" onclick="moveProduct('${item.getCode()}')">
-                                        </a>
-                                    </p>
-                                    <p class="image-right">
-                                        <a href="#image-track" onclick="confirmRedirect(${item.getId()})">
-                                            <img class="small-icon" src='assets/img/delete.png' draggable='false' />
-                                        </a>
-                                    </p>
-                                </c:if>
-                                <p class="image-left image-bottom">${item.getName()}</p>
-                                <p class="image-right image-bottom">${item.getPrice()}$</p>
-                            </div>                            
-                        </c:forEach>
-
-                    </div>
-
-                    <!-- Item slider end-->
-                </div>
-
+            
                 <div class="layout mb-2">
-                    <h4 class="text-center">Products not offered by your business</h4>
+                    <h4 class="text-center">Top 10 products for today</h4>
                 </div>
-                <div class="layout track-container mb-2" id="trackcontainer2">
-                    <!-- Item slider-->
-                    <div id='image-track2' class="image-track" data-mouse-down-at='0' data-prev-percentage='0'>
-                        <c:forEach items="${productList}" var="item">
-                            <div class='product' data-product-code="${item.getCode()}">
-                                <a class="product-image" href='${pageContext.request.contextPath}/productdetails?productCode=${item.getCode()}'>
-                                    <img src='${item.getFirstImagePath()}' draggable='false' />
-                                </a>
-                                <c:if test="${loginedbusiness.getBusinessName()=='c'}">
-                                    <p class="image-left">
-                                        <a href="#image-track" class="small-icon icon-plus" onclick="moveProduct('${item.getCode()}')">
-                                        </a>
-                                    </p>
-                                    <p class="image-right">
-                                        <a href="#image-track" onclick="confirmRedirect(${item.getId()})">
-                                            <img class="small-icon" src='assets/img/delete.png' draggable='false' />
-                                        </a>
-                                    </p>
-                                </c:if>
-                                <p class="image-left image-bottom">${item.getName()}</p>
-                                <p class="image-right image-bottom">${item.getPrice()}$</p>
-                            </div>                            
-                        </c:forEach>
-                    </div>
-                    <!-- Item slider end-->
-                </div> 
+                <div class="layout mb-2">
+                    <h4 class="text-center">Long term analysis </h4>
+                    
+                <div class="layout mb-2">
+                    <h6 class="text-center">Select the period you want to analyze</h6>
+                </div>
+              <div >
+
+                    <label for="startDate" class="form-label" >From:</label>
+                    <input type="date" id="startDate" name="startDate" required>
+  
+                    <label for="endDate" class="form-label">to</label>
+                    <input type="date" id="endDate" name="endDate" required>
+                    <br> 
+                     <button type="submit">Υποβολή</button>
+              </div>
+                    
+                </div>
+                </form>
+                                <div id="piechart" style="    display: flex;    position: relative;    justify-content: center;"></div>
             </div>
         </div>
+              
+<script src="https://www.gstatic.com/charts/loader.js"></script>
+<script>
+  
+        
+    if(${productList2}){
+        google.charts.load('current', {'packages':['corechart']});
+            google.charts.setOnLoadCallback(drawChart);
+        }
 
+        function drawChart() {
+            var data = ${productList2};
+            console.log(data);
+            var chartData = new google.visualization.DataTable();
+            chartData.addColumn('string', 'Product');
+            chartData.addColumn('number', 'Count');
+            chartData.addRows(data.length);
+            for (var i = 0; i < data.length; i++) {
+                chartData.setCell(i, 0, data[i].name);
+                chartData.setCell(i, 1, data[i].dailyCounterSearches);
+            }
+
+            var options = {
+                title: 'Top Searches',
+                width: 400,
+                height: 300
+            };
+
+            var chart = new google.visualization.PieChart(document.getElementById('piechart'));
+            chart.draw(chartData, options);
+        }
+    </script>
+                                
+<script>
+  function validateForm() {
+    var startDate = new Date(document.getElementById("startDate").value);
+    var endDate = new Date(document.getElementById("endDate").value);
+    var today = new Date();
+    var oneMonthAgo = new Date(today.getFullYear(), today.getMonth() - 1, today.getDate());
+
+    // Έλεγχος αν η startDate είναι μεταγενέστερη από την endDate
+    if (startDate > endDate) {
+      alert("Η ημερομηνία 'Από' πρέπει να είναι προγενέστερη από την ημερομηνία 'Έως'.");
+      return false;
+    }
+
+    // Έλεγχος αν οι ημερομηνίες είναι προγενέστερες του ενός μήνα από τη σημερινή ημερομηνία
+    if (startDate < oneMonthAgo || endDate < oneMonthAgo) {
+      alert("Οι ημερομηνίες πρέπει να είναι μέσα στον τελευταίο μήνα.");
+      return false;
+    }
+
+    // Έλεγχος αν η startDate είναι ίδια ή μεγαλύτερη από τη σημερινή ημερομηνία
+    if (startDate > today) {
+      alert("Η ημερομηνία 'Από' δεν μπορεί να είναι μεγαλύτερη από τη σημερινή ημερομηνία.");
+      return false;
+    }
+
+    return true;
+  }
+  
+</script>
+
+                                
+                                
+                                
         <script>
             var categories = {
             // Mapping of general category ID to category list
@@ -276,45 +309,7 @@
             });
             //--------------------//
 
-            function moveProduct(productCode) {
-            // AJAX post to servlet with productId
-            $.ajax({
-            type: 'POST',
-                    url: '${pageContext.request.contextPath}/updatebusinessproducts',
-                    data: { productCode: productCode },
-                    success: function(response) {
-                    // Handle success
-                    if (response === 'true') {
-                    // Handle success case
-                    console.log('Operation successful');
-                    // Check if the productDiv exists in #image-track2
-                    var productDiv = $("#image-track2").find(`.product[data-product-code='` + productCode + `']`);
-                    if (productDiv.length === 0) {
-                    // Search for the productDiv in #image-track
-                    productDiv = $("#image-track").find(`.product[data-product-code='` + productCode + `']`);
-                    if (productDiv.length > 0) {
-                    // Move the productDiv to #image-track2
-                    productDiv.appendTo("#image-track2");
-                    // Change the button icon to fa-plus
-                    productDiv.find(".icon-minus").removeClass("icon-minus").addClass("icon-plus");
-                    }
-                    } else {
-                    // Move the productDiv to #image-track
-                    productDiv.appendTo("#image-track");
-                    // Change the button icon to fa-minus
-                    productDiv.find(".icon-plus").removeClass("icon-plus").addClass("icon-minus");
-                    }
-                    } else {
-                    // Handle error case
-                    alert('Operation failed. Please make sure you are logged in your Business Account. ');
-                    }
-                    },
-                    error: function() {
-                    // Handle error
-                    alert('Error occurred during the operation. Please try again later.');
-                    }
-            });
-            }
+      
 // Function to make AJAX post request to servlet
             function categoryFilterProductsAjax(categoryName, categoryType) {
             $.ajax({
@@ -340,39 +335,6 @@
                     // Handle error
                     alert('Error occurred during the operation. Please try again later.');
                     }
-            });
-            }
-
-            function populateDivWithProducts(divId, productList) {
-            var addicon;
-            if(divId=="#image-track"){
-                addicon = "icon-minus";
-            }
-            else
-                addicon = "icon-plus";
-            $(divId).empty();
-            productList.forEach(function (product) {
-            // Create and append the necessary elements based on your HTML structure
-            var productHtml = `<div class='product' data-product-code="` + product.code + `">
-                                <a class="product-image" href='${pageContext.request.contextPath}/productdetails?productCode=` + product.code + `'>
-                                    <img src='` + product.firstImagePath + `' draggable='false' />
-                                </a>
-            <c:if test="${loginedbusiness.getBusinessName()=='c'}">
-                                    <p class="image-left">
-                                        <a href="#image-track" class="small-icon `+addicon+`" onclick="moveProduct(` + product.code + `)">
-                                        </a>
-                                    </p>
-                                    <p class="image-right">
-                                        <a href="#image-track" onclick="confirmRedirect(` + product.id + `)">
-                                            <img class="small-icon" src='assets/img/delete.png' draggable='false' />
-                                        </a>
-                                    </p>
-            </c:if>
-                                <p class="image-left image-bottom">` + product.name + `</p>
-                                <p class="image-right image-bottom">` + product.price + `$</p>
-                            </div>`;
-            // Append the productHtml to the productList container
-            $(divId).append(productHtml);
             });
             }
 

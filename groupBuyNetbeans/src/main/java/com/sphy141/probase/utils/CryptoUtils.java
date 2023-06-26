@@ -18,7 +18,7 @@ import javax.crypto.spec.SecretKeySpec;
 
 public class CryptoUtils {
     
-    private static final String key = "141";
+    private static final String key = "sphy141groupbuy!";
     
     public static String hashString(String password) {
         try {

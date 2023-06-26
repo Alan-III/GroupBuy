@@ -5,10 +5,12 @@
  */
 package com.sphy141.probase.servlets;
 
+import com.paypal.api.payments.Capture;
 import com.paypal.api.payments.PayerInfo;
 import com.paypal.api.payments.Payment;
 import com.paypal.api.payments.Transaction;
 import com.paypal.base.rest.PayPalRESTException;
+import com.sphy141.probase.beans.CouponToken;
 import com.sphy141.probase.beans.Offer;
 import com.sphy141.probase.beans.OrderDetails;
 import com.sphy141.probase.beans.UserAccount;
@@ -64,25 +66,40 @@ public class ExecutePaymentServlet extends HttpServlet {
         
         String paymentId = req.getParameter("paymentId");
         String payerId = req.getParameter("payerId");
-        String token = req.getParameter("token");       //test
         
         if(payerId==null || paymentId==null)
             resp.sendRedirect(req.getContextPath() + "/paymentfailed");
-        
-        
         
         String orderIdstr = req.getParameter("orderId");
         int orderId = Integer.parseInt(orderIdstr);
 
         try {
+            //Authorize payment and reserve customers funds
             Payment payment = PaymentUtils.executePayment(paymentId, payerId);
             PayerInfo payerInfo = payment.getPayer().getPayerInfo();
             Transaction transaction = payment.getTransactions().get(0);
-            System.out.println("payee: "+transaction.getPayee().getEmail());;
             
-            DBUtils.updatePayPalPayment(conn, orderId, "completed");
-            OrderDetails orderDetails = DBUtils.findPayment(conn, orderId);
-            DBUtils.insertUserInOffer(conn, orderDetails.getOffer().getId(), user);
+            // Retrieve the authorization ID from the payment response
+            String authorizationId = payment.getTransactions().get(0).getRelatedResources().get(0).getAuthorization().getId();
+            //Capture funds
+            Capture capturePayment = PaymentUtils.capturePayment(authorizationId, transaction.getAmount().getTotal());
+            String captureId = capturePayment.getId();
+            
+            
+            //Save the capture ID in your database for future reference
+            DBUtils.updatePayPalPayment(conn, orderId, "completed", authorizationId, captureId);
+            OrderDetails orderDetails = DBUtils.findPayment(conn, orderId);     //INSERT BEFORE PAYING. ROLLBACK IF CANT PAY
+            
+            Offer offer = DBUtils.findOffer(conn, orderDetails.getOffer().getId());
+            //if user was already in offer then he is paying full price
+            CouponToken ct = DBUtils.findCouponToken(conn, offer, user);
+            if("participant".equals(ct.getState())){
+                DBUtils.updateCouponToken(conn, ct, "buyer");   
+            } else{
+                DBUtils.insertUserInOffer(conn, offer.getId(), user);
+            }
+            
+            
             
             req.setAttribute("payerInfo", payerInfo);
             req.setAttribute("transaction", transaction);

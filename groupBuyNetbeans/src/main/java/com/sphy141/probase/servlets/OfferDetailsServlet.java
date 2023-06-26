@@ -7,6 +7,7 @@ package com.sphy141.probase.servlets;
 
 import com.sphy141.probase.beans.BusinessAccount;
 import com.sphy141.probase.beans.Category;
+import com.sphy141.probase.beans.CouponToken;
 import com.sphy141.probase.beans.Offer;
 import com.sphy141.probase.beans.Product;
 import com.sphy141.probase.beans.UserAccount;
@@ -15,7 +16,9 @@ import com.sphy141.probase.utils.MyUtils;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -84,17 +87,30 @@ public class OfferDetailsServlet extends HttpServlet {
         
         //----------See if user has already joined this offer
         boolean isParticipant=false;
+        CouponToken ct=null;
         if(user!=null){
             try {
-                isParticipant = DBUtils.isParticipantInOffer(conn, user, offer);
+                ct = DBUtils.findCouponToken(conn, offer, user);
+                isParticipant = (ct==null);
             } catch (SQLException ex) {
                 ex.printStackTrace();
             }
         }
+        // Get the current datetime
+        Date currentDate = new Date();
+
+        // Convert the Date object to a Timestamp object
+        Timestamp currentTimestamp = new Timestamp(currentDate.getTime());
+
+        // Print the current datetime
+        System.out.println("Current Datetime: " + currentTimestamp);
         
+        // You can also pass the current datetime to your JSP page or set it as a request attribute
+        req.setAttribute("currentDatetime", currentTimestamp);
         req.setAttribute("errorString", errorString);
         req.setAttribute("offer", offer);
         req.setAttribute("isParticipant", isParticipant);
+        req.setAttribute("couponToken", ct);
         RequestDispatcher dispatcher=this.getServletContext().getRequestDispatcher("/WEB-INF/views/offerDetailsView.jsp");
         dispatcher.forward(req, resp);
     }//doGet
