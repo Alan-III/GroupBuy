@@ -162,7 +162,7 @@
 <script src="https://www.gstatic.com/charts/loader.js"></script>
 <script>
   
-        
+        console.log(${productList2});
     if(${productList2}){
         google.charts.load('current', {'packages':['corechart']});
             google.charts.setOnLoadCallback(drawChart);
