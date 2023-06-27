@@ -91,7 +91,7 @@ public class OfferDetailsServlet extends HttpServlet {
         if(user!=null){
             try {
                 ct = DBUtils.findCouponToken(conn, offer, user);
-                isParticipant = (ct==null);
+                isParticipant = (ct!=null);
             } catch (SQLException ex) {
                 ex.printStackTrace();
             }

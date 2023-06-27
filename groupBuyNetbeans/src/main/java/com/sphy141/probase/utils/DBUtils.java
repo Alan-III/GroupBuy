@@ -1483,7 +1483,8 @@ public static void UpdateOffer(Connection conn,Offer offer) throws SQLException 
             notif.setDetails("User fees will be returned");
         else if("accepted".equals(newstatus))
             notif.setDetails("Go to offer to pay full price");
-            
+        notif.setOffer(offer);
+        
         insertNotification(conn, offer, null, notif);
         MailUtils.sendMailNotifications(conn,notif);
     }
@@ -1602,19 +1603,16 @@ public static void UpdateOffer(Connection conn,Offer offer) throws SQLException 
     }//queryHotWishes
 
     static List<String> queryNotificationListeners(Connection conn, Notification notif)  throws SQLException{
-        String sql = "SELECT *\n" +
-"FROM notifications n \n" +
-"LEFT JOIN coupontokens ct ON ct.offerID=n.offerID\n" +
-"LEFT JOIN (SELECT productName,productCode FROM products) p ON n.productCode=p.productCode\n" +
-"LEFT JOIN (SELECT title as offerTitle,offerID FROM offers) o ON n.offerID=o.offerID\n" +
-"WHERE n.notificationID=?\n" +
-"ORDER BY n.notificationDate DESC;";
+        String sql = "SELECT *,ct.email as usermail\n" +
+"FROM coupontokens ct\n" +
+"LEFT JOIN offers o ON o.offerID=ct.offerID\n" +
+"WHERE ct.offerID=?;";
         List<String> list = new ArrayList<String>();
         PreparedStatement pst = conn.prepareStatement(sql);
-        pst.setInt(1, notif.getId());
+        pst.setInt(1, notif.getOffer().getId());
         ResultSet rs = pst.executeQuery();
         while (rs.next()) {
-            list.add(CryptoUtils.decrypt(rs.getString("email")));
+            list.add(CryptoUtils.decrypt(rs.getString("usermail")));
         }//while
         return list;
     }

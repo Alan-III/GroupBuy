@@ -108,7 +108,7 @@ String json = gson.toJson(productList2);
 
 // Set the JSON as an attribute in the request
 req.setAttribute("productList2", json);
-        RequestDispatcher dispatcher = req.getRequestDispatcher("/WEB-INF/views/hotproducts.jsp");
+        RequestDispatcher dispatcher = req.getRequestDispatcher("/WEB-INF/views/hotProductsChartView.jsp");
         dispatcher.forward(req, resp);
     }
 }

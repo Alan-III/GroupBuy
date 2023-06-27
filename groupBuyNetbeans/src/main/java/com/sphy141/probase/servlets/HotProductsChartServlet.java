@@ -32,8 +32,8 @@ import org.json.JSONObject;
  *
  * @author MITSOS GLA
  */
-@WebServlet(urlPatterns = {"/hotproductchart"})
-public class BusinessChartsServlet extends HttpServlet {
+@WebServlet(urlPatterns = {"/hotproductschart"})
+public class HotProductsChartServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -86,7 +86,7 @@ public class BusinessChartsServlet extends HttpServlet {
         
 
         RequestDispatcher dispatcher = this.getServletContext()
-                .getRequestDispatcher("/WEB-INF/views/hotproducts.jsp");
+                .getRequestDispatcher("/WEB-INF/views/hotProductsChartView.jsp");
         dispatcher.forward(req, resp);
     }
 

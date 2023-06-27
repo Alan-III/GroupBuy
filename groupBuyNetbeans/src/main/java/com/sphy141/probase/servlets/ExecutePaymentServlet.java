@@ -93,7 +93,7 @@ public class ExecutePaymentServlet extends HttpServlet {
             Offer offer = DBUtils.findOffer(conn, orderDetails.getOffer().getId());
             //if user was already in offer then he is paying full price
             CouponToken ct = DBUtils.findCouponToken(conn, offer, user);
-            if("participant".equals(ct.getState())){
+            if(ct!=null && "participant".equals(ct.getState())){
                 DBUtils.updateCouponToken(conn, ct, "buyer");   
             } else{
                 DBUtils.insertUserInOffer(conn, offer.getId(), user);

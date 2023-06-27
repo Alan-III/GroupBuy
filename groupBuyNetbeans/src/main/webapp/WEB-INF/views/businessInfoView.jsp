@@ -78,10 +78,10 @@
                             </a>
                         </li>
                         <li>
-                            <a href="#">
-                                <i class="fa fa-map-marker fa-2x"></i>
+                            <a href="${pageContext.request.contextPath}/hotproductschart">
+                                <i class="fa fa-chart-line fa-2x"></i>
                                 <span class="nav-text">
-                                    Member Map
+                                    Analytics
                                 </span>
                             </a>
                         </li>

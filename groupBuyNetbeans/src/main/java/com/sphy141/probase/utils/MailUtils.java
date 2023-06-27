@@ -151,17 +151,17 @@ public class MailUtils {
         }); // gives the authentication to send email
         
         for(String email : emailsList){
-        Message msg = new MimeMessage(session);
-        
-        msg.setFrom(new InternetAddress(fromEmail));
-        msg.setRecipient(Message.RecipientType.TO, new InternetAddress(email));
-        
-        msg.setSubject(notif.getNotificationTitle());
-        String link = "http://localhost:8080/groupbuy/offerdetails?offerid="+notif.getOffer().getId();
-        String emailContent = "The "+notif.getOffer().getTitle()+" offer you participated has been "+notif.getOffer().getStatus()+".<br>"+notif.getDetails()+"<br>"
-        + "<a href=\"" + link + "\">Check Offer</a>";
-        msg.setContent(emailContent, "text/html; charset=utf-8");
-        Transport.send(msg);
+            Message msg = new MimeMessage(session);
+
+            msg.setFrom(new InternetAddress(fromEmail));
+            msg.setRecipient(Message.RecipientType.TO, new InternetAddress(email));
+
+            msg.setSubject(notif.getNotificationTitle());
+            String link = "http://localhost:8080/groupbuy/offerdetails?offerid="+notif.getOffer().getId();
+            String emailContent = "The "+notif.getOffer().getTitle()+" offer you participated has been "+notif.getOffer().getStatus()+".<br>"+notif.getDetails()+"<br>"
+            + "<a href=\"" + link + "\">Check Offer</a>";
+            msg.setContent(emailContent, "text/html; charset=utf-8");
+            Transport.send(msg);
         }
     }
 }
